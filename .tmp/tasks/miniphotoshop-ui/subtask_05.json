@@ -1,0 +1,18 @@
+{
+  "subtaskId": "subtask_05",
+  "name": "AppShell Layout",
+  "description": "Main application shell layout orchestrating all panels in Photoshop-like arrangement",
+  "status": "pending",
+  "parallel": false,
+  "depends_on": ["subtask_02", "subtask_03", "subtask_04"],
+  "context_files": [
+    "~/.opencode/context/core/standards/code-quality.md",
+    "~/.opencode/context/ui/web/react-patterns.md",
+    "~/.opencode/context/ui/web/design-systems.md"
+  ],
+  "reference_files": ["PLAN.md"],
+  "deliverables": [
+    "src/components/layout/AppShell.tsx - Main layout component",
+    "Layout matches PLAN.md Section 7 diagram"
+  ]
+}

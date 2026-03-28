@@ -1,0 +1,18 @@
+{
+  "subtaskId": "subtask_10",
+  "name": "LayersPanel",
+  "description": "Right panel showing layer stack with thumbnails, visibility, opacity",
+  "status": "pending",
+  "parallel": true,
+  "depends_on": ["subtask_05"],
+  "context_files": [
+    "~/.opencode/context/core/standards/code-quality.md",
+    "~/.opencode/context/ui/web/react-patterns.md"
+  ],
+  "reference_files": ["PLAN.md"],
+  "deliverables": [
+    "src/components/layout/LayersPanel.tsx",
+    "src/components/panels/layers/LayerList.tsx",
+    "src/components/panels/layers/LayerItem.tsx"
+  ]
+}

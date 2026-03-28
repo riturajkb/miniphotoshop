@@ -1,0 +1,44 @@
+{
+  "version": "1.0",
+  "last_updated": "2026-03-25T00:00:00Z",
+  "libraries": {
+    "electron-vite": {
+      "description": "Build tool for Electron with Vite",
+      "files": [
+        {
+          "filename": "electron-vite-react-scaffold.md",
+          "topic": "React + TypeScript scaffold setup",
+          "tech_stack": "electron-vite + React 18 + TypeScript",
+          "fetched": "2026-03-25T00:00:00Z",
+          "source": "electron-vite.org"
+        }
+      ]
+    },
+    "electron": {
+      "description": "Electron desktop app framework",
+      "files": [
+        {
+          "filename": "electron-ipc-communication.md",
+          "topic": "IPC communication patterns",
+          "tech_stack": "Electron main/renderer processes",
+          "fetched": "2026-03-25T00:00:00Z",
+          "source": "electronjs.org"
+        },
+        {
+          "filename": "electron-context-isolation.md",
+          "topic": "Context isolation and preload scripts",
+          "tech_stack": "Electron security model",
+          "fetched": "2026-03-25T00:00:00Z",
+          "source": "electronjs.org"
+        },
+        {
+          "filename": "electron-window-management.md",
+          "topic": "Window management best practices",
+          "tech_stack": "Electron BrowserWindow API",
+          "fetched": "2026-03-25T00:00:00Z",
+          "source": "electronjs.org"
+        }
+      ]
+    }
+  }
+}

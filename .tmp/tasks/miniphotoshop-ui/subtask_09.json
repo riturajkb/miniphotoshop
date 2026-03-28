@@ -1,0 +1,17 @@
+{
+  "subtaskId": "subtask_09",
+  "name": "CanvasArea",
+  "description": "Scrollable canvas viewport with checkerboard transparency background",
+  "status": "pending",
+  "parallel": true,
+  "depends_on": ["subtask_05", "subtask_02"],
+  "context_files": [
+    "~/.opencode/context/core/standards/code-quality.md",
+    "~/.opencode/context/ui/web/react-patterns.md"
+  ],
+  "reference_files": ["PLAN.md"],
+  "deliverables": [
+    "src/components/canvas/CanvasArea.tsx - Scrollable viewport",
+    "src/components/canvas/CanvasRulers.tsx - Top and left rulers"
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "subtaskId": "subtask_04",
+  "name": "Tailwind Config",
+  "description": "Configure Tailwind CSS 4 with MiniPhotoshop dark theme design tokens",
+  "status": "pending",
+  "parallel": false,
+  "depends_on": ["subtask_01"],
+  "context_files": [
+    "~/.opencode/context/ui/web/design-systems.md",
+    "~/.opencode/context/ui/web/ui-styling-standards.md"
+  ],
+  "reference_files": ["PLAN.md"],
+  "deliverables": [
+    "tailwind.config.ts with CSS custom properties for dark theme",
+    "src/index.css - Tailwind directives + CSS variables"
+  ]
+}

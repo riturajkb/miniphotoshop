@@ -1,0 +1,23 @@
+{
+  "subtaskId": "subtask_03",
+  "name": "Zustand Stores",
+  "description": "Create Zustand store stubs for editor, document, tool, color, and UI state",
+  "status": "in_progress",
+  "agent_id": "coder-agent",
+  "started_at": "2026-03-25T00:00:00Z",
+  "parallel": true,
+  "depends_on": ["subtask_01"],
+  "context_files": [
+    "~/.opencode/context/core/standards/code-quality.md",
+    "~/.opencode/context/ui/web/react-patterns.md"
+  ],
+  "reference_files": ["PLAN.md"],
+  "deliverables": [
+    "src/store/editorStore.ts - Active tool, zoom, pan, viewport",
+    "src/store/documentStore.ts - Canvas dimensions, layers, pixels",
+    "src/store/toolStore.ts - Per-tool settings",
+    "src/store/colorStore.ts - Foreground/background colors",
+    "src/store/uiStore.ts - Panel visibility, preferences",
+    "src/types/editor.ts - Core types: RGBA, Tool, Document, Layer"
+  ]
+}

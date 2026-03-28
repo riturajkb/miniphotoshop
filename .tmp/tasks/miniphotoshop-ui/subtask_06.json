@@ -1,0 +1,14 @@
+{
+  "subtaskId": "subtask_06",
+  "name": "MenuBar",
+  "description": "Top menu bar with File/Edit/Image/Layer/Filter/View menus",
+  "status": "pending",
+  "parallel": true,
+  "depends_on": ["subtask_05"],
+  "context_files": [
+    "~/.opencode/context/core/standards/code-quality.md",
+    "~/.opencode/context/ui/web/react-patterns.md"
+  ],
+  "reference_files": ["PLAN.md"],
+  "deliverables": ["src/components/layout/MenuBar.tsx"]
+}

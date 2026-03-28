@@ -1,0 +1,28 @@
+{
+  "subtaskId": "subtask_01",
+  "name": "Project Scaffold",
+  "description": "Set up electron-vite + React 18 + TypeScript + Tailwind CSS 4 + shadcn/ui project structure",
+  "status": "pending",
+  "parallel": true,
+  "depends_on": [],
+  "context_files": [
+    "~/.opencode/context/core/standards/code-quality.md",
+    "~/.opencode/context/ui/web/react-patterns.md",
+    "~/.opencode/context/ui/web/ui-styling-standards.md"
+  ],
+  "reference_files": [
+    ".tmp/external-context/electron/electron-vite-react-scaffold.md",
+    "PLAN.md"
+  ],
+  "deliverables": [
+    "package.json with all dependencies",
+    "electron/main.ts - Electron main process entry",
+    "electron/preload.ts - IPC bridge with contextBridge",
+    "src/main.tsx - React entry point",
+    "src/App.tsx - Root component",
+    "vite.config.ts - Vite + Electron config",
+    "tsconfig.json - TypeScript config",
+    "tailwind.config.ts - Tailwind with design tokens",
+    "index.html - HTML entry"
+  ]
+}
