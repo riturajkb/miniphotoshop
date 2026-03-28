@@ -118,6 +118,16 @@ export class LayerStack {
     return this.layers.filter((l) => l.visible);
   }
 
+  reorderLayer(fromIndex: number, toIndex: number): void {
+    if (
+      fromIndex < 0 || fromIndex >= this.layers.length ||
+      toIndex < 0 || toIndex >= this.layers.length ||
+      fromIndex === toIndex
+    ) return;
+    const [moved] = this.layers.splice(fromIndex, 1);
+    this.layers.splice(toIndex, 0, moved);
+  }
+
   getLayerCount(): number {
     return this.layers.length;
   }

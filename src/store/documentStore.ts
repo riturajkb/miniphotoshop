@@ -19,6 +19,7 @@ interface DocumentActions {
   removeLayer: (layerId: string) => void;
   updateLayer: (layerId: string, updates: Partial<Omit<Layer, "id">>) => void;
   setActiveLayer: (layerId: string | null) => void;
+  moveLayer: (fromIndex: number, toIndex: number) => void;
   clearDocument: () => void;
 }
 
@@ -120,6 +121,19 @@ export const useDocumentStore = create<DocumentStore>()(
     setActiveLayer: (layerId: string | null) =>
       setFn((state: DocumentState) => {
         state.activeLayerId = layerId;
+      }),
+
+    moveLayer: (fromIndex: number, toIndex: number) =>
+      setFn((state: DocumentState) => {
+        if (!state.document) return;
+        const layers = state.document.layers;
+        if (
+          fromIndex < 0 || fromIndex >= layers.length ||
+          toIndex < 0 || toIndex >= layers.length ||
+          fromIndex === toIndex
+        ) return;
+        const [moved] = layers.splice(fromIndex, 1);
+        layers.splice(toIndex, 0, moved);
       }),
 
     clearDocument: () =>
