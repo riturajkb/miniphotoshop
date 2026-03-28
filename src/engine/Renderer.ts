@@ -131,6 +131,53 @@ export class Renderer {
   }
 
   /**
+   * Brush drawing logic
+   */
+  drawBrush(x: number, y: number, color: import("../types/editor").RGBA, size: number): void {
+    const layer = this.layerStack.getActiveLayer();
+    if (!layer || layer.locked || !layer.pixelBuffer) return;
+
+    const radius = Math.floor(size / 2);
+    const w = this.docWidth;
+    const h = this.docHeight;
+
+    for (let dy = -radius; dy <= radius; dy++) {
+      for (let dx = -radius; dx <= radius; dx++) {
+        const px = x + dx;
+        const py = y + dy;
+
+        if (px >= 0 && px < w && py >= 0 && py < h) {
+          if (dx * dx + dy * dy <= radius * radius) {
+            const idx = (py * w + px) * 4;
+            layer.pixelBuffer[idx] = color.r;
+            layer.pixelBuffer[idx + 1] = color.g;
+            layer.pixelBuffer[idx + 2] = color.b;
+            layer.pixelBuffer[idx + 3] = color.a;
+          }
+        }
+      }
+    }
+    layer.dirty = true;
+    this.render();
+  }
+
+  /**
+   * Invert current layer pixels
+   */
+  invertLayer(): void {
+    const layer = this.layerStack.getActiveLayer();
+    if (!layer || layer.locked || !layer.pixelBuffer) return;
+
+    for (let i = 0; i < layer.pixelBuffer.length; i += 4) {
+      layer.pixelBuffer[i] = 255 - layer.pixelBuffer[i];
+      layer.pixelBuffer[i + 1] = 255 - layer.pixelBuffer[i + 1];
+      layer.pixelBuffer[i + 2] = 255 - layer.pixelBuffer[i + 2];
+    }
+    layer.dirty = true;
+    this.render();
+  }
+
+  /**
    * Create a white background Graphics object as the bottommost layer
    * This creates a real PixiJS Graphics object in the scene graph
    */

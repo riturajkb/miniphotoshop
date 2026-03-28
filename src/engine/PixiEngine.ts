@@ -62,7 +62,7 @@ export class PixiEngine {
         const isEvenRow = Math.floor(y / tileSize) % 2 === 0;
         const isEvenCol = Math.floor(x / tileSize) % 2 === 0;
         g.rect(x, y, tileSize, tileSize);
-        g.fill(isEvenRow === isEvenCol ? 0x141414 : 0x0e0e0e);
+        g.fill(isEvenRow === isEvenCol ? 0xdddddd : 0xcccccc);
       }
     }
 

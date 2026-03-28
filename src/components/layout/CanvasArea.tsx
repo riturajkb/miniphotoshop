@@ -128,42 +128,16 @@ export function CanvasArea() {
   // Sync document store layer properties → engine LayerStack
   // This runs whenever layers in the store change (visibility, opacity, etc.)
   useEffect(() => {
-    const unsubscribe = useDocumentStore.subscribe((state) => {
+    const unsubscribe = useDocumentStore.subscribe((state: any) => {
       const renderer = rendererRef.current;
       if (!renderer) return;
 
-      const storeLayers = selectLayers(state as any);
+      const storeLayers = selectLayers(state);
       const layerStack = renderer.getLayerStack();
-      const engineLayers = layerStack.getLayers();
-      const storeLayerIds = new Set(storeLayers.map((layer) => layer.id));
-      const engineLayerIds = new Set(engineLayers.map((layer) => layer.id));
-
-      for (const engineLayer of engineLayers) {
-        if (!storeLayerIds.has(engineLayer.id)) {
-          layerStack.deleteLayer(engineLayer.id);
-        }
-      }
-
-      for (const storeLayer of storeLayers) {
-        if (!engineLayerIds.has(storeLayer.id)) {
-          layerStack.createLayer(storeLayer.name, undefined, storeLayer.id);
-        }
-      }
-
-      layerStack.setActiveLayer((state as any).activeLayerId ?? null);
 
       for (const storeLayer of storeLayers) {
         const engineLayer = layerStack.getLayer(storeLayer.id);
         if (!engineLayer) continue;
-
-        if (engineLayer.name !== storeLayer.name) {
-          engineLayer.name = storeLayer.name;
-          engineLayer.dirty = true;
-        }
-
-        if (engineLayer.locked !== storeLayer.locked) {
-          engineLayer.locked = storeLayer.locked;
-        }
 
         // Sync visibility
         if (engineLayer.visible !== storeLayer.visible) {
@@ -177,13 +151,8 @@ export function CanvasArea() {
         }
 
         // Sync opacity
-        if (engineLayer.opacity !== storeLayer.opacity) {
-          engineLayer.opacity = storeLayer.opacity;
-          engineLayer.dirty = true;
-        }
-
-        if (engineLayer.blendMode !== storeLayer.blendMode) {
-          engineLayer.blendMode = storeLayer.blendMode;
+        if (engineLayer.opacity !== (storeLayer.opacity ?? 1)) {
+          engineLayer.opacity = storeLayer.opacity ?? 1;
           engineLayer.dirty = true;
         }
       }
@@ -232,8 +201,20 @@ export function CanvasArea() {
 
   // mouse
   const onDown = useCallback((e: React.MouseEvent) => {
+    const r = rendererRef.current;
+    const vp = vpRef.current;
+    if (!r || !vp) return;
+
     if (e.button === 1 || e.altKey) {
       panningRef.current = true;
+      lastRef.current = { x: e.clientX, y: e.clientY };
+    } else {
+      const { left, top } = vp.getBoundingClientRect();
+      const cp = r.screenToCanvas(e.clientX - left, e.clientY - top);
+      
+      // Basic painting for Brush tool
+      r.drawBrush(cp.x, cp.y, { r: 50, g: 150, b: 250, a: 255 }, 20);
+      panningRef.current = false;
       lastRef.current = { x: e.clientX, y: e.clientY };
     }
   }, []);
@@ -255,6 +236,9 @@ export function CanvasArea() {
         r.setPan(p.x + dx, p.y + dy);
         setPan(r.getPan());
         lastRef.current = { x: e.clientX, y: e.clientY };
+      } else if (e.buttons === 1) {
+        // Continue painting if mouse button is held
+        r.drawBrush(cp.x, cp.y, { r: 50, g: 150, b: 250, a: 255 }, 20);
       }
     },
     [setCursor, setPan],
@@ -263,6 +247,10 @@ export function CanvasArea() {
   const onUp = useCallback(() => {
     panningRef.current = false;
   }, []);
+
+  const handleInvert = () => {
+    rendererRef.current?.invertLayer();
+  };
 
   return (
     <main className="canvas-area">
@@ -309,7 +297,7 @@ export function CanvasArea() {
         <div className="osep"></div>
         <div className="og">
           <button className="ob d">✕ Deselect</button>
-          <button className="ob" style={{ marginLeft: 3 }}>
+          <button className="ob" style={{ marginLeft: 3 }} onClick={handleInvert}>
             Invert
           </button>
           <button className="ob" style={{ marginLeft: 3 }}>
