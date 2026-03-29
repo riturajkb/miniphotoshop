@@ -5,6 +5,8 @@ import type { Graphics } from "pixi.js";
 import { PixiEngine } from "./PixiEngine";
 import { LayerStack } from "./LayerStack";
 import { Compositor } from "./Compositor";
+import { SelectionManager } from "./SelectionManager";
+import { SelectionOverlay } from "./SelectionOverlay";
 
 export class Renderer {
   private engine: PixiEngine;
@@ -19,6 +21,10 @@ export class Renderer {
   private vpH = 0;
   private offscreen: HTMLCanvasElement;
   private offCtx: CanvasRenderingContext2D;
+  private selectionManager: SelectionManager;
+  private selectionOverlay: SelectionOverlay;
+  private tempSelectionMask: Uint8Array | null = null;
+  private lastTime = performance.now();
 
   constructor(width: number, height: number) {
     this.engine = new PixiEngine();
@@ -31,6 +37,9 @@ export class Renderer {
     this.offscreen.width = width;
     this.offscreen.height = height;
     this.offCtx = this.offscreen.getContext("2d")!;
+
+    this.selectionManager = new SelectionManager(width, height);
+    this.selectionOverlay = new SelectionOverlay();
   }
 
   async init(
@@ -42,6 +51,7 @@ export class Renderer {
     this.vpH = vpH;
     await this.engine.init(canvas, vpW, vpH);
     this.engine.createCheckerboard(this.docWidth, this.docHeight);
+    this.engine.documentContainer.addChild(this.selectionOverlay.container);
     this.updateTransform();
   }
 
@@ -61,6 +71,13 @@ export class Renderer {
   render(): void {
     if (!this.engine.isInitialized) return;
     this.composeDirty();
+
+    const now = performance.now();
+    const dt = (now - this.lastTime) / 1000;
+    this.lastTime = now;
+    
+    this.selectionOverlay.updateAnimationAndGetDirty(dt);
+
     this.engine.render();
   }
 
@@ -92,10 +109,18 @@ export class Renderer {
     this.engine.setTransform(this.panX, this.panY, this.zoom);
   }
 
-  screenToCanvas(sx: number, sy: number): { x: number; y: number } {
+  screenToCanvasPrecise(sx: number, sy: number): { x: number; y: number } {
     return {
-      x: Math.floor((sx - this.panX) / this.zoom),
-      y: Math.floor((sy - this.panY) / this.zoom),
+      x: (sx - this.panX) / this.zoom,
+      y: (sy - this.panY) / this.zoom,
+    };
+  }
+
+  screenToCanvas(sx: number, sy: number): { x: number; y: number } {
+    const precise = this.screenToCanvasPrecise(sx, sy);
+    return {
+      x: Math.floor(precise.x),
+      y: Math.floor(precise.y),
     };
   }
 
@@ -130,6 +155,40 @@ export class Renderer {
     return this.layerStack;
   }
 
+  private getSelectionState(): {
+    mask: Uint8Array;
+    hasActiveSelection: boolean;
+  } {
+    const mask = this.selectionManager.getMask();
+    let hasActiveSelection = false;
+
+    for (let i = 0; i < mask.length; i++) {
+      if (mask[i] > 0) {
+        hasActiveSelection = true;
+        break;
+      }
+    }
+
+    return { mask, hasActiveSelection };
+  }
+
+  private canAffectPixel(
+    x: number,
+    y: number,
+    selectionMask: Uint8Array,
+    hasActiveSelection: boolean,
+  ): boolean {
+    if (x < 0 || x >= this.docWidth || y < 0 || y >= this.docHeight) {
+      return false;
+    }
+
+    if (!hasActiveSelection) {
+      return true;
+    }
+
+    return selectionMask[y * this.docWidth + x] > 0;
+  }
+
   /**
    * Brush drawing logic
    */
@@ -140,6 +199,7 @@ export class Renderer {
     const radius = Math.floor(size / 2);
     const w = this.docWidth;
     const h = this.docHeight;
+    const { mask: selectionMask, hasActiveSelection } = this.getSelectionState();
 
     for (let dy = -radius; dy <= radius; dy++) {
       for (let dx = -radius; dx <= radius; dx++) {
@@ -148,6 +208,10 @@ export class Renderer {
 
         if (px >= 0 && px < w && py >= 0 && py < h) {
           if (dx * dx + dy * dy <= radius * radius) {
+            if (!this.canAffectPixel(px, py, selectionMask, hasActiveSelection)) {
+              continue;
+            }
+
             const idx = (py * w + px) * 4;
             layer.pixelBuffer[idx] = color.r;
             layer.pixelBuffer[idx + 1] = color.g;
@@ -161,14 +225,132 @@ export class Renderer {
     this.render();
   }
 
+  fill(
+    x: number,
+    y: number,
+    color: import("../types/editor").RGBA,
+    tolerance: number,
+    contiguous: boolean,
+  ): void {
+    const layer = this.layerStack.getActiveLayer();
+    if (!layer || layer.locked || !layer.pixelBuffer) return;
+    if (x < 0 || x >= this.docWidth || y < 0 || y >= this.docHeight) return;
+
+    const pixels = layer.pixelBuffer;
+    const width = this.docWidth;
+    const height = this.docHeight;
+    const { mask: selectionMask, hasActiveSelection } = this.getSelectionState();
+
+    if (!this.canAffectPixel(x, y, selectionMask, hasActiveSelection)) return;
+
+    const startIndex = (y * width + x) * 4;
+    const source = {
+      r: pixels[startIndex],
+      g: pixels[startIndex + 1],
+      b: pixels[startIndex + 2],
+      a: pixels[startIndex + 3],
+    };
+
+    if (
+      source.r === color.r &&
+      source.g === color.g &&
+      source.b === color.b &&
+      source.a === color.a
+    ) {
+      return;
+    }
+
+    const withinTolerance = (index: number) => {
+      const dr = pixels[index] - source.r;
+      const dg = pixels[index + 1] - source.g;
+      const db = pixels[index + 2] - source.b;
+      const da = pixels[index + 3] - source.a;
+      return Math.sqrt(dr * dr + dg * dg + db * db + da * da) <= tolerance;
+    };
+
+    const applyAtIndex = (index: number) => {
+      pixels[index] = color.r;
+      pixels[index + 1] = color.g;
+      pixels[index + 2] = color.b;
+      pixels[index + 3] = color.a;
+    };
+
+    if (!contiguous) {
+      for (let py = 0; py < height; py++) {
+        for (let px = 0; px < width; px++) {
+          if (!this.canAffectPixel(px, py, selectionMask, hasActiveSelection)) {
+            continue;
+          }
+
+          const index = (py * width + px) * 4;
+          if (withinTolerance(index)) {
+            applyAtIndex(index);
+          }
+        }
+      }
+      layer.dirty = true;
+      this.render();
+      return;
+    }
+
+    const visited = new Uint8Array(width * height);
+    const queue: number[] = [y * width + x];
+    visited[y * width + x] = 1;
+    let head = 0;
+
+    while (head < queue.length) {
+      const current = queue[head++];
+      const px = current % width;
+      const py = Math.floor(current / width);
+
+      if (!this.canAffectPixel(px, py, selectionMask, hasActiveSelection)) {
+        continue;
+      }
+
+      const index = current * 4;
+      if (!withinTolerance(index)) {
+        continue;
+      }
+
+      applyAtIndex(index);
+
+      const neighbors = [
+        [px - 1, py],
+        [px + 1, py],
+        [px, py - 1],
+        [px, py + 1],
+      ];
+
+      for (const [nx, ny] of neighbors) {
+        if (nx < 0 || nx >= width || ny < 0 || ny >= height) continue;
+        const next = ny * width + nx;
+        if (visited[next]) continue;
+        visited[next] = 1;
+        queue.push(next);
+      }
+    }
+
+    layer.dirty = true;
+    this.render();
+  }
+
   /**
    * Invert current layer pixels
    */
   invertLayer(): void {
     const layer = this.layerStack.getActiveLayer();
     if (!layer || layer.locked || !layer.pixelBuffer) return;
+    const { mask: selectionMask, hasActiveSelection } = this.getSelectionState();
 
     for (let i = 0; i < layer.pixelBuffer.length; i += 4) {
+      const pixelIndex = i / 4;
+      const px = pixelIndex % this.docWidth;
+      const py = Math.floor(pixelIndex / this.docWidth);
+
+      if (!this.canAffectPixel(px, py, selectionMask, hasActiveSelection)) {
+        continue;
+      }
+
       layer.pixelBuffer[i] = 255 - layer.pixelBuffer[i];
       layer.pixelBuffer[i + 1] = 255 - layer.pixelBuffer[i + 1];
       layer.pixelBuffer[i + 2] = 255 - layer.pixelBuffer[i + 2];
@@ -212,7 +394,8 @@ export class Renderer {
     this.docHeight = h;
     this.compositor.resize(w, h);
     this.layerStack.resize(w, h);
-    this.layerStack.clear();
+    this.selectionManager.resize(w, h);
+    this.layerStack.markAllDirty();
     this.engine.removeBackgroundGraphics();
 
     this.offscreen.width = w;
@@ -224,6 +407,12 @@ export class Renderer {
     if (this.vpW > 0 && this.vpH > 0) {
       this.fitToViewport(this.vpW, this.vpH);
     }
+  }
+
+  syncDocument(doc: import("../types/editor").Document, activeLayerId: string | null): void {
+    this.layerStack.syncFromDocument(doc.layers);
+    this.layerStack.setActiveLayer(activeLayerId);
+    this.forceRender();
   }
 
   destroy(): void {
@@ -273,5 +462,67 @@ export class Renderer {
     // Get visible layers in order (they're already composited in offscreen)
     // Just export the offscreen canvas directly
     return this.offscreen.toDataURL("image/png");
+  }
+
+  // ============================================
+  // SELECTION INTERACTIVE DRAFTING API
+  // ============================================
+
+  beginSelectionDraft(originalMask: Uint8Array | null) {
+    this.tempSelectionMask = originalMask;
+    this.selectionManager.loadMask(originalMask);
+  }
+
+  updateSelectionRectDraft(x: number, y: number, w: number, h: number, mode: import("../types/editor").SelectionMode) {
+    this.selectionManager.loadMask(this.tempSelectionMask);
+    this.selectionManager.drawRect(x, y, w, h, mode);
+    this.updateOverlayFromManager();
+  }
+
+  updateSelectionEllipseDraft(x: number, y: number, rx: number, ry: number, mode: import("../types/editor").SelectionMode) {
+    this.selectionManager.loadMask(this.tempSelectionMask);
+    this.selectionManager.drawEllipse(x, y, rx, ry, mode);
+    this.updateOverlayFromManager();
+  }
+
+  updateSelectionPolygonDraft(points: import("../types/editor").Point[], mode: import("../types/editor").SelectionMode) {
+    this.selectionManager.loadMask(this.tempSelectionMask);
+    this.selectionManager.drawPolygon(points, mode);
+    this.updateOverlayFromManager();
+  }
+
+  updateSelectionQuickDraft(startX: number, startY: number, radius: number, tolerance: number, mode: import("../types/editor").SelectionMode) {
+    // Force latest composite for accurate color sampling
+    this.composeDirty();
+    const pixels = this.offCtx.getImageData(0, 0, this.docWidth, this.docHeight).data;
+    
+    this.selectionManager.quickSelect(startX, startY, radius, tolerance, pixels, mode);
+    this.updateOverlayFromManager();
+  }
+
+  commitSelectionDraft(): Uint8Array {
+    return this.selectionManager.getMask();
+  }
+
+  private updateOverlayFromManager() {
+    const mask = this.selectionManager.getMask();
+    this.selectionOverlay.updateMask(mask, this.docWidth, this.docHeight);
+    this.render();
+  }
+
+  // ============================================
+  // STORE SYNC API
+  // ============================================
+  syncSelection(selection: import("../types/editor").Selection | null) {
+    if (selection && selection.mask) {
+       this.selectionManager.loadMask(selection.mask);
+       this.selectionOverlay.updateMask(selection.mask, this.docWidth, this.docHeight);
+       this.selectionOverlay.startAnimation();
+    } else {
+       this.selectionManager.clear();
+       this.selectionOverlay.clear();
+       this.selectionOverlay.stopAnimation();
+    }
+    this.render();
   }
 }

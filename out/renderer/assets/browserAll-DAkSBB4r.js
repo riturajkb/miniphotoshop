@@ -1,6 +1,6 @@
-import { n as Ticker, U as UPDATE_PRIORITY, P as Point, r as removeItems, E as ExtensionType, o as EventEmitter, w as warn, l as extensions, p as Container } from "./index-C4NVyuef.js";
-import "./webworkerAll-5EtXhF0n.js";
-import "./Filter-DXbVL_vw.js";
+import { n as Ticker, U as UPDATE_PRIORITY, P as Point, r as removeItems, E as ExtensionType, o as EventEmitter, w as warn, l as extensions, p as Container } from "./index-R3pYnx9K.js";
+import "./webworkerAll-CYbwvZbD.js";
+import "./Filter-BwbujZFC.js";
 class CanvasObserver {
   constructor(options) {
     this._lastTransform = "";

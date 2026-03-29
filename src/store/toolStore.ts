@@ -73,7 +73,10 @@ export interface ToolSettings {
   [Tool.Pencil]: BrushSettings;
   [Tool.Eraser]: EraserSettings;
   [Tool.Fill]: FillSettings;
-  [Tool.Selection]: SelectionSettings;
+  [Tool.SelectionRect]: SelectionSettings;
+  [Tool.SelectionEllipse]: SelectionSettings;
+  [Tool.Lasso]: SelectionSettings;
+  [Tool.QuickSelection]: FillSettings;
   [Tool.MagicWand]: FillSettings;
   [Tool.Gradient]: GradientSettings;
   [Tool.Text]: TextSettings;
@@ -262,9 +265,12 @@ export const useToolStore = create<ToolStore>()(
           case "fill":
             state.fill = { ...defaultFillSettings };
             break;
-          case "selection":
+          case "selectionRect":
+          case "selectionEllipse":
+          case "lasso":
             state.selection = { ...defaultSelectionSettings };
             break;
+          case "quickSelection":
           case "magicWand":
             state.magicWand = { ...defaultFillSettings };
             break;

@@ -1,4 +1,4 @@
-const __vite__mapDeps=(i,m=__vite__mapDeps,d=(m.f||(m.f=["./browserAll-CYvDI9SR.js","./webworkerAll-5EtXhF0n.js","./Filter-DXbVL_vw.js","./WebGPURenderer-CRoqqgQx.js","./GpuStencilModesToPixi-BgYFfW2B.js","./RenderTargetSystem-GTbxreYW.js","./WebGLRenderer-DkXxKfCC.js","./CanvasRenderer-653jH_vA.js"])))=>i.map(i=>d[i]);
+const __vite__mapDeps=(i,m=__vite__mapDeps,d=(m.f||(m.f=["./browserAll-DAkSBB4r.js","./webworkerAll-CYbwvZbD.js","./Filter-BwbujZFC.js","./WebGPURenderer-D8Vf0Z9J.js","./GpuStencilModesToPixi-D1QluwRF.js","./RenderTargetSystem-BoAEBTSB.js","./WebGLRenderer-D7JMZ8M2.js","./CanvasRenderer-ClfeYIuh.js"])))=>i.map(i=>d[i]);
 function getDefaultExportFromCjs(x2) {
   return x2 && x2.__esModule && Object.prototype.hasOwnProperty.call(x2, "default") ? x2["default"] : x2;
 }
@@ -15,7 +15,7 @@ var react_production_min = {};
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-var l$2 = Symbol.for("react.element"), n$2 = Symbol.for("react.portal"), p$3 = Symbol.for("react.fragment"), q$1 = Symbol.for("react.strict_mode"), r$1 = Symbol.for("react.profiler"), t$1 = Symbol.for("react.provider"), u$1 = Symbol.for("react.context"), v$2 = Symbol.for("react.forward_ref"), w$1 = Symbol.for("react.suspense"), x$1 = Symbol.for("react.memo"), y$1 = Symbol.for("react.lazy"), z$1 = Symbol.iterator;
+var l$4 = Symbol.for("react.element"), n$5 = Symbol.for("react.portal"), p$4 = Symbol.for("react.fragment"), q$1 = Symbol.for("react.strict_mode"), r$3 = Symbol.for("react.profiler"), t$1 = Symbol.for("react.provider"), u$1 = Symbol.for("react.context"), v$2 = Symbol.for("react.forward_ref"), w$1 = Symbol.for("react.suspense"), x$1 = Symbol.for("react.memo"), y$1 = Symbol.for("react.lazy"), z$1 = Symbol.iterator;
 function A$1(a2) {
   if (null === a2 || "object" !== typeof a2) return null;
   a2 = z$1 && a2[z$1] || a2["@@iterator"];
@@ -50,10 +50,10 @@ function G$1(a2, b2, e2) {
   this.refs = D$1;
   this.updater = e2 || B$1;
 }
-var H$2 = G$1.prototype = new F();
-H$2.constructor = G$1;
-C$1(H$2, E$1.prototype);
-H$2.isPureReactComponent = true;
+var H$3 = G$1.prototype = new F();
+H$3.constructor = G$1;
+C$1(H$3, E$1.prototype);
+H$3.isPureReactComponent = true;
 var I$1 = Array.isArray, J = Object.prototype.hasOwnProperty, K$1 = { current: null }, L$1 = { key: true, ref: true, __self: true, __source: true };
 function M$2(a2, b2, e2) {
   var d2, c2 = {}, k2 = null, h2 = null;
@@ -65,13 +65,13 @@ function M$2(a2, b2, e2) {
     c2.children = f2;
   }
   if (a2 && a2.defaultProps) for (d2 in g2 = a2.defaultProps, g2) void 0 === c2[d2] && (c2[d2] = g2[d2]);
-  return { $$typeof: l$2, type: a2, key: k2, ref: h2, props: c2, _owner: K$1.current };
+  return { $$typeof: l$4, type: a2, key: k2, ref: h2, props: c2, _owner: K$1.current };
 }
 function N$2(a2, b2) {
-  return { $$typeof: l$2, type: a2.type, key: b2, ref: a2.ref, props: a2.props, _owner: a2._owner };
+  return { $$typeof: l$4, type: a2.type, key: b2, ref: a2.ref, props: a2.props, _owner: a2._owner };
 }
 function O$1(a2) {
-  return "object" === typeof a2 && null !== a2 && a2.$$typeof === l$2;
+  return "object" === typeof a2 && null !== a2 && a2.$$typeof === l$4;
 }
 function escape(a2) {
   var b2 = { "=": "=0", ":": "=2" };
@@ -95,8 +95,8 @@ function R$1(a2, b2, e2, d2, c2) {
       break;
     case "object":
       switch (a2.$$typeof) {
-        case l$2:
-        case n$2:
+        case l$4:
+        case n$5:
           h2 = true;
       }
   }
@@ -159,8 +159,8 @@ react_production_min.Children = { map: S$2, forEach: function(a2, b2, e2) {
   return a2;
 } };
 react_production_min.Component = E$1;
-react_production_min.Fragment = p$3;
-react_production_min.Profiler = r$1;
+react_production_min.Fragment = p$4;
+react_production_min.Profiler = r$3;
 react_production_min.PureComponent = G$1;
 react_production_min.StrictMode = q$1;
 react_production_min.Suspense = w$1;
@@ -182,7 +182,7 @@ react_production_min.cloneElement = function(a2, b2, e2) {
     for (var m2 = 0; m2 < f2; m2++) g2[m2] = arguments[m2 + 2];
     d2.children = g2;
   }
-  return { $$typeof: l$2, type: a2.type, key: c2, ref: k2, props: d2, _owner: h2 };
+  return { $$typeof: l$4, type: a2.type, key: c2, ref: k2, props: d2, _owner: h2 };
 };
 react_production_min.createContext = function(a2) {
   a2 = { $$typeof: u$1, _currentValue: a2, _currentValue2: a2, _threadCount: 0, Provider: null, Consumer: null, _defaultValue: null, _globalName: null };
@@ -277,17 +277,17 @@ const React = /* @__PURE__ */ getDefaultExportFromCjs(reactExports);
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-var f$1 = reactExports, k$1 = Symbol.for("react.element"), l$1 = Symbol.for("react.fragment"), m$2 = Object.prototype.hasOwnProperty, n$1 = f$1.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.ReactCurrentOwner, p$2 = { key: true, ref: true, __self: true, __source: true };
+var f$2 = reactExports, k$1 = Symbol.for("react.element"), l$3 = Symbol.for("react.fragment"), m$8 = Object.prototype.hasOwnProperty, n$4 = f$2.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.ReactCurrentOwner, p$3 = { key: true, ref: true, __self: true, __source: true };
 function q(c2, a2, g2) {
   var b2, d2 = {}, e2 = null, h2 = null;
   void 0 !== g2 && (e2 = "" + g2);
   void 0 !== a2.key && (e2 = "" + a2.key);
   void 0 !== a2.ref && (h2 = a2.ref);
-  for (b2 in a2) m$2.call(a2, b2) && !p$2.hasOwnProperty(b2) && (d2[b2] = a2[b2]);
+  for (b2 in a2) m$8.call(a2, b2) && !p$3.hasOwnProperty(b2) && (d2[b2] = a2[b2]);
   if (c2 && c2.defaultProps) for (b2 in a2 = c2.defaultProps, a2) void 0 === d2[b2] && (d2[b2] = a2[b2]);
-  return { $$typeof: k$1, type: c2, key: e2, ref: h2, props: d2, _owner: n$1.current };
+  return { $$typeof: k$1, type: c2, key: e2, ref: h2, props: d2, _owner: n$4.current };
 }
-reactJsxRuntime_production_min.Fragment = l$1;
+reactJsxRuntime_production_min.Fragment = l$3;
 reactJsxRuntime_production_min.jsx = q;
 reactJsxRuntime_production_min.jsxs = q;
 {
@@ -550,7 +550,7 @@ var schedulerExports = scheduler.exports;
  * LICENSE file in the root directory of this source tree.
  */
 var aa = reactExports, ca = schedulerExports;
-function p$1(a2) {
+function p$2(a2) {
   for (var b2 = "https://reactjs.org/docs/error-decoder.html?invariant=" + a2, c2 = 1; c2 < arguments.length; c2++) b2 += "&args[]=" + encodeURIComponent(arguments[c2]);
   return "Minified React error #" + a2 + "; visit " + b2 + " for the full message or use the non-minified dev environment for full errors and additional helpful warnings.";
 }
@@ -979,7 +979,7 @@ function fb(a2, b2, c2, d2) {
   }
 }
 function gb(a2, b2) {
-  if (null != b2.dangerouslySetInnerHTML) throw Error(p$1(91));
+  if (null != b2.dangerouslySetInnerHTML) throw Error(p$2(91));
   return A({}, b2, { value: void 0, defaultValue: void 0, children: "" + a2._wrapperState.initialValue });
 }
 function hb(a2, b2) {
@@ -988,9 +988,9 @@ function hb(a2, b2) {
     c2 = b2.children;
     b2 = b2.defaultValue;
     if (null != c2) {
-      if (null != b2) throw Error(p$1(92));
+      if (null != b2) throw Error(p$2(92));
       if (eb(c2)) {
-        if (1 < c2.length) throw Error(p$1(93));
+        if (1 < c2.length) throw Error(p$2(93));
         c2 = c2[0];
       }
       b2 = c2;
@@ -1112,12 +1112,12 @@ function sb(a2, b2) {
 var tb = A({ menuitem: true }, { area: true, base: true, br: true, col: true, embed: true, hr: true, img: true, input: true, keygen: true, link: true, meta: true, param: true, source: true, track: true, wbr: true });
 function ub(a2, b2) {
   if (b2) {
-    if (tb[a2] && (null != b2.children || null != b2.dangerouslySetInnerHTML)) throw Error(p$1(137, a2));
+    if (tb[a2] && (null != b2.children || null != b2.dangerouslySetInnerHTML)) throw Error(p$2(137, a2));
     if (null != b2.dangerouslySetInnerHTML) {
-      if (null != b2.children) throw Error(p$1(60));
-      if ("object" !== typeof b2.dangerouslySetInnerHTML || !("__html" in b2.dangerouslySetInnerHTML)) throw Error(p$1(61));
+      if (null != b2.children) throw Error(p$2(60));
+      if ("object" !== typeof b2.dangerouslySetInnerHTML || !("__html" in b2.dangerouslySetInnerHTML)) throw Error(p$2(61));
     }
-    if (null != b2.style && "object" !== typeof b2.style) throw Error(p$1(62));
+    if (null != b2.style && "object" !== typeof b2.style) throw Error(p$2(62));
   }
 }
 function vb(a2, b2) {
@@ -1145,7 +1145,7 @@ function xb(a2) {
 var yb = null, zb = null, Ab = null;
 function Bb(a2) {
   if (a2 = Cb(a2)) {
-    if ("function" !== typeof yb) throw Error(p$1(280));
+    if ("function" !== typeof yb) throw Error(p$2(280));
     var b2 = a2.stateNode;
     b2 && (b2 = Db(b2), yb(a2.stateNode, a2.type, b2));
   }
@@ -1201,7 +1201,7 @@ function Kb(a2, b2) {
       a2 = false;
   }
   if (a2) return null;
-  if (c2 && "function" !== typeof c2) throw Error(p$1(231, b2, typeof c2));
+  if (c2 && "function" !== typeof c2) throw Error(p$2(231, b2, typeof c2));
   return c2;
 }
 var Lb = false;
@@ -1239,7 +1239,7 @@ function Ub(a2, b2, c2, d2, e2, f2, g2, h2, k2) {
       var l2 = Pb;
       Ob = false;
       Pb = null;
-    } else throw Error(p$1(198));
+    } else throw Error(p$2(198));
     Qb || (Qb = true, Rb = l2);
   }
 }
@@ -1263,13 +1263,13 @@ function Wb(a2) {
   return null;
 }
 function Xb(a2) {
-  if (Vb(a2) !== a2) throw Error(p$1(188));
+  if (Vb(a2) !== a2) throw Error(p$2(188));
 }
 function Yb(a2) {
   var b2 = a2.alternate;
   if (!b2) {
     b2 = Vb(a2);
-    if (null === b2) throw Error(p$1(188));
+    if (null === b2) throw Error(p$2(188));
     return b2 !== a2 ? null : a2;
   }
   for (var c2 = a2, d2 = b2; ; ) {
@@ -1290,7 +1290,7 @@ function Yb(a2) {
         if (f2 === d2) return Xb(e2), b2;
         f2 = f2.sibling;
       }
-      throw Error(p$1(188));
+      throw Error(p$2(188));
     }
     if (c2.return !== d2.return) c2 = e2, d2 = f2;
     else {
@@ -1325,12 +1325,12 @@ function Yb(a2) {
           }
           h2 = h2.sibling;
         }
-        if (!g2) throw Error(p$1(189));
+        if (!g2) throw Error(p$2(189));
       }
     }
-    if (c2.alternate !== d2) throw Error(p$1(190));
+    if (c2.alternate !== d2) throw Error(p$2(190));
   }
-  if (3 !== c2.tag) throw Error(p$1(188));
+  if (3 !== c2.tag) throw Error(p$2(188));
   return c2.stateNode.current === c2 ? a2 : b2;
 }
 function Zb(a2) {
@@ -2501,7 +2501,7 @@ function zf(a2) {
 }
 function Af(a2, b2, c2) {
   b2 = zf(b2);
-  if (zf(a2) !== b2 && c2) throw Error(p$1(425));
+  if (zf(a2) !== b2 && c2) throw Error(p$2(425));
 }
 function Bf() {
 }
@@ -2584,7 +2584,7 @@ function Cb(a2) {
 }
 function ue(a2) {
   if (5 === a2.tag || 6 === a2.tag) return a2.stateNode;
-  throw Error(p$1(33));
+  throw Error(p$2(33));
 }
 function Db(a2) {
   return a2[Pf] || null;
@@ -2601,7 +2601,7 @@ function G(a2, b2) {
   Sf[Tf] = a2.current;
   a2.current = b2;
 }
-var Vf = {}, H$1 = Uf(Vf), Wf = Uf(false), Xf = Vf;
+var Vf = {}, H$2 = Uf(Vf), Wf = Uf(false), Xf = Vf;
 function Yf(a2, b2) {
   var c2 = a2.type.contextTypes;
   if (!c2) return Vf;
@@ -2618,11 +2618,11 @@ function Zf(a2) {
 }
 function $f() {
   E(Wf);
-  E(H$1);
+  E(H$2);
 }
 function ag(a2, b2, c2) {
-  if (H$1.current !== Vf) throw Error(p$1(168));
-  G(H$1, b2);
+  if (H$2.current !== Vf) throw Error(p$2(168));
+  G(H$2, b2);
   G(Wf, c2);
 }
 function bg(a2, b2, c2) {
@@ -2630,20 +2630,20 @@ function bg(a2, b2, c2) {
   b2 = b2.childContextTypes;
   if ("function" !== typeof d2.getChildContext) return c2;
   d2 = d2.getChildContext();
-  for (var e2 in d2) if (!(e2 in b2)) throw Error(p$1(108, Ra(a2) || "Unknown", e2));
+  for (var e2 in d2) if (!(e2 in b2)) throw Error(p$2(108, Ra(a2) || "Unknown", e2));
   return A({}, c2, d2);
 }
 function cg(a2) {
   a2 = (a2 = a2.stateNode) && a2.__reactInternalMemoizedMergedChildContext || Vf;
-  Xf = H$1.current;
-  G(H$1, a2);
+  Xf = H$2.current;
+  G(H$2, a2);
   G(Wf, Wf.current);
   return true;
 }
 function dg(a2, b2, c2) {
   var d2 = a2.stateNode;
-  if (!d2) throw Error(p$1(169));
-  c2 ? (a2 = bg(a2, b2, Xf), d2.__reactInternalMemoizedMergedChildContext = a2, E(Wf), E(H$1), G(H$1, a2)) : E(Wf);
+  if (!d2) throw Error(p$2(169));
+  c2 ? (a2 = bg(a2, b2, Xf), d2.__reactInternalMemoizedMergedChildContext = a2, E(Wf), E(H$2), G(H$2, a2)) : E(Wf);
   G(Wf, c2);
 }
 var eg = null, fg = false, gg = false;
@@ -2742,13 +2742,13 @@ function Eg(a2) {
     if (b2) {
       var c2 = b2;
       if (!Cg(a2, b2)) {
-        if (Dg(a2)) throw Error(p$1(418));
+        if (Dg(a2)) throw Error(p$2(418));
         b2 = Lf(c2.nextSibling);
         var d2 = xg;
         b2 && Cg(a2, b2) ? Ag(d2, c2) : (a2.flags = a2.flags & -4097 | 2, I = false, xg = a2);
       }
     } else {
-      if (Dg(a2)) throw Error(p$1(418));
+      if (Dg(a2)) throw Error(p$2(418));
       a2.flags = a2.flags & -4097 | 2;
       I = false;
       xg = a2;
@@ -2765,14 +2765,14 @@ function Gg(a2) {
   var b2;
   (b2 = 3 !== a2.tag) && !(b2 = 5 !== a2.tag) && (b2 = a2.type, b2 = "head" !== b2 && "body" !== b2 && !Ef(a2.type, a2.memoizedProps));
   if (b2 && (b2 = yg)) {
-    if (Dg(a2)) throw Hg(), Error(p$1(418));
+    if (Dg(a2)) throw Hg(), Error(p$2(418));
     for (; b2; ) Ag(a2, b2), b2 = Lf(b2.nextSibling);
   }
   Fg(a2);
   if (13 === a2.tag) {
     a2 = a2.memoizedState;
     a2 = null !== a2 ? a2.dehydrated : null;
-    if (!a2) throw Error(p$1(317));
+    if (!a2) throw Error(p$2(317));
     a: {
       a2 = a2.nextSibling;
       for (b2 = 0; a2; ) {
@@ -2810,10 +2810,10 @@ function Lg(a2, b2, c2) {
     if (c2._owner) {
       c2 = c2._owner;
       if (c2) {
-        if (1 !== c2.tag) throw Error(p$1(309));
+        if (1 !== c2.tag) throw Error(p$2(309));
         var d2 = c2.stateNode;
       }
-      if (!d2) throw Error(p$1(147, a2));
+      if (!d2) throw Error(p$2(147, a2));
       var e2 = d2, f2 = "" + a2;
       if (null !== b2 && null !== b2.ref && "function" === typeof b2.ref && b2.ref._stringRef === f2) return b2.ref;
       b2 = function(a3) {
@@ -2823,14 +2823,14 @@ function Lg(a2, b2, c2) {
       b2._stringRef = f2;
       return b2;
     }
-    if ("string" !== typeof a2) throw Error(p$1(284));
-    if (!c2._owner) throw Error(p$1(290, a2));
+    if ("string" !== typeof a2) throw Error(p$2(284));
+    if (!c2._owner) throw Error(p$2(290, a2));
   }
   return a2;
 }
 function Mg(a2, b2) {
   a2 = Object.prototype.toString.call(b2);
-  throw Error(p$1(31, "[object Object]" === a2 ? "object with keys {" + Object.keys(b2).join(", ") + "}" : a2));
+  throw Error(p$2(31, "[object Object]" === a2 ? "object with keys {" + Object.keys(b2).join(", ") + "}" : a2));
 }
 function Ng(a2) {
   var b2 = a2._init;
@@ -2982,9 +2982,9 @@ function Og(a2) {
   }
   function t2(e3, g3, h3, k3) {
     var l3 = Ka(h3);
-    if ("function" !== typeof l3) throw Error(p$1(150));
+    if ("function" !== typeof l3) throw Error(p$2(150));
     h3 = l3.call(h3);
-    if (null == h3) throw Error(p$1(151));
+    if (null == h3) throw Error(p$2(151));
     for (var u2 = l3 = null, m3 = g3, w2 = g3 = 0, x2 = null, n3 = h3.next(); null !== m3 && !n3.done; w2++, n3 = h3.next()) {
       m3.index > w2 ? (x2 = m3, m3 = null) : x2 = m3.sibling;
       var t3 = r2(e3, m3, n3.value, k3);
@@ -3105,7 +3105,7 @@ function ch(a2, b2) {
 function eh(a2) {
   var b2 = a2._currentValue;
   if (Zg !== a2) if (a2 = { context: a2, memoizedValue: b2, next: null }, null === Yg) {
-    if (null === Xg) throw Error(p$1(308));
+    if (null === Xg) throw Error(p$2(308));
     Yg = a2;
     Xg.dependencies = { lanes: 0, firstContext: a2 };
   } else Yg = Yg.next = a2;
@@ -3270,14 +3270,14 @@ function sh(a2, b2, c2) {
     if (null !== e2) {
       d2.callback = null;
       d2 = c2;
-      if ("function" !== typeof e2) throw Error(p$1(191, e2));
+      if ("function" !== typeof e2) throw Error(p$2(191, e2));
       e2.call(d2);
     }
   }
 }
 var th = {}, uh = Uf(th), vh = Uf(th), wh = Uf(th);
 function xh(a2) {
-  if (a2 === th) throw Error(p$1(174));
+  if (a2 === th) throw Error(p$2(174));
   return a2;
 }
 function yh(a2, b2) {
@@ -3340,7 +3340,7 @@ function Eh() {
 }
 var Fh = ua.ReactCurrentDispatcher, Gh = ua.ReactCurrentBatchConfig, Hh = 0, M$1 = null, N$1 = null, O = null, Ih = false, Jh = false, Kh = 0, Lh = 0;
 function P() {
-  throw Error(p$1(321));
+  throw Error(p$2(321));
 }
 function Mh(a2, b2) {
   if (null === b2) return false;
@@ -3360,7 +3360,7 @@ function Nh(a2, b2, c2, d2, e2, f2) {
     do {
       Jh = false;
       Kh = 0;
-      if (25 <= f2) throw Error(p$1(301));
+      if (25 <= f2) throw Error(p$2(301));
       f2 += 1;
       O = N$1 = null;
       b2.updateQueue = null;
@@ -3373,7 +3373,7 @@ function Nh(a2, b2, c2, d2, e2, f2) {
   Hh = 0;
   O = N$1 = M$1 = null;
   Ih = false;
-  if (b2) throw Error(p$1(300));
+  if (b2) throw Error(p$2(300));
   return a2;
 }
 function Sh() {
@@ -3394,7 +3394,7 @@ function Uh() {
   var b2 = null === O ? M$1.memoizedState : O.next;
   if (null !== b2) O = b2, N$1 = a2;
   else {
-    if (null === a2) throw Error(p$1(310));
+    if (null === a2) throw Error(p$2(310));
     N$1 = a2;
     a2 = { memoizedState: N$1.memoizedState, baseState: N$1.baseState, baseQueue: N$1.baseQueue, queue: N$1.queue, next: null };
     null === O ? M$1.memoizedState = O = a2 : O = O.next = a2;
@@ -3406,7 +3406,7 @@ function Vh(a2, b2) {
 }
 function Wh(a2) {
   var b2 = Uh(), c2 = b2.queue;
-  if (null === c2) throw Error(p$1(311));
+  if (null === c2) throw Error(p$2(311));
   c2.lastRenderedReducer = a2;
   var d2 = N$1, e2 = d2.baseQueue, f2 = c2.pending;
   if (null !== f2) {
@@ -3457,7 +3457,7 @@ function Wh(a2) {
 }
 function Xh(a2) {
   var b2 = Uh(), c2 = b2.queue;
-  if (null === c2) throw Error(p$1(311));
+  if (null === c2) throw Error(p$2(311));
   c2.lastRenderedReducer = a2;
   var d2 = c2.dispatch, e2 = c2.pending, f2 = b2.memoizedState;
   if (null !== e2) {
@@ -3483,7 +3483,7 @@ function Zh(a2, b2) {
   if (d2.getSnapshot !== b2 || f2 || null !== O && O.memoizedState.tag & 1) {
     c2.flags |= 2048;
     bi(9, ci.bind(null, c2, d2, e2, b2), void 0, null);
-    if (null === Q) throw Error(p$1(349));
+    if (null === Q) throw Error(p$2(349));
     0 !== (Hh & 30) || di(c2, b2, e2);
   }
   return e2;
@@ -3714,11 +3714,11 @@ var Rh = { readContext: eh, useCallback: P, useContext: P, useEffect: P, useImpe
 }, useSyncExternalStore: function(a2, b2, c2) {
   var d2 = M$1, e2 = Th();
   if (I) {
-    if (void 0 === c2) throw Error(p$1(407));
+    if (void 0 === c2) throw Error(p$2(407));
     c2 = c2();
   } else {
     c2 = b2();
-    if (null === Q) throw Error(p$1(349));
+    if (null === Q) throw Error(p$2(349));
     0 !== (Hh & 30) || di(d2, b2, c2);
   }
   e2.memoizedState = c2;
@@ -3829,7 +3829,7 @@ function Fi(a2, b2, c2, d2, e2, f2, g2) {
 function Gi(a2, b2, c2) {
   var d2 = false, e2 = Vf;
   var f2 = b2.contextType;
-  "object" === typeof f2 && null !== f2 ? f2 = eh(f2) : (e2 = Zf(b2) ? Xf : H$1.current, d2 = b2.contextTypes, f2 = (d2 = null !== d2 && void 0 !== d2) ? Yf(a2, e2) : Vf);
+  "object" === typeof f2 && null !== f2 ? f2 = eh(f2) : (e2 = Zf(b2) ? Xf : H$2.current, d2 = b2.contextTypes, f2 = (d2 = null !== d2 && void 0 !== d2) ? Yf(a2, e2) : Vf);
   b2 = new b2(c2, f2);
   a2.memoizedState = null !== b2.state && void 0 !== b2.state ? b2.state : null;
   b2.updater = Ei;
@@ -3851,7 +3851,7 @@ function Ii(a2, b2, c2, d2) {
   e2.refs = {};
   kh(a2);
   var f2 = b2.contextType;
-  "object" === typeof f2 && null !== f2 ? e2.context = eh(f2) : (f2 = Zf(b2) ? Xf : H$1.current, e2.context = Yf(a2, f2));
+  "object" === typeof f2 && null !== f2 ? e2.context = eh(f2) : (f2 = Zf(b2) ? Xf : H$2.current, e2.context = Yf(a2, f2));
   e2.state = a2.memoizedState;
   f2 = b2.getDerivedStateFromProps;
   "function" === typeof f2 && (Di(a2, b2, f2, c2), e2.state = a2.memoizedState);
@@ -4005,7 +4005,7 @@ function gj(a2, b2) {
   if (null === a2 && null !== c2 || null !== a2 && a2.ref !== c2) b2.flags |= 512, b2.flags |= 2097152;
 }
 function cj(a2, b2, c2, d2, e2) {
-  var f2 = Zf(c2) ? Xf : H$1.current;
+  var f2 = Zf(c2) ? Xf : H$2.current;
   f2 = Yf(b2, f2);
   ch(b2, e2);
   c2 = Nh(a2, b2, c2, d2, f2, e2);
@@ -4027,7 +4027,7 @@ function hj(a2, b2, c2, d2, e2) {
     var g2 = b2.stateNode, h2 = b2.memoizedProps;
     g2.props = h2;
     var k2 = g2.context, l2 = c2.contextType;
-    "object" === typeof l2 && null !== l2 ? l2 = eh(l2) : (l2 = Zf(c2) ? Xf : H$1.current, l2 = Yf(b2, l2));
+    "object" === typeof l2 && null !== l2 ? l2 = eh(l2) : (l2 = Zf(c2) ? Xf : H$2.current, l2 = Yf(b2, l2));
     var m2 = c2.getDerivedStateFromProps, q2 = "function" === typeof m2 || "function" === typeof g2.getSnapshotBeforeUpdate;
     q2 || "function" !== typeof g2.UNSAFE_componentWillReceiveProps && "function" !== typeof g2.componentWillReceiveProps || (h2 !== d2 || k2 !== l2) && Hi(b2, g2, d2, l2);
     jh = false;
@@ -4045,7 +4045,7 @@ function hj(a2, b2, c2, d2, e2) {
     q2 = b2.pendingProps;
     r2 = g2.context;
     k2 = c2.contextType;
-    "object" === typeof k2 && null !== k2 ? k2 = eh(k2) : (k2 = Zf(c2) ? Xf : H$1.current, k2 = Yf(b2, k2));
+    "object" === typeof k2 && null !== k2 ? k2 = eh(k2) : (k2 = Zf(c2) ? Xf : H$2.current, k2 = Yf(b2, k2));
     var y2 = c2.getDerivedStateFromProps;
     (m2 = "function" === typeof y2 || "function" === typeof g2.getSnapshotBeforeUpdate) || "function" !== typeof g2.UNSAFE_componentWillReceiveProps && "function" !== typeof g2.componentWillReceiveProps || (h2 !== q2 || r2 !== k2) && Hi(b2, g2, d2, k2);
     jh = false;
@@ -4149,7 +4149,7 @@ function sj(a2, b2, c2, d2) {
 }
 function rj(a2, b2, c2, d2, e2, f2, g2) {
   if (c2) {
-    if (b2.flags & 256) return b2.flags &= -257, d2 = Ki(Error(p$1(422))), sj(a2, b2, g2, d2);
+    if (b2.flags & 256) return b2.flags &= -257, d2 = Ki(Error(p$2(422))), sj(a2, b2, g2, d2);
     if (null !== b2.memoizedState) return b2.child = a2.child, b2.flags |= 128, null;
     f2 = d2.fallback;
     e2 = b2.mode;
@@ -4170,7 +4170,7 @@ function rj(a2, b2, c2, d2, e2, f2, g2) {
     d2 = e2.nextSibling && e2.nextSibling.dataset;
     if (d2) var h2 = d2.dgst;
     d2 = h2;
-    f2 = Error(p$1(419));
+    f2 = Error(p$2(419));
     d2 = Ki(f2, d2, void 0);
     return sj(a2, b2, g2, d2);
   }
@@ -4218,7 +4218,7 @@ function rj(a2, b2, c2, d2, e2, f2, g2) {
       0 !== e2 && e2 !== f2.retryLane && (f2.retryLane = e2, ih(a2, e2), gi(d2, a2, e2, -1));
     }
     tj();
-    d2 = Ki(Error(p$1(421)));
+    d2 = Ki(Error(p$2(421)));
     return sj(a2, b2, g2, d2);
   }
   if ("$?" === e2.data) return b2.flags |= 128, b2.child = a2.child, b2 = uj.bind(null, a2), e2._reactRetry = b2, null;
@@ -4307,7 +4307,7 @@ function Zi(a2, b2, c2) {
   null !== a2 && (b2.dependencies = a2.dependencies);
   rh |= b2.lanes;
   if (0 === (c2 & b2.childLanes)) return null;
-  if (null !== a2 && b2.child !== a2.child) throw Error(p$1(153));
+  if (null !== a2 && b2.child !== a2.child) throw Error(p$2(153));
   if (null !== b2.child) {
     a2 = b2.child;
     c2 = Pg(a2, a2.pendingProps);
@@ -4479,7 +4479,7 @@ function Ej(a2, b2, c2) {
       d2 = b2.stateNode;
       zh();
       E(Wf);
-      E(H$1);
+      E(H$2);
       Eh();
       d2.pendingContext && (d2.context = d2.pendingContext, d2.pendingContext = null);
       if (null === a2 || null === a2.child) Gg(b2) ? b2.flags |= 4 : null === a2 || a2.memoizedState.isDehydrated && 0 === (b2.flags & 256) || (b2.flags |= 1024, null !== zg && (Fj(zg), zg = null));
@@ -4493,7 +4493,7 @@ function Ej(a2, b2, c2) {
       if (null !== a2 && null != b2.stateNode) Bj(a2, b2, c2, d2, e2), a2.ref !== b2.ref && (b2.flags |= 512, b2.flags |= 2097152);
       else {
         if (!d2) {
-          if (null === b2.stateNode) throw Error(p$1(166));
+          if (null === b2.stateNode) throw Error(p$2(166));
           S$1(b2);
           return null;
         }
@@ -4693,7 +4693,7 @@ function Ej(a2, b2, c2) {
     case 6:
       if (a2 && null != b2.stateNode) Cj(a2, b2, a2.memoizedProps, d2);
       else {
-        if ("string" !== typeof d2 && null === b2.stateNode) throw Error(p$1(166));
+        if ("string" !== typeof d2 && null === b2.stateNode) throw Error(p$2(166));
         c2 = xh(wh.current);
         xh(uh.current);
         if (Gg(b2)) {
@@ -4721,10 +4721,10 @@ function Ej(a2, b2, c2) {
         if (I && null !== yg && 0 !== (b2.mode & 1) && 0 === (b2.flags & 128)) Hg(), Ig(), b2.flags |= 98560, f2 = false;
         else if (f2 = Gg(b2), null !== d2 && null !== d2.dehydrated) {
           if (null === a2) {
-            if (!f2) throw Error(p$1(318));
+            if (!f2) throw Error(p$2(318));
             f2 = b2.memoizedState;
             f2 = null !== f2 ? f2.dehydrated : null;
-            if (!f2) throw Error(p$1(317));
+            if (!f2) throw Error(p$2(317));
             f2[Of] = b2;
           } else Ig(), 0 === (b2.flags & 128) && (b2.memoizedState = null), b2.flags |= 4;
           S$1(b2);
@@ -4786,7 +4786,7 @@ function Ej(a2, b2, c2) {
     case 25:
       return null;
   }
-  throw Error(p$1(156, b2.tag));
+  throw Error(p$2(156, b2.tag));
 }
 function Ij(a2, b2) {
   wg(b2);
@@ -4794,14 +4794,14 @@ function Ij(a2, b2) {
     case 1:
       return Zf(b2.type) && $f(), a2 = b2.flags, a2 & 65536 ? (b2.flags = a2 & -65537 | 128, b2) : null;
     case 3:
-      return zh(), E(Wf), E(H$1), Eh(), a2 = b2.flags, 0 !== (a2 & 65536) && 0 === (a2 & 128) ? (b2.flags = a2 & -65537 | 128, b2) : null;
+      return zh(), E(Wf), E(H$2), Eh(), a2 = b2.flags, 0 !== (a2 & 65536) && 0 === (a2 & 128) ? (b2.flags = a2 & -65537 | 128, b2) : null;
     case 5:
       return Bh(b2), null;
     case 13:
       E(L);
       a2 = b2.memoizedState;
       if (null !== a2 && null !== a2.dehydrated) {
-        if (null === b2.alternate) throw Error(p$1(340));
+        if (null === b2.alternate) throw Error(p$2(340));
         Ig();
       }
       a2 = b2.flags;
@@ -4910,7 +4910,7 @@ function Oj(a2, b2) {
         case 17:
           break;
         default:
-          throw Error(p$1(163));
+          throw Error(p$2(163));
       }
     } catch (F2) {
       W(b2, b2.return, F2);
@@ -5114,7 +5114,7 @@ function ck(a2, b2) {
         }
         h2 = h2.return;
       }
-      if (null === X) throw Error(p$1(160));
+      if (null === X) throw Error(p$2(160));
       Zj(f2, g2, e2);
       X = null;
       Xj = false;
@@ -5205,7 +5205,7 @@ function dk(a2, b2) {
       ck(b2, a2);
       ek(a2);
       if (d2 & 4) {
-        if (null === a2.stateNode) throw Error(p$1(162));
+        if (null === a2.stateNode) throw Error(p$2(162));
         e2 = a2.stateNode;
         f2 = a2.memoizedProps;
         try {
@@ -5337,7 +5337,7 @@ function ek(a2) {
           }
           c2 = c2.return;
         }
-        throw Error(p$1(160));
+        throw Error(p$2(160));
       }
       switch (d2.tag) {
         case 5:
@@ -5352,7 +5352,7 @@ function ek(a2) {
           Vj(a2, h2, g2);
           break;
         default:
-          throw Error(p$1(161));
+          throw Error(p$2(161));
       }
     } catch (k2) {
       W(a2, a2.return, k2);
@@ -5464,7 +5464,7 @@ function kk(a2) {
           case 25:
             break;
           default:
-            throw Error(p$1(163));
+            throw Error(p$2(163));
         }
         U || b2.flags & 512 && Rj(b2);
       } catch (r2) {
@@ -5571,7 +5571,7 @@ function yi(a2) {
   return a2;
 }
 function gi(a2, b2, c2, d2) {
-  if (50 < yk) throw yk = 0, zk = null, Error(p$1(185));
+  if (50 < yk) throw yk = 0, zk = null, Error(p$2(185));
   Ac(a2, c2, d2);
   if (0 === (K & 2) || a2 !== Q) a2 === Q && (0 === (K & 2) && (qk |= c2), 4 === T && Ck(a2, Z)), Dk(a2, d2), 1 === c2 && 0 === K && 0 === (b2.mode & 1) && (Gj = B() + 500, fg && jg());
 }
@@ -5611,7 +5611,7 @@ function Dk(a2, b2) {
 function Gk(a2, b2) {
   Ak = -1;
   Bk = 0;
-  if (0 !== (K & 6)) throw Error(p$1(327));
+  if (0 !== (K & 6)) throw Error(p$2(327));
   var c2 = a2.callbackNode;
   if (Hk() && a2.callbackNode !== c2) return null;
   var d2 = uc(a2, a2 === Q ? Z : 0);
@@ -5648,7 +5648,7 @@ function Gk(a2, b2) {
       switch (b2) {
         case 0:
         case 1:
-          throw Error(p$1(345));
+          throw Error(p$2(345));
         case 2:
           Pk(a2, tk, uk);
           break;
@@ -5691,7 +5691,7 @@ function Gk(a2, b2) {
           Pk(a2, tk, uk);
           break;
         default:
-          throw Error(p$1(329));
+          throw Error(p$2(329));
       }
     }
   }
@@ -5748,7 +5748,7 @@ function Ck(a2, b2) {
   }
 }
 function Ek(a2) {
-  if (0 !== (K & 6)) throw Error(p$1(327));
+  if (0 !== (K & 6)) throw Error(p$2(327));
   Hk();
   var b2 = uc(a2, 0);
   if (0 === (b2 & 1)) return Dk(a2, B()), null;
@@ -5758,7 +5758,7 @@ function Ek(a2) {
     0 !== d2 && (b2 = d2, c2 = Nk(a2, d2));
   }
   if (1 === c2) throw c2 = pk, Kk(a2, 0), Ck(a2, b2), Dk(a2, B()), c2;
-  if (6 === c2) throw Error(p$1(345));
+  if (6 === c2) throw Error(p$2(345));
   a2.finishedWork = a2.current.alternate;
   a2.finishedLanes = b2;
   Pk(a2, tk, uk);
@@ -5805,7 +5805,7 @@ function Kk(a2, b2) {
       case 3:
         zh();
         E(Wf);
-        E(H$1);
+        E(H$2);
         Eh();
         break;
       case 5:
@@ -5906,7 +5906,7 @@ function Mk(a2, b2) {
               tj();
               break a;
             }
-            k2 = Error(p$1(426));
+            k2 = Error(p$2(426));
           }
         } else if (I && h2.mode & 1) {
           var J2 = Ui(g2);
@@ -5979,7 +5979,7 @@ function Ik(a2, b2) {
   $g();
   K = c2;
   mk.current = d2;
-  if (null !== Y) throw Error(p$1(261));
+  if (null !== Y) throw Error(p$2(261));
   Q = null;
   Z = 0;
   return T;
@@ -6042,13 +6042,13 @@ function Wk(a2, b2, c2, d2) {
   do
     Hk();
   while (null !== wk);
-  if (0 !== (K & 6)) throw Error(p$1(327));
+  if (0 !== (K & 6)) throw Error(p$2(327));
   c2 = a2.finishedWork;
   var e2 = a2.finishedLanes;
   if (null === c2) return null;
   a2.finishedWork = null;
   a2.finishedLanes = 0;
-  if (c2 === a2.current) throw Error(p$1(177));
+  if (c2 === a2.current) throw Error(p$2(177));
   a2.callbackNode = null;
   a2.callbackPriority = 0;
   var f2 = c2.lanes | c2.childLanes;
@@ -6103,7 +6103,7 @@ function Hk() {
         a2 = wk;
         wk = null;
         xk = 0;
-        if (0 !== (K & 6)) throw Error(p$1(331));
+        if (0 !== (K & 6)) throw Error(p$2(331));
         var e2 = K;
         K |= 4;
         for (V = a2.current; null !== V; ) {
@@ -6276,7 +6276,7 @@ function bk(a2, b2) {
       d2 = a2.stateNode;
       break;
     default:
-      throw Error(p$1(314));
+      throw Error(p$2(314));
   }
   null !== d2 && d2.delete(b2);
   Yk(a2, c2);
@@ -6295,7 +6295,7 @@ Vk = function(a2, b2, c2) {
       var d2 = b2.type;
       ij(a2, b2);
       a2 = b2.pendingProps;
-      var e2 = Yf(b2, H$1.current);
+      var e2 = Yf(b2, H$2.current);
       ch(b2, c2);
       e2 = Nh(null, b2, d2, a2, e2, c2);
       var f2 = Sh();
@@ -6326,7 +6326,7 @@ Vk = function(a2, b2, c2) {
             b2 = $i(null, b2, d2, Ci(d2.type, a2), c2);
             break a;
         }
-        throw Error(p$1(
+        throw Error(p$2(
           306,
           d2,
           ""
@@ -6340,7 +6340,7 @@ Vk = function(a2, b2, c2) {
     case 3:
       a: {
         kj(b2);
-        if (null === a2) throw Error(p$1(387));
+        if (null === a2) throw Error(p$2(387));
         d2 = b2.pendingProps;
         f2 = b2.memoizedState;
         e2 = f2.element;
@@ -6349,11 +6349,11 @@ Vk = function(a2, b2, c2) {
         var g2 = b2.memoizedState;
         d2 = g2.element;
         if (f2.isDehydrated) if (f2 = { element: d2, isDehydrated: false, cache: g2.cache, pendingSuspenseBoundaries: g2.pendingSuspenseBoundaries, transitions: g2.transitions }, b2.updateQueue.baseState = f2, b2.memoizedState = f2, b2.flags & 256) {
-          e2 = Ji(Error(p$1(423)), b2);
+          e2 = Ji(Error(p$2(423)), b2);
           b2 = lj(a2, b2, d2, c2, e2);
           break a;
         } else if (d2 !== e2) {
-          e2 = Ji(Error(p$1(424)), b2);
+          e2 = Ji(Error(p$2(424)), b2);
           b2 = lj(a2, b2, d2, c2, e2);
           break a;
         } else for (yg = Lf(b2.stateNode.containerInfo.firstChild), xg = b2, I = true, zg = null, c2 = Vg(b2, null, d2, c2), b2.child = c2; c2; ) c2.flags = c2.flags & -3 | 4096, c2 = c2.sibling;
@@ -6430,7 +6430,7 @@ Vk = function(a2, b2, c2) {
           } else if (10 === f2.tag) g2 = f2.type === b2.type ? null : f2.child;
           else if (18 === f2.tag) {
             g2 = f2.return;
-            if (null === g2) throw Error(p$1(341));
+            if (null === g2) throw Error(p$2(341));
             g2.lanes |= c2;
             h2 = g2.alternate;
             null !== h2 && (h2.lanes |= c2);
@@ -6470,7 +6470,7 @@ Vk = function(a2, b2, c2) {
     case 22:
       return dj(a2, b2, c2);
   }
-  throw Error(p$1(156, b2.tag));
+  throw Error(p$2(156, b2.tag));
 };
 function Fk(a2, b2) {
   return ac(a2, b2);
@@ -6561,7 +6561,7 @@ function Rg(a2, b2, c2, d2, e2, f2) {
           d2 = null;
           break a;
       }
-      throw Error(p$1(130, null == a2 ? a2 : typeof a2, ""));
+      throw Error(p$2(130, null == a2 ? a2 : typeof a2, ""));
   }
   b2 = Bg(g2, c2, b2, e2);
   b2.elementType = a2;
@@ -6625,7 +6625,7 @@ function dl(a2) {
   if (!a2) return Vf;
   a2 = a2._reactInternals;
   a: {
-    if (Vb(a2) !== a2 || 1 !== a2.tag) throw Error(p$1(170));
+    if (Vb(a2) !== a2 || 1 !== a2.tag) throw Error(p$2(170));
     var b2 = a2;
     do {
       switch (b2.tag) {
@@ -6640,7 +6640,7 @@ function dl(a2) {
       }
       b2 = b2.return;
     } while (null !== b2);
-    throw Error(p$1(171));
+    throw Error(p$2(171));
   }
   if (1 === a2.tag) {
     var c2 = a2.type;
@@ -6706,7 +6706,7 @@ function ll(a2) {
 }
 ml.prototype.render = ll.prototype.render = function(a2) {
   var b2 = this._internalRoot;
-  if (null === b2) throw Error(p$1(409));
+  if (null === b2) throw Error(p$2(409));
   fl(a2, b2, null, null);
 };
 ml.prototype.unmount = ll.prototype.unmount = function() {
@@ -6850,7 +6850,7 @@ yb = function(a2, b2, c2) {
           var d2 = c2[b2];
           if (d2 !== a2 && d2.form === a2.form) {
             var e2 = Db(d2);
-            if (!e2) throw Error(p$1(90));
+            if (!e2) throw Error(p$2(90));
             Wa(d2);
             bb(d2, e2);
           }
@@ -6881,11 +6881,11 @@ if ("undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__) {
 reactDom_production_min.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED = sl;
 reactDom_production_min.createPortal = function(a2, b2) {
   var c2 = 2 < arguments.length && void 0 !== arguments[2] ? arguments[2] : null;
-  if (!nl(b2)) throw Error(p$1(200));
+  if (!nl(b2)) throw Error(p$2(200));
   return cl(a2, b2, null, c2);
 };
 reactDom_production_min.createRoot = function(a2, b2) {
-  if (!nl(a2)) throw Error(p$1(299));
+  if (!nl(a2)) throw Error(p$2(299));
   var c2 = false, d2 = "", e2 = kl;
   null !== b2 && void 0 !== b2 && (true === b2.unstable_strictMode && (c2 = true), void 0 !== b2.identifierPrefix && (d2 = b2.identifierPrefix), void 0 !== b2.onRecoverableError && (e2 = b2.onRecoverableError));
   b2 = bl(a2, 1, false, null, null, c2, false, d2, e2);
@@ -6898,9 +6898,9 @@ reactDom_production_min.findDOMNode = function(a2) {
   if (1 === a2.nodeType) return a2;
   var b2 = a2._reactInternals;
   if (void 0 === b2) {
-    if ("function" === typeof a2.render) throw Error(p$1(188));
+    if ("function" === typeof a2.render) throw Error(p$2(188));
     a2 = Object.keys(a2).join(",");
-    throw Error(p$1(268, a2));
+    throw Error(p$2(268, a2));
   }
   a2 = Zb(b2);
   a2 = null === a2 ? null : a2.stateNode;
@@ -6910,11 +6910,11 @@ reactDom_production_min.flushSync = function(a2) {
   return Rk(a2);
 };
 reactDom_production_min.hydrate = function(a2, b2, c2) {
-  if (!ol(b2)) throw Error(p$1(200));
+  if (!ol(b2)) throw Error(p$2(200));
   return rl(null, a2, b2, true, c2);
 };
 reactDom_production_min.hydrateRoot = function(a2, b2, c2) {
-  if (!nl(a2)) throw Error(p$1(405));
+  if (!nl(a2)) throw Error(p$2(405));
   var d2 = null != c2 && c2.hydratedSources || null, e2 = false, f2 = "", g2 = kl;
   null !== c2 && void 0 !== c2 && (true === c2.unstable_strictMode && (e2 = true), void 0 !== c2.identifierPrefix && (f2 = c2.identifierPrefix), void 0 !== c2.onRecoverableError && (g2 = c2.onRecoverableError));
   b2 = el(b2, null, a2, 1, null != c2 ? c2 : null, e2, false, f2, g2);
@@ -6927,11 +6927,11 @@ reactDom_production_min.hydrateRoot = function(a2, b2, c2) {
   return new ml(b2);
 };
 reactDom_production_min.render = function(a2, b2, c2) {
-  if (!ol(b2)) throw Error(p$1(200));
+  if (!ol(b2)) throw Error(p$2(200));
   return rl(null, a2, b2, false, c2);
 };
 reactDom_production_min.unmountComponentAtNode = function(a2) {
-  if (!ol(a2)) throw Error(p$1(40));
+  if (!ol(a2)) throw Error(p$2(40));
   return a2._reactRootContainer ? (Rk(function() {
     rl(null, null, a2, false, function() {
       a2._reactRootContainer = null;
@@ -6941,8 +6941,8 @@ reactDom_production_min.unmountComponentAtNode = function(a2) {
 };
 reactDom_production_min.unstable_batchedUpdates = Qk;
 reactDom_production_min.unstable_renderSubtreeIntoContainer = function(a2, b2, c2, d2) {
-  if (!ol(c2)) throw Error(p$1(200));
-  if (null == a2 || void 0 === a2._reactInternals) throw Error(p$1(38));
+  if (!ol(c2)) throw Error(p$2(200));
+  if (null == a2 || void 0 === a2._reactInternals) throw Error(p$2(38));
   return rl(a2, b2, c2, false, d2);
 };
 reactDom_production_min.version = "18.3.1-next-f1338f8080-20240426";
@@ -6962,10 +6962,10 @@ function checkDCE() {
 }
 var reactDomExports = reactDom.exports;
 var createRoot;
-var m$1 = reactDomExports;
+var m$7 = reactDomExports;
 {
-  createRoot = m$1.createRoot;
-  m$1.hydrateRoot;
+  createRoot = m$7.createRoot;
+  m$7.hydrateRoot;
 }
 const createStoreImpl = (createState) => {
   let state;
@@ -7694,6 +7694,20 @@ const immerImpl = (initializer) => (set2, get, store) => {
   return initializer(store.setState, get, store);
 };
 const immer = immerImpl;
+function cloneDocument(doc) {
+  return {
+    ...doc,
+    layers: doc.layers.map((l2) => ({
+      ...l2,
+      pixels: l2.pixels ? new Uint8ClampedArray(l2.pixels) : null
+    })),
+    selection: doc.selection ? {
+      ...doc.selection,
+      mask: new Uint8Array(doc.selection.mask),
+      bounds: doc.selection.bounds ? { ...doc.selection.bounds } : null
+    } : null
+  };
+}
 function canRemoveLayer(document2, layerId) {
   if (!document2 || !layerId) return false;
   if (document2.layers.length <= 1) return false;
@@ -7703,59 +7717,136 @@ const createDefaultDocument = (width, height, backgroundColor = { r: 255, g: 255
   width,
   height,
   backgroundColor,
-  layers: []
+  layers: [],
+  selection: null
 });
 const useDocumentStore = create()(
-  immer((setFn) => ({
+  immer((setFn, getFn) => ({
     document: null,
     activeLayerId: null,
+    undoStack: [],
+    redoStack: [],
+    commitHistory: () => {
+      const { document: document2 } = getFn();
+      if (!document2) return;
+      setFn((state) => {
+        state.undoStack.push(cloneDocument(document2));
+        if (state.undoStack.length > 50) state.undoStack.shift();
+        state.redoStack = [];
+      });
+    },
+    undo: () => setFn((state) => {
+      if (state.undoStack.length === 0 || !state.document) return;
+      const previous = state.undoStack.pop();
+      state.redoStack.push(cloneDocument(state.document));
+      state.document = previous;
+      if (!state.document.layers.some((l2) => l2.id === state.activeLayerId)) {
+        state.activeLayerId = state.document.layers[0]?.id || null;
+      }
+    }),
+    redo: () => setFn((state) => {
+      if (state.redoStack.length === 0 || !state.document) return;
+      const next = state.redoStack.pop();
+      state.undoStack.push(cloneDocument(state.document));
+      state.document = next;
+      if (!state.document.layers.some((l2) => l2.id === state.activeLayerId)) {
+        state.activeLayerId = state.document.layers[0]?.id || null;
+      }
+    }),
     setDocument: (doc) => setFn((state) => {
       state.document = doc;
       state.activeLayerId = doc.layers[0]?.id ?? null;
+      state.undoStack = [];
+      state.redoStack = [];
     }),
-    addLayer: (layer) => setFn((state) => {
-      if (state.document) {
-        const activeIndex = state.document.layers.findIndex(
-          (l2) => l2.id === state.activeLayerId
-        );
-        if (activeIndex !== -1) {
-          state.document.layers.splice(activeIndex + 1, 0, layer);
-        } else {
-          state.document.layers.push(layer);
+    setSelection: (selection) => {
+      getFn().commitHistory();
+      setFn((state) => {
+        if (state.document) {
+          state.document.selection = selection;
         }
-        state.activeLayerId = layer.id;
-      }
-    }),
-    removeLayer: (layerId) => setFn((state) => {
-      const document2 = state.document;
-      if (!document2 || !canRemoveLayer(document2, layerId)) return;
-      const index = document2.layers.findIndex((l2) => l2.id === layerId);
-      if (index !== -1) {
-        document2.layers.splice(index, 1);
-        if (state.activeLayerId === layerId) {
-          const nextActiveLayer = document2.layers[Math.min(index, document2.layers.length - 1)] ?? null;
-          state.activeLayerId = nextActiveLayer?.id ?? null;
+      });
+    },
+    clearSelection: () => {
+      getFn().commitHistory();
+      setFn((state) => {
+        if (state.document && state.document.selection) {
+          state.document.selection = null;
         }
-      }
-    }),
-    updateLayer: (layerId, updates) => setFn((state) => {
+      });
+    },
+    addLayer: (layer) => {
+      getFn().commitHistory();
+      setFn((state) => {
+        if (state.document) {
+          const activeIndex = state.document.layers.findIndex(
+            (l2) => l2.id === state.activeLayerId
+          );
+          if (activeIndex !== -1) {
+            state.document.layers.splice(activeIndex + 1, 0, layer);
+          } else {
+            state.document.layers.push(layer);
+          }
+          state.activeLayerId = layer.id;
+        }
+      });
+    },
+    removeLayer: (layerId) => {
+      if (!canRemoveLayer(getFn().document, layerId)) return;
+      getFn().commitHistory();
+      setFn((state) => {
+        const document2 = state.document;
+        if (!document2) return;
+        const index = document2.layers.findIndex((l2) => l2.id === layerId);
+        if (index !== -1) {
+          document2.layers.splice(index, 1);
+          if (state.activeLayerId === layerId) {
+            const nextActiveLayer = document2.layers[Math.min(index, document2.layers.length - 1)] ?? null;
+            state.activeLayerId = nextActiveLayer?.id ?? null;
+          }
+        }
+      });
+    },
+    updateLayer: (layerId, updates) => {
+      getFn().commitHistory();
+      setFn((state) => {
+        if (state.document) {
+          const layer = state.document.layers.find((l2) => l2.id === layerId);
+          if (layer) {
+            Object.assign(layer, updates);
+          }
+        }
+      });
+    },
+    syncPixels: (layerId, pixels) => setFn((state) => {
       if (state.document) {
         const layer = state.document.layers.find((l2) => l2.id === layerId);
         if (layer) {
-          Object.assign(layer, updates);
+          layer.pixels = new Uint8ClampedArray(pixels);
         }
       }
     }),
     setActiveLayer: (layerId) => setFn((state) => {
       state.activeLayerId = layerId;
     }),
+    moveLayer: (fromIndex, toIndex) => {
+      getFn().commitHistory();
+      setFn((state) => {
+        if (!state.document) return;
+        const layers = state.document.layers;
+        if (fromIndex < 0 || fromIndex >= layers.length || toIndex < 0 || toIndex >= layers.length || fromIndex === toIndex) return;
+        const [moved] = layers.splice(fromIndex, 1);
+        layers.splice(toIndex, 0, moved);
+      });
+    },
     clearDocument: () => setFn((state) => {
       state.document = null;
       state.activeLayerId = null;
+      state.undoStack = [];
+      state.redoStack = [];
     })
   }))
 );
-const selectLayers = (state) => state.document?.layers ?? [];
 function TitleBar() {
   const { document: document2 } = useDocumentStore();
   return /* @__PURE__ */ jsxRuntimeExports.jsxs("header", { className: "titlebar", children: [
@@ -7785,7 +7876,7 @@ function TitleBar() {
     ] })
   ] });
 }
-const initialState = {
+const initialState$1 = {
   activeTool: "brush",
   zoom: 100,
   pan: { x: 0, y: 0 },
@@ -7797,7 +7888,7 @@ const initialState = {
 };
 const useEditorStore = create()(
   immer((setFn) => ({
-    ...initialState,
+    ...initialState$1,
     setTool: (tool) => setFn((state) => {
       state.activeTool = tool;
     }),
@@ -7828,16 +7919,18 @@ const PRESETS = [
   { label: "2560×1440", w: 2560, h: 1440 },
   { label: "3840×2160", w: 3840, h: 2160 }
 ];
-function MenuBar() {
-  const { setDocument, document: doc, addLayer, setActiveLayer } = useDocumentStore();
+function MenuBar({ onOpenAppearance }) {
+  const { setDocument, document: doc, addLayer, setActiveLayer, undo, redo, undoStack, redoStack } = useDocumentStore();
   const { setZoom, setPan, rendererRef } = useEditorStore();
   const [showNewModal, setShowNewModal] = reactExports.useState(false);
   const [newWidth, setNewWidth] = reactExports.useState(800);
   const [newHeight, setNewHeight] = reactExports.useState(600);
   const [activePreset, setActivePreset] = reactExports.useState("800×600");
   const [fileMenuOpen, setFileMenuOpen] = reactExports.useState(false);
+  const [editMenuOpen, setEditMenuOpen] = reactExports.useState(false);
   const [exportMenuOpen, setExportMenuOpen] = reactExports.useState(false);
   const fileMenuRef = reactExports.useRef(null);
+  const editMenuRef = reactExports.useRef(null);
   const fileInputRef = reactExports.useRef(null);
   const [showQualityDialog, setShowQualityDialog] = reactExports.useState(false);
   const [jpegQuality, setJpegQuality] = reactExports.useState(90);
@@ -7846,6 +7939,9 @@ function MenuBar() {
       if (fileMenuRef.current && !fileMenuRef.current.contains(event.target)) {
         setFileMenuOpen(false);
         setExportMenuOpen(false);
+      }
+      if (editMenuRef.current && !editMenuRef.current.contains(event.target)) {
+        setEditMenuOpen(false);
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
@@ -8129,7 +8225,10 @@ function MenuBar() {
   return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
     /* @__PURE__ */ jsxRuntimeExports.jsxs("nav", { className: "menubar", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mi", ref: fileMenuRef, style: { position: "relative" }, children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { onClick: () => setFileMenuOpen(!fileMenuOpen), style: { cursor: "pointer" }, children: "File" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { onClick: () => {
+          setFileMenuOpen(!fileMenuOpen);
+          setEditMenuOpen(false);
+        }, style: { cursor: "pointer" }, children: "File" }),
         fileMenuOpen && /* @__PURE__ */ jsxRuntimeExports.jsxs(
           "div",
           {
@@ -8275,11 +8374,85 @@ function MenuBar() {
           }
         )
       ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mi", children: "Edit" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mi", ref: editMenuRef, style: { position: "relative" }, children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { onClick: () => {
+          setEditMenuOpen(!editMenuOpen);
+          setFileMenuOpen(false);
+        }, style: { cursor: "pointer" }, children: "Edit" }),
+        editMenuOpen && /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          "div",
+          {
+            style: {
+              position: "absolute",
+              top: "100%",
+              left: 0,
+              backgroundColor: "#2a2a2a",
+              border: "1px solid #3a3a3a",
+              borderRadius: "4px",
+              minWidth: "180px",
+              zIndex: 1e3,
+              boxShadow: "0 4px 12px rgba(0,0,0,0.4)"
+            },
+            children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                "div",
+                {
+                  style: {
+                    padding: "8px 16px",
+                    cursor: undoStack.length > 0 ? "pointer" : "default",
+                    color: undoStack.length > 0 ? "#e0e0e0" : "#666",
+                    fontSize: "13px",
+                    display: "flex",
+                    justifyContent: "space-between"
+                  },
+                  onMouseEnter: (e2) => undoStack.length > 0 && (e2.currentTarget.style.backgroundColor = "#3a3a3a"),
+                  onMouseLeave: (e2) => e2.currentTarget.style.backgroundColor = "transparent",
+                  onClick: () => {
+                    if (undoStack.length > 0) {
+                      undo();
+                      setEditMenuOpen(false);
+                    }
+                  },
+                  children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "Undo" }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("span", { style: { opacity: 0.5, marginLeft: "20px" }, children: "Ctrl+Z" })
+                  ]
+                }
+              ),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                "div",
+                {
+                  style: {
+                    padding: "8px 16px",
+                    cursor: redoStack.length > 0 ? "pointer" : "default",
+                    color: redoStack.length > 0 ? "#e0e0e0" : "#666",
+                    fontSize: "13px",
+                    display: "flex",
+                    justifyContent: "space-between"
+                  },
+                  onMouseEnter: (e2) => redoStack.length > 0 && (e2.currentTarget.style.backgroundColor = "#3a3a3a"),
+                  onMouseLeave: (e2) => e2.currentTarget.style.backgroundColor = "transparent",
+                  onClick: () => {
+                    if (redoStack.length > 0) {
+                      redo();
+                      setEditMenuOpen(false);
+                    }
+                  },
+                  children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "Redo" }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("span", { style: { opacity: 0.5, marginLeft: "20px" }, children: "Ctrl+Y" })
+                  ]
+                }
+              )
+            ]
+          }
+        )
+      ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mi", children: "Image" }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mi", children: "Layer" }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mi", children: "Filter" }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mi", children: "View" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mi", onClick: onOpenAppearance, children: "Customize" }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "msep" }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mi", children: "Window" }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mr", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "ws-badge", children: "Painting" }) })
@@ -8419,14 +8592,821 @@ function MenuBar() {
     ] }) })
   ] });
 }
+const l$2 = /* @__PURE__ */ new Map([
+  [
+    "bold",
+    /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, /* @__PURE__ */ reactExports.createElement("path", { d: "M87.51,64.49a12,12,0,0,1,0-17l32-32a12,12,0,0,1,17,0l32,32a12,12,0,0,1-17,17L140,53V96a12,12,0,0,1-24,0V53L104.49,64.49A12,12,0,0,1,87.51,64.49Zm64,127L140,203V160a12,12,0,0,0-24,0v43l-11.51-11.52a12,12,0,0,0-17,17l32,32a12,12,0,0,0,17,0l32-32a12,12,0,0,0-17-17Zm89-72-32-32a12,12,0,0,0-17,17L203,116H160a12,12,0,0,0,0,24h43l-11.52,11.51a12,12,0,0,0,17,17l32-32A12,12,0,0,0,240.49,119.51ZM53,140H96a12,12,0,0,0,0-24H53l11.52-11.51a12,12,0,1,0-17-17l-32,32a12,12,0,0,0,0,17l32,32a12,12,0,1,0,17-17Z" }))
+  ],
+  [
+    "duotone",
+    /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, /* @__PURE__ */ reactExports.createElement("path", { d: "M232,128,128,232,24,128,128,24Z", opacity: "0.2" }), /* @__PURE__ */ reactExports.createElement("path", { d: "M90.34,61.66a8,8,0,0,1,0-11.32l32-32a8,8,0,0,1,11.32,0l32,32a8,8,0,0,1-11.32,11.32L136,43.31V96a8,8,0,0,1-16,0V43.31L101.66,61.66A8,8,0,0,1,90.34,61.66Zm64,132.68L136,212.69V160a8,8,0,0,0-16,0v52.69l-18.34-18.35a8,8,0,0,0-11.32,11.32l32,32a8,8,0,0,0,11.32,0l32-32a8,8,0,0,0-11.32-11.32Zm83.32-72-32-32a8,8,0,0,0-11.32,11.32L212.69,120H160a8,8,0,0,0,0,16h52.69l-18.35,18.34a8,8,0,0,0,11.32,11.32l32-32A8,8,0,0,0,237.66,122.34ZM43.31,136H96a8,8,0,0,0,0-16H43.31l18.35-18.34A8,8,0,0,0,50.34,90.34l-32,32a8,8,0,0,0,0,11.32l32,32a8,8,0,0,0,11.32-11.32Z" }))
+  ],
+  [
+    "fill",
+    /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, /* @__PURE__ */ reactExports.createElement("path", { d: "M96,136H64v24a8,8,0,0,1-13.66,5.66l-32-32a8,8,0,0,1,0-11.32l32-32A8,8,0,0,1,64,96v24H96a8,8,0,0,1,0,16Zm0-72h24V96a8,8,0,0,0,16,0V64h24a8,8,0,0,0,5.66-13.66l-32-32a8,8,0,0,0-11.32,0l-32,32A8,8,0,0,0,96,64Zm141.66,58.34-32-32A8,8,0,0,0,192,96v24H160a8,8,0,0,0,0,16h32v24a8,8,0,0,0,13.66,5.66l32-32A8,8,0,0,0,237.66,122.34ZM160,192H136V160a8,8,0,0,0-16,0v32H96a8,8,0,0,0-5.66,13.66l32,32a8,8,0,0,0,11.32,0l32-32A8,8,0,0,0,160,192Z" }))
+  ],
+  [
+    "light",
+    /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, /* @__PURE__ */ reactExports.createElement("path", { d: "M91.76,60.24a6,6,0,0,1,0-8.48l32-32a6,6,0,0,1,8.48,0l32,32a6,6,0,1,1-8.48,8.48L134,38.49V96a6,6,0,0,1-12,0V38.49L100.24,60.24A6,6,0,0,1,91.76,60.24Zm64,135.52L134,217.51V160a6,6,0,0,0-12,0v57.51l-21.76-21.75a6,6,0,0,0-8.48,8.48l32,32a6,6,0,0,0,8.48,0l32-32a6,6,0,0,0-8.48-8.48Zm80.48-72-32-32a6,6,0,0,0-8.48,8.48L217.51,122H160a6,6,0,0,0,0,12h57.51l-21.75,21.76a6,6,0,1,0,8.48,8.48l32-32A6,6,0,0,0,236.24,123.76ZM38.49,134H96a6,6,0,0,0,0-12H38.49l21.75-21.76a6,6,0,0,0-8.48-8.48l-32,32a6,6,0,0,0,0,8.48l32,32a6,6,0,0,0,8.48-8.48Z" }))
+  ],
+  [
+    "regular",
+    /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, /* @__PURE__ */ reactExports.createElement("path", { d: "M90.34,61.66a8,8,0,0,1,0-11.32l32-32a8,8,0,0,1,11.32,0l32,32a8,8,0,0,1-11.32,11.32L136,43.31V96a8,8,0,0,1-16,0V43.31L101.66,61.66A8,8,0,0,1,90.34,61.66Zm64,132.68L136,212.69V160a8,8,0,0,0-16,0v52.69l-18.34-18.35a8,8,0,0,0-11.32,11.32l32,32a8,8,0,0,0,11.32,0l32-32a8,8,0,0,0-11.32-11.32Zm83.32-72-32-32a8,8,0,0,0-11.32,11.32L212.69,120H160a8,8,0,0,0,0,16h52.69l-18.35,18.34a8,8,0,0,0,11.32,11.32l32-32A8,8,0,0,0,237.66,122.34ZM43.31,136H96a8,8,0,0,0,0-16H43.31l18.35-18.34A8,8,0,0,0,50.34,90.34l-32,32a8,8,0,0,0,0,11.32l32,32a8,8,0,0,0,11.32-11.32Z" }))
+  ],
+  [
+    "thin",
+    /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, /* @__PURE__ */ reactExports.createElement("path", { d: "M93.17,58.83a4,4,0,0,1,0-5.66l32-32a4,4,0,0,1,5.66,0l32,32a4,4,0,0,1-5.66,5.66L132,33.66V96a4,4,0,0,1-8,0V33.66L98.83,58.83A4,4,0,0,1,93.17,58.83Zm64,138.34L132,222.34V160a4,4,0,0,0-8,0v62.34L98.83,197.17a4,4,0,0,0-5.66,5.66l32,32a4,4,0,0,0,5.66,0l32-32a4,4,0,0,0-5.66-5.66Zm77.66-72-32-32a4,4,0,0,0-5.66,5.66L222.34,124H160a4,4,0,0,0,0,8h62.34l-25.17,25.17a4,4,0,0,0,5.66,5.66l32-32A4,4,0,0,0,234.83,125.17ZM33.66,132H96a4,4,0,0,0,0-8H33.66L58.83,98.83a4,4,0,0,0-5.66-5.66l-32,32a4,4,0,0,0,0,5.66l32,32a4,4,0,1,0,5.66-5.66Z" }))
+  ]
+]);
+const e$c = /* @__PURE__ */ new Map([
+  [
+    "bold",
+    /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, /* @__PURE__ */ reactExports.createElement("path", { d: "M92.38,38.05A12,12,0,0,1,101,23.42a108,108,0,0,1,54,0,12,12,0,1,1-6,23.23,84.11,84.11,0,0,0-42,0A12,12,0,0,1,92.38,38.05ZM50.94,52.34a108.1,108.1,0,0,0-27,46.76,12,12,0,0,0,8.37,14.77,12.2,12.2,0,0,0,3.2.43,12,12,0,0,0,11.56-8.8,84,84,0,0,1,21-36.35A12,12,0,1,0,50.94,52.34Zm-3.88,98.14a12,12,0,0,0-23.12,6.42,108,108,0,0,0,27,46.78A12,12,0,0,0,68,186.85,84,84,0,0,1,47.06,150.48ZM149,209.35a84,84,0,0,1-42,0,12,12,0,1,0-6,23.23,108,108,0,0,0,54,0,12,12,0,1,0-6-23.23Zm74.72-67.22A12,12,0,0,0,209,150.5a84,84,0,0,1-21,36.35,12,12,0,0,0,17.12,16.82,108.19,108.19,0,0,0,27-46.77A12,12,0,0,0,223.71,142.13Zm-14.77-36.61a12,12,0,0,0,23.12-6.42,108,108,0,0,0-27-46.78A12,12,0,1,0,188,69.15,84,84,0,0,1,208.94,105.52Z" }))
+  ],
+  [
+    "duotone",
+    /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, /* @__PURE__ */ reactExports.createElement("path", { d: "M224,128a96,96,0,1,1-96-96A96,96,0,0,1,224,128Z", opacity: "0.2" }), /* @__PURE__ */ reactExports.createElement("path", { d: "M96.26,37A8,8,0,0,1,102,27.29a104.11,104.11,0,0,1,52,0,8,8,0,0,1-2,15.75,8.15,8.15,0,0,1-2-.26,88.09,88.09,0,0,0-44,0A8,8,0,0,1,96.26,37ZM53.79,55.14a104,104,0,0,0-26,45,8,8,0,1,0,15.42,4.26,87.91,87.91,0,0,1,22-38.08A8,8,0,0,0,53.79,55.14ZM43.21,151.55a8,8,0,1,0-15.42,4.28,104,104,0,0,0,26,45,8,8,0,1,0,11.41-11.21A88.14,88.14,0,0,1,43.21,151.55ZM150,213.22a88,88,0,0,1-44,0,8,8,0,1,0-4,15.49,104.11,104.11,0,0,0,52,0,8,8,0,0,0-4-15.49ZM222.65,146a8,8,0,0,0-9.85,5.57,87.88,87.88,0,0,1-22,38.09,8,8,0,1,0,11.42,11.21,104.05,104.05,0,0,0,26-45A8,8,0,0,0,222.65,146Zm-9.86-41.54a8,8,0,0,0,15.42-4.28,104,104,0,0,0-26-45,8,8,0,1,0-11.41,11.21A88.14,88.14,0,0,1,212.79,104.45Z" }))
+  ],
+  [
+    "fill",
+    /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, /* @__PURE__ */ reactExports.createElement("path", { d: "M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm54.59,45a8,8,0,0,1,11.29.7,88,88,0,0,1,17.6,30.47,8,8,0,0,1-15.18,5.08,71.87,71.87,0,0,0-14.4-25A8,8,0,0,1,182.59,69ZM73.41,187.05a8,8,0,0,1-11.29-.7,88,88,0,0,1-17.6-30.47A8,8,0,1,1,59.7,150.8a71.87,71.87,0,0,0,14.4,24.95A8,8,0,0,1,73.41,187.05Zm.69-106.8a71.87,71.87,0,0,0-14.4,25,8,8,0,1,1-15.18-5.08,88,88,0,0,1,17.6-30.47,8,8,0,1,1,12,10.6Zm71.49,134a87.8,87.8,0,0,1-35.18,0,8,8,0,0,1,3.18-15.68,72.08,72.08,0,0,0,28.82,0,8,8,0,0,1,3.18,15.68Zm6.25-163A8,8,0,0,1,144,57.61a7.89,7.89,0,0,1-1.6-.16,72.08,72.08,0,0,0-28.82,0,8,8,0,1,1-3.18-15.68,87.92,87.92,0,0,1,35.18,0A8,8,0,0,1,151.84,51.2Zm59.64,104.68a88,88,0,0,1-17.6,30.47,8,8,0,1,1-12-10.6,71.87,71.87,0,0,0,14.4-24.95,8,8,0,0,1,15.18,5.08Z" }))
+  ],
+  [
+    "light",
+    /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, /* @__PURE__ */ reactExports.createElement("path", { d: "M98.19,36.54a6,6,0,0,1,4.3-7.31,102.12,102.12,0,0,1,51,0,6,6,0,0,1-3,11.62,90,90,0,0,0-45,0A6,6,0,0,1,98.19,36.54Zm-43,20A102.07,102.07,0,0,0,29.7,100.7a6,6,0,0,0,4.19,7.38,5.88,5.88,0,0,0,1.6.22,6,6,0,0,0,5.78-4.4A90,90,0,0,1,63.78,65a6,6,0,1,0-8.56-8.41ZM41.28,152.09a6,6,0,1,0-11.56,3.2,102,102,0,0,0,25.49,44.18,6,6,0,0,0,8.55-8.41A90.11,90.11,0,0,1,41.28,152.09Zm109.21,63.06a90,90,0,0,1-45,0,6,6,0,1,0-3,11.62,102.16,102.16,0,0,0,51,0,6,6,0,0,0-3-11.62Zm71.62-67.23a6,6,0,0,0-7.38,4.18,90,90,0,0,1-22.51,39,6,6,0,1,0,8.56,8.41A102.12,102.12,0,0,0,226.3,155.3,6,6,0,0,0,222.11,147.92Zm-7.39-44a6,6,0,0,0,5.78,4.4,5.88,5.88,0,0,0,1.6-.22,6,6,0,0,0,4.18-7.38,102,102,0,0,0-25.49-44.18,6,6,0,0,0-8.55,8.41A90.05,90.05,0,0,1,214.72,103.91Z" }))
+  ],
+  [
+    "regular",
+    /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, /* @__PURE__ */ reactExports.createElement("path", { d: "M96.26,37.05A8,8,0,0,1,102,27.29a104.11,104.11,0,0,1,52,0,8,8,0,0,1-2,15.75,8.15,8.15,0,0,1-2-.26,88.09,88.09,0,0,0-44,0A8,8,0,0,1,96.26,37.05ZM53.79,55.14a104.05,104.05,0,0,0-26,45,8,8,0,0,0,15.42,4.27,88,88,0,0,1,22-38.09A8,8,0,0,0,53.79,55.14ZM43.21,151.55a8,8,0,1,0-15.42,4.28,104.12,104.12,0,0,0,26,45,8,8,0,0,0,11.41-11.22A88.14,88.14,0,0,1,43.21,151.55ZM150,213.22a88,88,0,0,1-44,0,8,8,0,1,0-4,15.49,104.11,104.11,0,0,0,52,0,8,8,0,0,0-4-15.49ZM222.65,146a8,8,0,0,0-9.85,5.58,87.91,87.91,0,0,1-22,38.08,8,8,0,1,0,11.42,11.21,104,104,0,0,0,26-45A8,8,0,0,0,222.65,146Zm-9.86-41.54a8,8,0,0,0,15.42-4.28,104,104,0,0,0-26-45,8,8,0,1,0-11.41,11.22A88,88,0,0,1,212.79,104.45Z" }))
+  ],
+  [
+    "thin",
+    /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, /* @__PURE__ */ reactExports.createElement("path", { d: "M155.87,36.06a4,4,0,0,1-3.87,3,4.29,4.29,0,0,1-1-.13,92,92,0,0,0-46,0,4,4,0,0,1-2-7.74,100.09,100.09,0,0,1,50,0A4,4,0,0,1,155.87,36.06ZM56.65,57.94a100.18,100.18,0,0,0-25,43.29,4,4,0,0,0,7.71,2.14,92.06,92.06,0,0,1,23-39.82,4,4,0,1,0-5.7-5.61ZM39.36,152.62a4,4,0,0,0-7.71,2.14,100.08,100.08,0,0,0,25,43.31,4,4,0,1,0,5.71-5.61A91.91,91.91,0,0,1,39.36,152.62ZM151,217.09a92,92,0,0,1-46,0,4,4,0,0,0-2,7.75,100,100,0,0,0,50,0,4,4,0,1,0-2-7.74Zm70.58-67.25a4,4,0,0,0-4.92,2.79,92.12,92.12,0,0,1-23,39.82,4,4,0,1,0,5.7,5.61,100.18,100.18,0,0,0,25-43.29A4,4,0,0,0,221.58,149.84Zm-4.94-46.46a4,4,0,0,0,7.71-2.14,100.08,100.08,0,0,0-25-43.31,4,4,0,1,0-5.71,5.61A91.91,91.91,0,0,1,216.64,103.38Z" }))
+  ]
+]);
+const e$b = /* @__PURE__ */ new Map([
+  [
+    "bold",
+    /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, /* @__PURE__ */ reactExports.createElement("path", { d: "M244,192a12,12,0,0,1-12,12H204v28a12,12,0,0,1-24,0V204H64a12,12,0,0,1-12-12V76H24a12,12,0,0,1,0-24H52V24a12,12,0,0,1,24,0V180H232A12,12,0,0,1,244,192ZM104,76h76v76a12,12,0,0,0,24,0V64a12,12,0,0,0-12-12H104a12,12,0,0,0,0,24Z" }))
+  ],
+  [
+    "duotone",
+    /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, /* @__PURE__ */ reactExports.createElement("path", { d: "M192,64V192H64V64Z", opacity: "0.2" }), /* @__PURE__ */ reactExports.createElement("path", { d: "M240,192a8,8,0,0,1-8,8H200v32a8,8,0,0,1-16,0V200H64a8,8,0,0,1-8-8V72H24a8,8,0,0,1,0-16H56V24a8,8,0,0,1,16,0V184H232A8,8,0,0,1,240,192ZM96,72h88v88a8,8,0,0,0,16,0V64a8,8,0,0,0-8-8H96a8,8,0,0,0,0,16Z" }))
+  ],
+  [
+    "fill",
+    /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, /* @__PURE__ */ reactExports.createElement("path", { d: "M208,32H48A16,16,0,0,0,32,48V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V48A16,16,0,0,0,208,32ZM120,80h48a8,8,0,0,1,8,8v48a8,8,0,0,1-16,0V96H120a8,8,0,0,1,0-16Zm72,96H176v16a8,8,0,0,1-16,0V176H88a8,8,0,0,1-8-8V96H64a8,8,0,0,1,0-16H80V64a8,8,0,0,1,16,0v96h96a8,8,0,0,1,0,16Z" }))
+  ],
+  [
+    "light",
+    /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, /* @__PURE__ */ reactExports.createElement("path", { d: "M238,192a6,6,0,0,1-6,6H198v34a6,6,0,0,1-12,0V198H64a6,6,0,0,1-6-6V70H24a6,6,0,0,1,0-12H58V24a6,6,0,0,1,12,0V186H232A6,6,0,0,1,238,192ZM96,70h90v90a6,6,0,0,0,12,0V64a6,6,0,0,0-6-6H96a6,6,0,0,0,0,12Z" }))
+  ],
+  [
+    "regular",
+    /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, /* @__PURE__ */ reactExports.createElement("path", { d: "M240,192a8,8,0,0,1-8,8H200v32a8,8,0,0,1-16,0V200H64a8,8,0,0,1-8-8V72H24a8,8,0,0,1,0-16H56V24a8,8,0,0,1,16,0V184H232A8,8,0,0,1,240,192ZM96,72h88v88a8,8,0,0,0,16,0V64a8,8,0,0,0-8-8H96a8,8,0,0,0,0,16Z" }))
+  ],
+  [
+    "thin",
+    /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, /* @__PURE__ */ reactExports.createElement("path", { d: "M236,192a4,4,0,0,1-4,4H196v36a4,4,0,0,1-8,0V196H64a4,4,0,0,1-4-4V68H24a4,4,0,0,1,0-8H60V24a4,4,0,0,1,8,0V188H232A4,4,0,0,1,236,192ZM96,68h92v92a4,4,0,0,0,8,0V64a4,4,0,0,0-4-4H96a4,4,0,0,0,0,8Z" }))
+  ]
+]);
+const e$a = /* @__PURE__ */ new Map([
+  [
+    "bold",
+    /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, /* @__PURE__ */ reactExports.createElement("path", { d: "M216,204H141l86.84-86.84a28,28,0,0,0,0-39.6L186.43,36.19a28,28,0,0,0-39.6,0L28.19,154.82a28,28,0,0,0,0,39.6l30.06,30.07A12,12,0,0,0,66.74,228H216a12,12,0,0,0,0-24ZM163.8,53.16a4,4,0,0,1,5.66,0l41.38,41.38a4,4,0,0,1,0,5.65L160,151l-47-47ZM71.71,204,45.16,177.45a4,4,0,0,1,0-5.65L96,121l47,47-36,36Z" }))
+  ],
+  [
+    "duotone",
+    /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, /* @__PURE__ */ reactExports.createElement(
+      "path",
+      {
+        d: "M160,168l-48,48H66.75L36.69,185.94a16,16,0,0,1,0-22.63L96,104Z",
+        opacity: "0.2"
+      }
+    ), /* @__PURE__ */ reactExports.createElement("path", { d: "M225,80.4,183.6,39a24,24,0,0,0-33.94,0L31,157.66a24,24,0,0,0,0,33.94l30.06,30.06A8,8,0,0,0,66.74,224H216a8,8,0,0,0,0-16h-84.7L225,114.34A24,24,0,0,0,225,80.4ZM108.68,208H70.05L42.33,180.28a8,8,0,0,1,0-11.31L96,115.31,148.69,168Zm105-105L160,156.69,107.31,104,161,50.34a8,8,0,0,1,11.32,0l41.38,41.38a8,8,0,0,1,0,11.31Z" }))
+  ],
+  [
+    "fill",
+    /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, /* @__PURE__ */ reactExports.createElement("path", { d: "M225,80.4,183.6,39a24,24,0,0,0-33.94,0L31,157.66a24,24,0,0,0,0,33.94l30.06,30.06A8,8,0,0,0,66.74,224H216a8,8,0,0,0,0-16h-84.7L225,114.34A24,24,0,0,0,225,80.4ZM213.67,103,160,156.69,107.31,104,161,50.34a8,8,0,0,1,11.32,0l41.38,41.38a8,8,0,0,1,0,11.31Z" }))
+  ],
+  [
+    "light",
+    /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, /* @__PURE__ */ reactExports.createElement("path", { d: "M223.57,81.81,182.19,40.43a22,22,0,0,0-31.12,0L32.43,159.07a22,22,0,0,0,0,31.11L62.5,220.24A6,6,0,0,0,66.74,222H216a6,6,0,0,0,0-12H126.49l97.08-97.08A22,22,0,0,0,223.57,81.81ZM109.51,210H69.22l-28.3-28.3a10,10,0,0,1,0-14.15L96,112.48,151.52,168ZM215.08,104.44,160,159.51,104.48,104l55.08-55.07a10,10,0,0,1,14.14,0l41.38,41.37A10,10,0,0,1,215.08,104.44Z" }))
+  ],
+  [
+    "regular",
+    /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, /* @__PURE__ */ reactExports.createElement("path", { d: "M225,80.4,183.6,39a24,24,0,0,0-33.94,0L31,157.66a24,24,0,0,0,0,33.94l30.06,30.06A8,8,0,0,0,66.74,224H216a8,8,0,0,0,0-16h-84.7L225,114.34A24,24,0,0,0,225,80.4ZM108.68,208H70.05L42.33,180.28a8,8,0,0,1,0-11.31L96,115.31,148.69,168Zm105-105L160,156.69,107.31,104,161,50.34a8,8,0,0,1,11.32,0l41.38,41.38a8,8,0,0,1,0,11.31Z" }))
+  ],
+  [
+    "thin",
+    /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, /* @__PURE__ */ reactExports.createElement("path", { d: "M222.15,83.22,180.77,41.85a20,20,0,0,0-28.28,0L33.85,160.48a20,20,0,0,0,0,28.29l30.06,30.06A4,4,0,0,0,66.74,220H216a4,4,0,0,0,0-8H121.66L222.15,111.51A20,20,0,0,0,222.15,83.22ZM110.34,212H68.4L39.51,183.11a12,12,0,0,1,0-17L96,109.65,154.35,168ZM216.49,105.85,160,162.34,101.65,104l56.49-56.48a12,12,0,0,1,17,0l41.37,41.37A12,12,0,0,1,216.49,105.85Z" }))
+  ]
+]);
+const l$1 = /* @__PURE__ */ new Map([
+  [
+    "bold",
+    /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, /* @__PURE__ */ reactExports.createElement("path", { d: "M228,67.24a39.77,39.77,0,0,0-12.51-28.52C199.91,24,174.71,24.5,159.29,39.93L142.48,56.84a28,28,0,0,0-35.64,3.29l-9,9a20,20,0,0,0-.73,27.49L48.9,144.84A43.76,43.76,0,0,0,37,185.28l-7.5,17.19a17.66,17.66,0,0,0,3.71,19.65,19.9,19.9,0,0,0,22.15,4.19l16.31-7.13a43.88,43.88,0,0,0,39.45-12.09l48.24-48.26a20,20,0,0,0,27.47-.73l9-9a28.06,28.06,0,0,0,3.26-35.72l17.23-17.33A39.69,39.69,0,0,0,228,67.24ZM94.15,190.11a20,20,0,0,1-20,5,11.93,11.93,0,0,0-8.32.47L57,199.38,60.69,191a12,12,0,0,0,.37-8.64,19.92,19.92,0,0,1,4.81-20.55l48.2-48.22,28.28,28.3Zm105.14-111-25.37,25.52a12,12,0,0,0,0,16.95l4.88,4.89a4,4,0,0,1,0,5.66l-6.14,6.15-55-55.05,6.14-6.14a4,4,0,0,1,5.65,0L134.35,82a12,12,0,0,0,8.49,3.51h0A12,12,0,0,0,151.34,82l24.94-25.08c6.3-6.3,16.48-6.63,22.71-.74a16,16,0,0,1,.3,23Z" }))
+  ],
+  [
+    "duotone",
+    /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, /* @__PURE__ */ reactExports.createElement(
+      "path",
+      {
+        d: "M207.8,87.6l-25.37,25.53,4.89,4.88a16,16,0,0,1,0,22.64l-9,9a8,8,0,0,1-11.32,0l-60.68-60.7a8,8,0,0,1,0-11.32l9-9a16,16,0,0,1,22.63,0l4.88,4.89,25-25.11c10.79-10.79,28.37-11.45,39.45-1A28,28,0,0,1,207.8,87.6Z",
+        opacity: "0.2"
+      }
+    ), /* @__PURE__ */ reactExports.createElement("path", { d: "M224,67.3a35.79,35.79,0,0,0-11.26-25.66c-14-13.28-36.72-12.78-50.62,1.13L142.8,62.2a24,24,0,0,0-33.14.77l-9,9a16,16,0,0,0,0,22.64l2,2.06-51,51a39.75,39.75,0,0,0-10.53,38l-8,18.41A13.68,13.68,0,0,0,36,219.3a15.92,15.92,0,0,0,17.71,3.35L71.23,215a39.89,39.89,0,0,0,37.06-10.75l51-51,2.06,2.06a16,16,0,0,0,22.62,0l9-9a24,24,0,0,0,.74-33.18l19.75-19.87A35.75,35.75,0,0,0,224,67.3ZM97,193a24,24,0,0,1-24,6,8,8,0,0,0-5.55.31l-18.1,7.91L57,189.41a8,8,0,0,0,.25-5.75A23.88,23.88,0,0,1,63,159l51-51,33.94,34ZM202.13,82l-25.37,25.52a8,8,0,0,0,0,11.3l4.89,4.89a8,8,0,0,1,0,11.32l-9,9L112,83.26l9-9a8,8,0,0,1,11.31,0l4.89,4.89a8,8,0,0,0,5.65,2.34h0a8,8,0,0,0,5.66-2.36l24.94-25.09c7.81-7.82,20.5-8.18,28.29-.81a20,20,0,0,1,.39,28.7Z" }))
+  ],
+  [
+    "fill",
+    /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, /* @__PURE__ */ reactExports.createElement("path", { d: "M224,67.3a35.79,35.79,0,0,0-11.26-25.66c-14-13.28-36.72-12.78-50.62,1.13L138.8,66.2a24,24,0,0,0-33.14.77l-5,5a16,16,0,0,0,0,22.64l2,2.06-51,51a39.75,39.75,0,0,0-10.53,38l-8,18.41A13.68,13.68,0,0,0,36,219.3a15.92,15.92,0,0,0,17.71,3.35L71.23,215a39.89,39.89,0,0,0,37.06-10.75l51-51,2.06,2.06a16,16,0,0,0,22.62,0l5-5a24,24,0,0,0,.74-33.18l23.75-23.87A35.75,35.75,0,0,0,224,67.3ZM97,193a24,24,0,0,1-24,6,8,8,0,0,0-5.55.31l-18.1,7.91L57,189.41a8,8,0,0,0,.25-5.75A23.88,23.88,0,0,1,63,159l51-51,33.94,34Z" }))
+  ],
+  [
+    "light",
+    /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, /* @__PURE__ */ reactExports.createElement("path", { d: "M222,67.34a33.81,33.81,0,0,0-10.64-24.25C198.12,30.56,176.68,31,163.54,44.18L142.82,65l-.63-.63a22,22,0,0,0-31.11,0l-9,9a14,14,0,0,0,0,19.81l3.47,3.47L53.14,149.1a37.79,37.79,0,0,0-9.84,36.73l-8.31,19a11.68,11.68,0,0,0,2.46,13A13.91,13.91,0,0,0,47.32,222,14.15,14.15,0,0,0,53,220.82L71,212.92a37.92,37.92,0,0,0,35.84-10.07l52.44-52.46,3.47,3.48a14,14,0,0,0,19.8,0l9-9a22,22,0,0,0,0-31.12l-.66-.66L212,91.85A33.76,33.76,0,0,0,222,67.34Zm-123.61,127a26,26,0,0,1-26,6.47,6,6,0,0,0-4.16.24l-20,8.75a2,2,0,0,1-2.09-.31l9.12-20.9a5.94,5.94,0,0,0,.19-4.31,25.88,25.88,0,0,1,6.26-26.72l52.44-52.45,36.76,36.78Zm105.16-111L178.17,108.9a6,6,0,0,0,0,8.47l4.88,4.89a10,10,0,0,1,0,14.15l-9,9a2,2,0,0,1-2.82,0l-60.69-60.7a2,2,0,0,1,0-2.83l9-9a10,10,0,0,1,14.14,0l4.89,4.89a6,6,0,0,0,4.24,1.75h0a6,6,0,0,0,4.25-1.77L172,52.66c8.58-8.58,22.52-9,31.08-.85a22,22,0,0,1,.44,31.57Z" }))
+  ],
+  [
+    "regular",
+    /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, /* @__PURE__ */ reactExports.createElement("path", { d: "M224,67.3a35.79,35.79,0,0,0-11.26-25.66c-14-13.28-36.72-12.78-50.62,1.13L142.8,62.2a24,24,0,0,0-33.14.77l-9,9a16,16,0,0,0,0,22.64l2,2.06-51,51a39.75,39.75,0,0,0-10.53,38l-8,18.41A13.68,13.68,0,0,0,36,219.3a15.92,15.92,0,0,0,17.71,3.35L71.23,215a39.89,39.89,0,0,0,37.06-10.75l51-51,2.06,2.06a16,16,0,0,0,22.62,0l9-9a24,24,0,0,0,.74-33.18l19.75-19.87A35.75,35.75,0,0,0,224,67.3ZM97,193a24,24,0,0,1-24,6,8,8,0,0,0-5.55.31l-18.1,7.91L57,189.41a8,8,0,0,0,.25-5.75A23.88,23.88,0,0,1,63,159l51-51,33.94,34ZM202.13,82l-25.37,25.52a8,8,0,0,0,0,11.3l4.89,4.89a8,8,0,0,1,0,11.32l-9,9L112,83.26l9-9a8,8,0,0,1,11.31,0l4.89,4.89a8,8,0,0,0,11.33,0l24.94-25.09c7.81-7.82,20.5-8.18,28.29-.81a20,20,0,0,1,.39,28.7Z" }))
+  ],
+  [
+    "thin",
+    /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, /* @__PURE__ */ reactExports.createElement("path", { d: "M220,67.37a31.82,31.82,0,0,0-10-22.82c-12.46-11.8-32.66-11.33-45,1.05L142.82,67.86l-2-2a20,20,0,0,0-28.28,0l-9,9a12,12,0,0,0,0,17l4.89,4.89L54.55,150.52A35.81,35.81,0,0,0,45.42,186l-8.6,19.7a9.7,9.7,0,0,0,2,10.79A12,12,0,0,0,52.15,219l18.72-8.18a35.9,35.9,0,0,0,34.59-9.37l53.86-53.87,4.88,4.89a12,12,0,0,0,17,0l9-9a20,20,0,0,0,0-28.3l-2.06-2.06,22.55-22.69A31.75,31.75,0,0,0,220,67.37ZM99.81,195.78a28,28,0,0,1-28,7,4,4,0,0,0-2.78.15l-20,8.75a4,4,0,0,1-4.43-.84,1.73,1.73,0,0,1-.36-1.93l9.19-21.06a4,4,0,0,0,.12-2.88,27.87,27.87,0,0,1,6.74-28.77l53.85-53.87,39.6,39.61Zm79.78-85.47a4,4,0,0,0,0,5.65l4.89,4.89a12,12,0,0,1,0,17l-9,9a4,4,0,0,1-5.66,0L109.18,86.1a4,4,0,0,1,0-5.66l9-9a12,12,0,0,1,17,0L140,76.36a4,4,0,0,0,2.83,1.17h0a4,4,0,0,0,2.83-1.18l25-25.1c9.33-9.34,24.52-9.73,33.87-.89A24,24,0,0,1,205,84.79Z" }))
+  ]
+]);
+const H$1 = /* @__PURE__ */ new Map([
+  [
+    "bold",
+    /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, /* @__PURE__ */ reactExports.createElement("path", { d: "M20,108A12,12,0,0,1,32,96h76a12,12,0,0,1,0,24H32A12,12,0,0,1,20,108ZM224,96H148a12,12,0,0,0,0,24h76a12,12,0,0,0,0-24ZM68,136H32a12,12,0,0,0,0,24H68a12,12,0,0,0,0-24Zm156,0H188a12,12,0,0,0,0,24h36a12,12,0,0,0,0-24ZM96,148a12,12,0,0,0,12,12h40a12,12,0,0,0,0-24H108A12,12,0,0,0,96,148ZM52,176H32a12,12,0,0,0,0,24H52a12,12,0,0,0,0-24Zm56,0H92a12,12,0,0,0,0,24h16a12,12,0,0,0,0-24Zm56,0H148a12,12,0,0,0,0,24h16a12,12,0,0,0,0-24Zm60,0H204a12,12,0,0,0,0,24h20a12,12,0,0,0,0-24ZM32,80H224a12,12,0,0,0,0-24H32a12,12,0,0,0,0,24Z" }))
+  ],
+  [
+    "duotone",
+    /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, /* @__PURE__ */ reactExports.createElement("path", { d: "M224,64V184H32V64Z", opacity: "0.2" }), /* @__PURE__ */ reactExports.createElement("path", { d: "M24,104a8,8,0,0,1,8-8h80a8,8,0,0,1,0,16H32A8,8,0,0,1,24,104Zm200-8H144a8,8,0,0,0,0,16h80a8,8,0,0,0,0-16ZM72,136H32a8,8,0,0,0,0,16H72a8,8,0,0,0,0-16Zm152,0H184a8,8,0,0,0,0,16h40a8,8,0,0,0,0-16ZM96,144a8,8,0,0,0,8,8h48a8,8,0,0,0,0-16H104A8,8,0,0,0,96,144ZM56,176H32a8,8,0,0,0,0,16H56a8,8,0,0,0,0-16Zm56,0H88a8,8,0,0,0,0,16h24a8,8,0,0,0,0-16Zm56,0H144a8,8,0,0,0,0,16h24a8,8,0,0,0,0-16Zm56,0H200a8,8,0,0,0,0,16h24a8,8,0,0,0,0-16ZM32,72H224a8,8,0,0,0,0-16H32a8,8,0,0,0,0,16Z" }))
+  ],
+  [
+    "fill",
+    /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, /* @__PURE__ */ reactExports.createElement("path", { d: "M80,192a8,8,0,0,1-8,8H32a8,8,0,0,1,0-16H72A8,8,0,0,1,80,192Zm144-8H184a8,8,0,0,0,0,16h40a8,8,0,0,0,0-16Zm-72,0H104a8,8,0,0,0,0,16h48a8,8,0,0,0,0-16ZM32,168h80a8,8,0,0,0,0-16H32a8,8,0,0,0,0,16Zm192-16H144a8,8,0,0,0,0,16h80a8,8,0,0,0,0-16Zm0-96H32a8,8,0,0,0-8,8V88a8,8,0,0,0,8,8H224a8,8,0,0,0,8-8V64A8,8,0,0,0,224,56Zm0,56H32a8,8,0,0,0-8,8v8a8,8,0,0,0,8,8H224a8,8,0,0,0,8-8v-8A8,8,0,0,0,224,112Z" }))
+  ],
+  [
+    "light",
+    /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, /* @__PURE__ */ reactExports.createElement("path", { d: "M26,104a6,6,0,0,1,6-6h80a6,6,0,0,1,0,12H32A6,6,0,0,1,26,104Zm198-6H144a6,6,0,0,0,0,12h80a6,6,0,0,0,0-12ZM72,138H32a6,6,0,0,0,0,12H72a6,6,0,0,0,0-12Zm152,0H184a6,6,0,0,0,0,12h40a6,6,0,0,0,0-12ZM98,144a6,6,0,0,0,6,6h48a6,6,0,0,0,0-12H104A6,6,0,0,0,98,144ZM56,178H32a6,6,0,0,0,0,12H56a6,6,0,0,0,0-12Zm56,0H88a6,6,0,0,0,0,12h24a6,6,0,0,0,0-12Zm56,0H144a6,6,0,0,0,0,12h24a6,6,0,0,0,0-12Zm56,0H200a6,6,0,0,0,0,12h24a6,6,0,0,0,0-12ZM32,70H224a6,6,0,0,0,0-12H32a6,6,0,0,0,0,12Z" }))
+  ],
+  [
+    "regular",
+    /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, /* @__PURE__ */ reactExports.createElement("path", { d: "M24,104a8,8,0,0,1,8-8h80a8,8,0,0,1,0,16H32A8,8,0,0,1,24,104Zm200-8H144a8,8,0,0,0,0,16h80a8,8,0,0,0,0-16ZM72,136H32a8,8,0,0,0,0,16H72a8,8,0,0,0,0-16Zm152,0H184a8,8,0,0,0,0,16h40a8,8,0,0,0,0-16ZM96,144a8,8,0,0,0,8,8h48a8,8,0,0,0,0-16H104A8,8,0,0,0,96,144ZM56,176H32a8,8,0,0,0,0,16H56a8,8,0,0,0,0-16Zm56,0H88a8,8,0,0,0,0,16h24a8,8,0,0,0,0-16Zm56,0H144a8,8,0,0,0,0,16h24a8,8,0,0,0,0-16Zm56,0H200a8,8,0,0,0,0,16h24a8,8,0,0,0,0-16ZM32,72H224a8,8,0,0,0,0-16H32a8,8,0,0,0,0,16Z" }))
+  ],
+  [
+    "thin",
+    /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, /* @__PURE__ */ reactExports.createElement("path", { d: "M28,104a4,4,0,0,1,4-4h80a4,4,0,0,1,0,8H32A4,4,0,0,1,28,104Zm196-4H144a4,4,0,0,0,0,8h80a4,4,0,0,0,0-8ZM72,140H32a4,4,0,0,0,0,8H72a4,4,0,0,0,0-8Zm152,0H184a4,4,0,0,0,0,8h40a4,4,0,0,0,0-8Zm-124,4a4,4,0,0,0,4,4h48a4,4,0,0,0,0-8H104A4,4,0,0,0,100,144ZM56,180H32a4,4,0,0,0,0,8H56a4,4,0,0,0,0-8Zm56,0H88a4,4,0,0,0,0,8h24a4,4,0,0,0,0-8Zm56,0H144a4,4,0,0,0,0,8h24a4,4,0,0,0,0-8Zm56,0H200a4,4,0,0,0,0,8h24a4,4,0,0,0,0-8ZM32,68H224a4,4,0,0,0,0-8H32a4,4,0,0,0,0,8Z" }))
+  ]
+]);
+const a$5 = /* @__PURE__ */ new Map([
+  [
+    "bold",
+    /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, /* @__PURE__ */ reactExports.createElement("path", { d: "M207.83,56.53C186.32,43.29,158,36,128,36S69.68,43.29,48.17,56.53C24.85,70.89,12,90.6,12,112s12.85,41.14,36.17,55.5c18.48,11.37,42,18.34,67.29,20.08-2,11.07-9.09,17.75-15.22,21.54-13.48,8.31-32.75,9.18-46.86,2.1A12,12,0,1,0,42.62,232.7a71.76,71.76,0,0,0,32,7.3,73.2,73.2,0,0,0,38.18-10.43c15.45-9.54,25-24.58,26.83-41.9,25.6-1.64,49.47-8.65,68.16-20.15C231.15,153.16,244,133.45,244,112S231.15,70.89,207.83,56.53Zm-134.44,97a21,21,0,0,1,20.16-9.35c10.36,1.39,16.54,9.43,19.72,19.13A135.3,135.3,0,0,1,73.39,153.56Zm64.87,10.14a61.84,61.84,0,0,0-10.76-24.82,46.08,46.08,0,0,0-30.75-18.46c-18-2.41-34.52,5.89-44.1,21C42.2,133,36,122.84,36,112c0-28.19,42.13-52,92-52s92,23.82,92,52C220,138.26,183.51,160.71,138.26,163.7Z" }))
+  ],
+  [
+    "duotone",
+    /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, /* @__PURE__ */ reactExports.createElement(
+      "path",
+      {
+        d: "M232,112c0,35.35-46.56,64-104,64S24,147.35,24,112,70.56,48,128,48,232,76.65,232,112Z",
+        opacity: "0.2"
+      }
+    ), /* @__PURE__ */ reactExports.createElement("path", { d: "M205.73,59.93C184.85,47.08,157.24,40,128,40S71.15,47.08,50.27,59.93C28.17,73.52,16,92,16,112S28.17,150.44,50.27,164c19,11.67,43.49,18.56,69.73,19.73v0a37.35,37.35,0,0,1-18.58,33c-14.64,8.86-34.62,9.52-49.72,1.64a8,8,0,1,0-7.4,14.18A66.4,66.4,0,0,0,75,240a67.31,67.31,0,0,0,34.74-9.5c17-10.27,26.29-26.86,26.29-46.7v0c26.24-1.17,50.76-8.06,69.73-19.73C227.83,150.44,240,132,240,112S227.83,73.52,205.73,59.93ZM67.41,155.18c5.24-9.55,15.45-12,23.53-11,10.9,1.42,21.86,9.13,26.61,23.42C99.11,166.45,81.85,162.16,67.41,155.18Zm129.94-4.77c-16.95,10.43-39.17,16.53-63.13,17.43a54.37,54.37,0,0,0-11.39-23.07A47.17,47.17,0,0,0,93,128.35c-17-2.2-31.72,5.11-39.38,18.7C39.64,137,32,124.73,32,112c0-14.21,9.47-27.86,26.65-38.43C77.05,62.23,101.68,56,128,56S179,62.23,197.35,73.55C214.53,84.12,224,97.77,224,112S214.53,139.84,197.35,150.41Z" }))
+  ],
+  [
+    "fill",
+    /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, /* @__PURE__ */ reactExports.createElement("path", { d: "M93.43,136.11a17.14,17.14,0,0,0-15.35,6.1c9.31,6.56,22.51,11.33,37.43,13.07C110.41,143.33,101.72,137,93.43,136.11Z" }), /* @__PURE__ */ reactExports.createElement("path", { d: "M224,48V208a16,16,0,0,1-16,16H127.65a4,4,0,0,1-3.23-6.34c7.5-10.23,11.58-23.24,11.58-37.84,0-2.79-.13-5.46-.35-8.05C176.79,169.33,208,147.47,208,120c0-29.15-35.14-52-80-52S48,90.84,48,120c0,27.31,30.82,49.07,71.58,51.73a77,77,0,0,1,.42,8.09c0,17.62-7.65,31.95-21,39.32A38.77,38.77,0,0,1,79.27,224H48a16,16,0,0,1-16-16V48A16,16,0,0,1,48,32H208A16,16,0,0,1,224,48Zm-32,72c0-19.51-29.31-36-64-36s-64,16.48-64,36a21.29,21.29,0,0,0,3,10.63A33.65,33.65,0,0,1,95.16,120.2c15,1.63,30.84,13.4,37.54,35.68C165.3,154.47,192,138.62,192,120Z" }))
+  ],
+  [
+    "light",
+    /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, /* @__PURE__ */ reactExports.createElement("path", { d: "M204.68,61.63C184.11,49,156.88,42,128,42S71.89,49,51.32,61.63C29.83,74.85,18,92.73,18,112s11.83,37.13,33.32,50.35C70.45,174.1,95.35,181,122,181.85c0,.64,0,1.28,0,1.94,0,14.76-6.94,27.1-19.54,34.73-15.22,9.22-36,9.9-51.68,1.71a6,6,0,1,0-5.56,10.63A64.45,64.45,0,0,0,75,238a65.24,65.24,0,0,0,33.7-9.22c16.34-9.89,25.33-25.87,25.33-45,0-.65,0-1.29,0-1.94,26.65-.89,51.57-7.74,70.72-19.52C226.17,149.11,238,131.23,238,112S226.17,74.85,204.68,61.63Zm-140,94.46c5.32-12,17.2-15.07,26.48-13.87,12.28,1.6,24.64,10.67,29.08,27.55C99.73,168.81,80.48,164.08,64.72,156.09Zm133.67-4c-17.62,10.85-40.83,17.1-65.77,17.79a52.77,52.77,0,0,0-11.31-23.84,45.24,45.24,0,0,0-28.56-15.73c-16.89-2.2-31.49,5.54-38.41,19.68C38.61,139.37,30,126,30,112c0-14.93,9.8-29.18,27.61-40.13C76.32,60.34,101.32,54,128,54s51.68,6.34,70.39,17.85C216.2,82.8,226,97.05,226,112S216.2,141.16,198.39,152.11Z" }))
+  ],
+  [
+    "regular",
+    /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, /* @__PURE__ */ reactExports.createElement("path", { d: "M205.73,59.93C184.85,47.08,157.24,40,128,40S71.15,47.08,50.27,59.93C28.17,73.52,16,92,16,112S28.17,150.44,50.27,164c19,11.67,43.49,18.56,69.73,19.73v0a37.35,37.35,0,0,1-18.58,33c-14.64,8.86-34.62,9.52-49.72,1.64a8,8,0,1,0-7.4,14.18A66.4,66.4,0,0,0,75,240a67.31,67.31,0,0,0,34.74-9.5c17-10.27,26.29-26.86,26.29-46.7v0c26.24-1.17,50.76-8.06,69.73-19.73C227.83,150.44,240,132,240,112S227.83,73.52,205.73,59.93ZM67.41,155.18c5.24-9.55,15.44-12,23.53-11,10.9,1.42,21.86,9.13,26.61,23.42C99.11,166.45,81.85,162.16,67.41,155.18Zm129.94-4.77c-16.95,10.43-39.17,16.53-63.13,17.43a54.37,54.37,0,0,0-11.39-23.07A47.17,47.17,0,0,0,93,128.35c-17-2.2-31.72,5.11-39.38,18.7C39.64,137,32,124.73,32,112c0-14.21,9.47-27.86,26.65-38.43C77.05,62.23,101.68,56,128,56S179,62.23,197.35,73.55C214.53,84.12,224,97.77,224,112S214.53,139.84,197.35,150.41Z" }))
+  ],
+  [
+    "thin",
+    /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, /* @__PURE__ */ reactExports.createElement("path", { d: "M203.64,63.34C183.37,50.87,156.51,44,128,44S72.63,50.87,52.36,63.34C31.49,76.19,20,93.48,20,112s11.49,35.83,32.36,48.68c19.29,11.87,44.55,18.65,71.51,19.28.08,1.27.13,2.56.13,3.9,0,15.49-7.28,28.44-20.51,36.46-15.79,9.57-37.34,10.28-53.64,1.77a4,4,0,1,0-3.7,7.09A62.32,62.32,0,0,0,74.91,236a63.56,63.56,0,0,0,32.73-8.82c15.71-9.52,24.36-24.9,24.36-43.3,0-1.32-.05-2.61-.12-3.9,27.06-.59,52.41-7.38,71.76-19.28C224.51,147.85,236,130.56,236,112S224.51,76.19,203.64,63.34ZM62.16,157.15c5.3-14.49,18.83-18.22,29.3-16.85,13.64,1.78,27.38,12.19,31.38,31.66C99.66,171.25,78.55,165.78,62.16,157.15ZM131,172a51.35,51.35,0,0,0-11.18-24.59,43.28,43.28,0,0,0-27.3-15.06c-16.82-2.19-31.24,6-37.33,20.74C38.33,142.35,28,127.9,28,112c0-33.09,44.86-60,100-60s100,26.93,100,60C228,144.52,184.74,171.06,131,172Z" }))
+  ]
+]);
+const e$9 = /* @__PURE__ */ new Map([
+  [
+    "bold",
+    /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, /* @__PURE__ */ reactExports.createElement("path", { d: "M252,152a12,12,0,0,1-12,12H228v12a12,12,0,0,1-24,0V164H192a12,12,0,0,1,0-24h12V128a12,12,0,0,1,24,0v12h12A12,12,0,0,1,252,152ZM56,76H68V88a12,12,0,0,0,24,0V76h12a12,12,0,1,0,0-24H92V40a12,12,0,0,0-24,0V52H56a12,12,0,0,0,0,24ZM184,188h-4v-4a12,12,0,0,0-24,0v4h-4a12,12,0,0,0,0,24h4v4a12,12,0,0,0,24,0v-4h4a12,12,0,0,0,0-24ZM222.14,82.83,82.82,222.14a20,20,0,0,1-28.28,0L33.85,201.46a20,20,0,0,1,0-28.29L173.17,33.86a20,20,0,0,1,28.28,0l20.69,20.68A20,20,0,0,1,222.14,82.83ZM159,112,144,97,53.65,187.31l15,15Zm43.31-43.31-15-15L161,80l15,15Z" }))
+  ],
+  [
+    "duotone",
+    /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, /* @__PURE__ */ reactExports.createElement(
+      "path",
+      {
+        d: "M176,112,74.34,213.66a8,8,0,0,1-11.31,0L42.34,193a8,8,0,0,1,0-11.31L144,80Z",
+        opacity: "0.2"
+      }
+    ), /* @__PURE__ */ reactExports.createElement("path", { d: "M248,152a8,8,0,0,1-8,8H224v16a8,8,0,0,1-16,0V160H192a8,8,0,0,1,0-16h16V128a8,8,0,0,1,16,0v16h16A8,8,0,0,1,248,152ZM56,72H72V88a8,8,0,0,0,16,0V72h16a8,8,0,0,0,0-16H88V40a8,8,0,0,0-16,0V56H56a8,8,0,0,0,0,16ZM184,192h-8v-8a8,8,0,0,0-16,0v8h-8a8,8,0,0,0,0,16h8v8a8,8,0,0,0,16,0v-8h8a8,8,0,0,0,0-16ZM219.31,80,80,219.31a16,16,0,0,1-22.62,0L36.68,198.63a16,16,0,0,1,0-22.63L176,36.69a16,16,0,0,1,22.63,0l20.68,20.68A16,16,0,0,1,219.31,80Zm-54.63,32L144,91.31l-96,96L68.68,208ZM208,68.69,187.31,48l-32,32L176,100.69Z" }))
+  ],
+  [
+    "fill",
+    /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, /* @__PURE__ */ reactExports.createElement("path", { d: "M248,152a8,8,0,0,1-8,8H224v16a8,8,0,0,1-16,0V160H192a8,8,0,0,1,0-16h16V128a8,8,0,0,1,16,0v16h16A8,8,0,0,1,248,152ZM56,72H72V88a8,8,0,0,0,16,0V72h16a8,8,0,0,0,0-16H88V40a8,8,0,0,0-16,0V56H56a8,8,0,0,0,0,16ZM184,192h-8v-8a8,8,0,0,0-16,0v8h-8a8,8,0,0,0,0,16h8v8a8,8,0,0,0,16,0v-8h8a8,8,0,0,0,0-16ZM219.31,80,80,219.31a16,16,0,0,1-22.62,0L36.68,198.63a16,16,0,0,1,0-22.63L176,36.69a16,16,0,0,1,22.63,0l20.68,20.68A16,16,0,0,1,219.31,80ZM208,68.69,187.31,48l-32,32L176,100.69Z" }))
+  ],
+  [
+    "light",
+    /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, /* @__PURE__ */ reactExports.createElement("path", { d: "M246,152a6,6,0,0,1-6,6H222v18a6,6,0,0,1-12,0V158H192a6,6,0,0,1,0-12h18V128a6,6,0,0,1,12,0v18h18A6,6,0,0,1,246,152ZM56,70H74V88a6,6,0,0,0,12,0V70h18a6,6,0,0,0,0-12H86V40a6,6,0,0,0-12,0V58H56a6,6,0,0,0,0,12ZM184,194H174V184a6,6,0,0,0-12,0v10H152a6,6,0,0,0,0,12h10v10a6,6,0,0,0,12,0V206h10a6,6,0,0,0,0-12ZM217.9,78.59,78.58,217.9a14,14,0,0,1-19.8,0L38.09,197.21a14,14,0,0,1,0-19.8L177.41,38.1a14,14,0,0,1,19.8,0L217.9,58.79A14,14,0,0,1,217.9,78.59ZM167.51,112,144,88.49,46.58,185.9a2,2,0,0,0,0,2.83l20.69,20.68a2,2,0,0,0,2.82,0h0Zm41.9-44.73L188.73,46.59a2,2,0,0,0-2.83,0L152.48,80,176,103.52,209.41,70.1A2,2,0,0,0,209.41,67.27Z" }))
+  ],
+  [
+    "regular",
+    /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, /* @__PURE__ */ reactExports.createElement("path", { d: "M48,64a8,8,0,0,1,8-8H72V40a8,8,0,0,1,16,0V56h16a8,8,0,0,1,0,16H88V88a8,8,0,0,1-16,0V72H56A8,8,0,0,1,48,64ZM184,192h-8v-8a8,8,0,0,0-16,0v8h-8a8,8,0,0,0,0,16h8v8a8,8,0,0,0,16,0v-8h8a8,8,0,0,0,0-16Zm56-48H224V128a8,8,0,0,0-16,0v16H192a8,8,0,0,0,0,16h16v16a8,8,0,0,0,16,0V160h16a8,8,0,0,0,0-16ZM219.31,80,80,219.31a16,16,0,0,1-22.62,0L36.68,198.63a16,16,0,0,1,0-22.63L176,36.69a16,16,0,0,1,22.63,0l20.68,20.68A16,16,0,0,1,219.31,80Zm-54.63,32L144,91.31l-96,96L68.68,208ZM208,68.69,187.31,48l-32,32L176,100.69Z" }))
+  ],
+  [
+    "thin",
+    /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, /* @__PURE__ */ reactExports.createElement("path", { d: "M244,152a4,4,0,0,1-4,4H220v20a4,4,0,0,1-8,0V156H192a4,4,0,0,1,0-8h20V128a4,4,0,0,1,8,0v20h20A4,4,0,0,1,244,152ZM56,68H76V88a4,4,0,0,0,8,0V68h20a4,4,0,0,0,0-8H84V40a4,4,0,0,0-8,0V60H56a4,4,0,0,0,0,8ZM184,196H172V184a4,4,0,0,0-8,0v12H152a4,4,0,0,0,0,8h12v12a4,4,0,0,0,8,0V204h12a4,4,0,0,0,0-8ZM216.48,77.17,77.17,216.49a12,12,0,0,1-17,0L39.51,195.8a12,12,0,0,1,0-17L178.83,39.51a12,12,0,0,1,17,0L216.48,60.2A12,12,0,0,1,216.48,77.17ZM170.34,112,144,85.66,45.17,184.49a4,4,0,0,0,0,5.65l20.68,20.69a4,4,0,0,0,5.66,0Zm40.49-46.14L190.14,45.17a4,4,0,0,0-5.66,0L149.65,80,176,106.34l34.83-34.83A4,4,0,0,0,210.83,65.86Z" }))
+  ]
+]);
+const e$8 = /* @__PURE__ */ new Map([
+  [
+    "bold",
+    /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, /* @__PURE__ */ reactExports.createElement("path", { d: "M156,112a12,12,0,0,1-12,12H124v20a12,12,0,0,1-24,0V124H80a12,12,0,0,1,0-24h20V80a12,12,0,0,1,24,0v20h20A12,12,0,0,1,156,112Zm76.49,120.49a12,12,0,0,1-17,0L168,185a92.12,92.12,0,1,1,17-17l47.54,47.53A12,12,0,0,1,232.49,232.49ZM112,180a68,68,0,1,0-68-68A68.08,68.08,0,0,0,112,180Z" }))
+  ],
+  [
+    "duotone",
+    /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, /* @__PURE__ */ reactExports.createElement("path", { d: "M192,112a80,80,0,1,1-80-80A80,80,0,0,1,192,112Z", opacity: "0.2" }), /* @__PURE__ */ reactExports.createElement("path", { d: "M229.66,218.34,179.6,168.28a88.21,88.21,0,1,0-11.32,11.31l50.06,50.07a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Zm112,0a8,8,0,0,1-8,8H120v24a8,8,0,0,1-16,0V120H80a8,8,0,0,1,0-16h24V80a8,8,0,0,1,16,0v24h24A8,8,0,0,1,152,112Z" }))
+  ],
+  [
+    "fill",
+    /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, /* @__PURE__ */ reactExports.createElement("path", { d: "M229.66,218.34,179.6,168.28a88.21,88.21,0,1,0-11.32,11.31l50.06,50.07a8,8,0,0,0,11.32-11.32ZM144,120H120v24a8,8,0,0,1-16,0V120H80a8,8,0,0,1,0-16h24V80a8,8,0,0,1,16,0v24h24a8,8,0,0,1,0,16Z" }))
+  ],
+  [
+    "light",
+    /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, /* @__PURE__ */ reactExports.createElement("path", { d: "M150,112a6,6,0,0,1-6,6H118v26a6,6,0,0,1-12,0V118H80a6,6,0,0,1,0-12h26V80a6,6,0,0,1,12,0v26h26A6,6,0,0,1,150,112Zm78.24,116.24a6,6,0,0,1-8.48,0l-51.38-51.38a86.15,86.15,0,1,1,8.48-8.48l51.38,51.38A6,6,0,0,1,228.24,228.24ZM112,186a74,74,0,1,0-74-74A74.09,74.09,0,0,0,112,186Z" }))
+  ],
+  [
+    "regular",
+    /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, /* @__PURE__ */ reactExports.createElement("path", { d: "M152,112a8,8,0,0,1-8,8H120v24a8,8,0,0,1-16,0V120H80a8,8,0,0,1,0-16h24V80a8,8,0,0,1,16,0v24h24A8,8,0,0,1,152,112Zm77.66,117.66a8,8,0,0,1-11.32,0l-50.06-50.07a88.11,88.11,0,1,1,11.31-11.31l50.07,50.06A8,8,0,0,1,229.66,229.66ZM112,184a72,72,0,1,0-72-72A72.08,72.08,0,0,0,112,184Z" }))
+  ],
+  [
+    "thin",
+    /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, /* @__PURE__ */ reactExports.createElement("path", { d: "M148,112a4,4,0,0,1-4,4H116v28a4,4,0,0,1-8,0V116H80a4,4,0,0,1,0-8h28V80a4,4,0,0,1,8,0v28h28A4,4,0,0,1,148,112Zm78.83,114.83a4,4,0,0,1-5.66,0l-52.7-52.7a84.1,84.1,0,1,1,5.66-5.66l52.7,52.7A4,4,0,0,1,226.83,226.83ZM112,188a76,76,0,1,0-76-76A76.08,76.08,0,0,0,112,188Z" }))
+  ]
+]);
+const a$4 = /* @__PURE__ */ new Map([
+  [
+    "bold",
+    /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, /* @__PURE__ */ reactExports.createElement("path", { d: "M236,32a12,12,0,0,0-12-12c-44.78,0-90,48.54-115.9,82a64,64,0,0,0-80,62c0,12-3.1,22.71-9.23,31.76A43,43,0,0,1,9.4,206.05a11.88,11.88,0,0,0-4.91,13.38A12.07,12.07,0,0,0,16.11,228h76A64,64,0,0,0,154,148C187.49,122.05,236,76.8,236,32ZM209.62,46.39c-4,12.92-13.15,27.49-26.92,42.91-3,3.39-6.16,6.7-9.35,9.89a104.31,104.31,0,0,0-16.5-16.51c3.19-3.19,6.49-6.32,9.88-9.35C182.15,59.55,196.71,50.43,209.62,46.39ZM92.07,204H42a80.17,80.17,0,0,0,10.14-40,40,40,0,1,1,40,40Zm38.18-91.32c3.12-3.93,6.55-8.09,10.23-12.35a80.52,80.52,0,0,1,15.23,15.24c-4.26,3.68-8.42,7.11-12.35,10.23A64.43,64.43,0,0,0,130.25,112.68Z" }))
+  ],
+  [
+    "duotone",
+    /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, /* @__PURE__ */ reactExports.createElement(
+      "path",
+      {
+        d: "M224,32c0,32.81-31.64,67.43-58.64,91.05A84.39,84.39,0,0,0,133,90.64C156.57,63.64,191.19,32,224,32Z",
+        opacity: "0.2"
+      }
+    ), /* @__PURE__ */ reactExports.createElement("path", { d: "M232,32a8,8,0,0,0-8-8c-44.08,0-89.31,49.71-114.43,82.63A60,60,0,0,0,32,164c0,30.88-19.54,44.73-20.47,45.37A8,8,0,0,0,16,224H92a60,60,0,0,0,57.37-77.57C182.3,121.31,232,76.08,232,32ZM92,208H34.63C41.38,198.41,48,183.92,48,164a44,44,0,1,1,44,44Zm32.42-94.45q5.14-6.66,10.09-12.55A76.23,76.23,0,0,1,155,121.49q-5.9,4.94-12.55,10.09A60.54,60.54,0,0,0,124.42,113.55Zm42.7-2.68a92.57,92.57,0,0,0-22-22c31.78-34.53,55.75-45,69.9-47.91C212.17,55.12,201.65,79.09,167.12,110.87Z" }))
+  ],
+  [
+    "fill",
+    /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, /* @__PURE__ */ reactExports.createElement("path", { d: "M232,32a8,8,0,0,0-8-8c-44.08,0-89.31,49.71-114.43,82.63A60,60,0,0,0,32,164c0,30.88-19.54,44.73-20.47,45.37A8,8,0,0,0,16,224H92a60,60,0,0,0,57.37-77.57C182.3,121.31,232,76.08,232,32ZM124.42,113.55q5.14-6.66,10.09-12.55A76.23,76.23,0,0,1,155,121.49q-5.9,4.94-12.55,10.09A60.54,60.54,0,0,0,124.42,113.55Zm42.7-2.68a92.57,92.57,0,0,0-22-22c31.78-34.53,55.75-45,69.9-47.91C212.17,55.12,201.65,79.09,167.12,110.87Z" }))
+  ],
+  [
+    "light",
+    /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, /* @__PURE__ */ reactExports.createElement("path", { d: "M224,26c-20.8,0-44.11,11.41-69.3,33.9C136.62,76.06,121,94.9,110.3,109A58,58,0,0,0,34,164c0,32.07-20.43,46.39-21.35,47A6,6,0,0,0,16,222H92a58,58,0,0,0,55-76.3c14.08-10.67,32.92-26.32,49.08-44.4C218.59,76.11,230,52.8,230,32A6,6,0,0,0,224,26ZM92,210H30.65C37.92,200.85,46,185.78,46,164a46,46,0,1,1,46,46Zm29.49-95.91c3.6-4.67,7.88-10,12.71-15.69a78.17,78.17,0,0,1,23.4,23.4c-5.67,4.83-11,9.11-15.69,12.71A58.38,58.38,0,0,0,121.49,114.09Zm45.2-.3a90.24,90.24,0,0,0-24.48-24.48C163.05,66.46,191,42,217.56,38.44,214,65,189.54,93,166.69,113.79Z" }))
+  ],
+  [
+    "regular",
+    /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, /* @__PURE__ */ reactExports.createElement("path", { d: "M232,32a8,8,0,0,0-8-8c-44.08,0-89.31,49.71-114.43,82.63A60,60,0,0,0,32,164c0,30.88-19.54,44.73-20.47,45.37A8,8,0,0,0,16,224H92a60,60,0,0,0,57.37-77.57C182.3,121.31,232,76.08,232,32ZM92,208H34.63C41.38,198.41,48,183.92,48,164a44,44,0,1,1,44,44Zm32.42-94.45q5.14-6.66,10.09-12.55A76.23,76.23,0,0,1,155,121.49q-5.9,4.94-12.55,10.09A60.54,60.54,0,0,0,124.42,113.55Zm42.7-2.68a92.57,92.57,0,0,0-22-22c31.78-34.53,55.75-45,69.9-47.91C212.17,55.12,201.65,79.09,167.12,110.87Z" }))
+  ],
+  [
+    "thin",
+    /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, /* @__PURE__ */ reactExports.createElement("path", { d: "M224,28c-20.29,0-43.16,11.24-68,33.4-18.47,16.49-34.39,35.83-45,49.93A56,56,0,0,0,36,164c0,33.22-21.26,48-22.22,48.68A4,4,0,0,0,16,220H92a56,56,0,0,0,52.67-75c14.11-10.63,33.44-26.55,49.93-45C216.76,75.16,228,52.29,228,32A4,4,0,0,0,224,28ZM92,212H26.35C33.91,203.69,44,188.08,44,164a48,48,0,1,1,48,48Zm26.52-97.31c4.13-5.44,9.32-12,15.29-18.9a80.08,80.08,0,0,1,26.4,26.4c-6.94,6-13.46,11.16-18.9,15.29A56.32,56.32,0,0,0,118.52,114.69Zm47.77,2.14a88.17,88.17,0,0,0-27.12-27.12C161,65.43,191.26,38.63,219.82,36.18,217.37,64.74,190.57,95,166.29,116.83Z" }))
+  ]
+]);
+const e$7 = /* @__PURE__ */ new Map([
+  [
+    "bold",
+    /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, /* @__PURE__ */ reactExports.createElement("path", { d: "M235.79,142.88a12,12,0,0,0,4.7-19.87L125,7.52a12,12,0,0,0-17,0L70.25,45.29,48.48,23.52a12,12,0,0,0-17,17L53.28,62.26,12.2,103.35a28,28,0,0,0,0,39.6l84.86,84.86a28,28,0,0,0,39.6,0L214.48,150Zm-31.58-14.77a12,12,0,0,0-4.7,2.9l-79.82,79.83a4,4,0,0,1-5.66,0L29.17,126a4,4,0,0,1,0-5.66L70.25,79.24l24.29,24.29a32,32,0,0,0,52.09,35.11h0a32,32,0,0,0-35.12-52.08L87.23,62.26,116.52,33l93.27,93.28Zm-85.87-17.75,0,0a8,8,0,1,1-.06.06ZM256,208a24,24,0,0,1-48,0c0-19.44,12.93-37.23,14.4-39.2a12,12,0,0,1,19.2,0C243.07,170.78,256,188.57,256,208Z" }))
+  ],
+  [
+    "duotone",
+    /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, /* @__PURE__ */ reactExports.createElement(
+      "path",
+      {
+        d: "M248,208a16,16,0,0,1-32,0c0-16,16-40,16-40S248,192,248,208Zm-16-76.52-24,8-79.83,79.83a16,16,0,0,1-22.63,0L20.69,134.46a16,16,0,0,1,0-22.63L116.52,16Zm-93.86-29.62a20,20,0,1,0,0,28.28A20,20,0,0,0,138.14,101.86Z",
+        opacity: "0.2"
+      }
+    ), /* @__PURE__ */ reactExports.createElement("path", { d: "M238.66,163.56a8,8,0,0,0-13.32,0C223.57,166.23,208,190.09,208,208a24,24,0,0,0,48,0C256,190.09,240.43,166.23,238.66,163.56ZM232,216a8,8,0,0,1-8-8c0-6.8,4-16.32,8-24.08,4,7.76,8,17.34,8,24.08A8,8,0,0,1,232,216Zm2.53-76.93a8,8,0,0,0,3.13-13.24L122.17,10.34a8,8,0,0,0-11.31,0L70.25,51,45.65,26.34A8,8,0,0,0,34.34,37.66l24.6,24.6L15,106.17a24,24,0,0,0,0,33.94L99.89,225a24,24,0,0,0,33.94,0l78.49-78.49Zm-32.19-5.24-79.83,79.83a8,8,0,0,1-11.31,0L26.34,128.8a8,8,0,0,1,0-11.31L70.25,73.57l29.12,29.12a28,28,0,1,0,11.31-11.32L81.57,62.26l35-34.95L217.19,128l-11.72,3.9A8.09,8.09,0,0,0,202.34,133.83Zm-86.83-26.31,0,0a13.26,13.26,0,1,1-.05.06S115.51,107.53,115.51,107.52Z" }))
+  ],
+  [
+    "fill",
+    /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, /* @__PURE__ */ reactExports.createElement("path", { d: "M256,208a24,24,0,0,1-48,0c0-17.91,15.57-41.77,17.34-44.44a8,8,0,0,1,13.32,0C240.43,166.23,256,190.09,256,208ZM132.49,124.49a12,12,0,0,0-17-17l0,0s0,0,0,0a12,12,0,0,0,17,16.94ZM37.65,18.34A8,8,0,0,0,26.34,29.66l32.6,32.6L70.25,51ZM234.53,139.07a8,8,0,0,0,3.13-13.24L122.17,10.34a8,8,0,0,0-11.31,0L70.25,51l40.43,40.42a28,28,0,1,1-11.31,11.32L58.94,62.26,15,106.17a24,24,0,0,0,0,33.94L99.89,225a24,24,0,0,0,33.94,0l78.49-78.49Z" }))
+  ],
+  [
+    "light",
+    /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, /* @__PURE__ */ reactExports.createElement("path", { d: "M237,164.67a6,6,0,0,0-10,0c-.7,1-17,25.72-17,43.33a22,22,0,0,0,44,0C254,190.39,237.69,165.71,237,164.67ZM232,218a10,10,0,0,1-10-10c0-8.17,5.37-19.92,10-28.34,4.63,8.41,10,20.15,10,28.34A10,10,0,0,1,232,218Zm1.9-80.82a6,6,0,0,0,2.34-9.94L120.76,11.76a6,6,0,0,0-8.49,0l-42,42-26-26a6,6,0,0,0-8.49,8.48l26,26L16.44,107.59a22,22,0,0,0,0,31.11l84.86,84.86a22,22,0,0,0,31.11,0l78.83-78.83Zm-30.14-1.94-79.83,79.83a10,10,0,0,1-14.14,0L24.93,130.21a10,10,0,0,1,0-14.14L70.25,70.75l31.62,31.61a26,26,0,0,0,3.75,32,26,26,0,0,0,36.76,0h0a26,26,0,0,0-32-40.51L78.74,62.26l37.78-37.77L220.89,128.86l-14.79,4.93A6.07,6.07,0,0,0,203.76,135.24ZM114.1,106.11l0,0a14,14,0,1,1,0,19.82,13.91,13.91,0,0,1,0-19.82Z" }))
+  ],
+  [
+    "regular",
+    /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, /* @__PURE__ */ reactExports.createElement("path", { d: "M234.53,139.07a8,8,0,0,0,3.13-13.24L122.17,10.34a8,8,0,0,0-11.31,0L70.25,51,45.65,26.34A8,8,0,0,0,34.34,37.66l24.6,24.6L15,106.17a24,24,0,0,0,0,33.94L99.89,225a24,24,0,0,0,33.94,0l78.49-78.49Zm-32.19-5.24-79.83,79.83a8,8,0,0,1-11.31,0L26.34,128.8a8,8,0,0,1,0-11.31L70.25,73.57l29.12,29.12a28,28,0,1,0,11.31-11.32L81.57,62.26l35-34.95L217.19,128l-11.72,3.9A8.09,8.09,0,0,0,202.34,133.83Zm-86.83-26.31,0,0a13.26,13.26,0,1,1-.05.06S115.51,107.53,115.51,107.52Zm123.15,56a8,8,0,0,0-13.32,0C223.57,166.23,208,190.09,208,208a24,24,0,0,0,48,0C256,190.09,240.43,166.23,238.66,163.56ZM232,216a8,8,0,0,1-8-8c0-6.8,4-16.32,8-24.08,4,7.76,8,17.34,8,24.08A8,8,0,0,1,232,216Z" }))
+  ],
+  [
+    "thin",
+    /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, /* @__PURE__ */ reactExports.createElement("path", { d: "M235.33,165.78a4,4,0,0,0-6.66,0C228,166.8,212,191,212,208a20,20,0,0,0,40,0C252,191,236,166.8,235.33,165.78ZM232,220a12,12,0,0,1-12-12c0-10.25,7.49-24.64,12-32.37,4.51,7.73,12,22.1,12,32.37A12,12,0,0,1,232,220Zm3.89-87.6a4,4,0,0,0-1.06-3.74L119.34,13.17a4,4,0,0,0-5.65,0L70.25,56.6,42.82,29.17a4,4,0,0,0-5.65,5.66L64.6,62.26,17.86,109a20,20,0,0,0,0,28.29l84.85,84.85a20,20,0,0,0,28.29,0L210.16,143l23.1-7.7A4,4,0,0,0,235.89,132.4Zm-29.15,3.29a4.06,4.06,0,0,0-1.57,1l-79.83,79.82a12,12,0,0,1-17,0L23.51,131.63a12,12,0,0,1,0-17L70.25,67.92l34.2,34.2A24,24,0,0,0,141,133h0a24,24,0,0,0-30.86-36.51l-34.2-34.2,40.61-40.6L224.59,129.74Zm-94.05-31a0,0,0,0,0,0,0,16,16,0,1,1,0,22.64,16,16,0,0,1,0-22.64Z" }))
+  ]
+]);
+const e$6 = /* @__PURE__ */ new Map([
+  [
+    "bold",
+    /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, /* @__PURE__ */ reactExports.createElement("path", { d: "M230.14,70.54,185.46,25.85a20,20,0,0,0-28.29,0L33.86,149.17A19.85,19.85,0,0,0,28,163.31V208a20,20,0,0,0,20,20H92.69a19.86,19.86,0,0,0,14.14-5.86L230.14,98.82a20,20,0,0,0,0-28.28ZM91,204H52V165l84-84,39,39ZM192,103,153,64l18.34-18.34,39,39Z" }))
+  ],
+  [
+    "duotone",
+    /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, /* @__PURE__ */ reactExports.createElement(
+      "path",
+      {
+        d: "M221.66,90.34,192,120,136,64l29.66-29.66a8,8,0,0,1,11.31,0L221.66,79A8,8,0,0,1,221.66,90.34Z",
+        opacity: "0.2"
+      }
+    ), /* @__PURE__ */ reactExports.createElement("path", { d: "M227.31,73.37,182.63,28.68a16,16,0,0,0-22.63,0L36.69,152A15.86,15.86,0,0,0,32,163.31V208a16,16,0,0,0,16,16H92.69A15.86,15.86,0,0,0,104,219.31L227.31,96a16,16,0,0,0,0-22.63ZM92.69,208H48V163.31l88-88L180.69,120ZM192,108.68,147.31,64l24-24L216,84.68Z" }))
+  ],
+  [
+    "fill",
+    /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, /* @__PURE__ */ reactExports.createElement("path", { d: "M227.31,73.37,182.63,28.68a16,16,0,0,0-22.63,0L36.69,152A15.86,15.86,0,0,0,32,163.31V208a16,16,0,0,0,16,16H92.69A15.86,15.86,0,0,0,104,219.31L227.31,96a16,16,0,0,0,0-22.63ZM192,108.68,147.31,64l24-24L216,84.68Z" }))
+  ],
+  [
+    "light",
+    /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, /* @__PURE__ */ reactExports.createElement("path", { d: "M225.9,74.78,181.21,30.09a14,14,0,0,0-19.8,0L38.1,153.41a13.94,13.94,0,0,0-4.1,9.9V208a14,14,0,0,0,14,14H92.69a13.94,13.94,0,0,0,9.9-4.1L225.9,94.58a14,14,0,0,0,0-19.8ZM94.1,209.41a2,2,0,0,1-1.41.59H48a2,2,0,0,1-2-2V163.31a2,2,0,0,1,.59-1.41L136,72.48,183.51,120ZM217.41,86.1,192,111.51,144.49,64,169.9,38.58a2,2,0,0,1,2.83,0l44.68,44.69a2,2,0,0,1,0,2.83Z" }))
+  ],
+  [
+    "regular",
+    /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, /* @__PURE__ */ reactExports.createElement("path", { d: "M227.31,73.37,182.63,28.68a16,16,0,0,0-22.63,0L36.69,152A15.86,15.86,0,0,0,32,163.31V208a16,16,0,0,0,16,16H92.69A15.86,15.86,0,0,0,104,219.31L227.31,96a16,16,0,0,0,0-22.63ZM92.69,208H48V163.31l88-88L180.69,120ZM192,108.68,147.31,64l24-24L216,84.68Z" }))
+  ],
+  [
+    "thin",
+    /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, /* @__PURE__ */ reactExports.createElement("path", { d: "M224.49,76.2,179.8,31.51a12,12,0,0,0-17,0L133.17,61.17h0L39.52,154.83A11.9,11.9,0,0,0,36,163.31V208a12,12,0,0,0,12,12H92.69a12,12,0,0,0,8.48-3.51L224.48,93.17a12,12,0,0,0,0-17Zm-129,134.63A4,4,0,0,1,92.69,212H48a4,4,0,0,1-4-4V163.31a4,4,0,0,1,1.17-2.83L136,69.65,186.34,120ZM218.83,87.51,192,114.34,141.66,64l26.82-26.83a4,4,0,0,1,5.66,0l44.69,44.68a4,4,0,0,1,0,5.66Z" }))
+  ]
+]);
+const e$5 = /* @__PURE__ */ new Map([
+  [
+    "bold",
+    /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, /* @__PURE__ */ reactExports.createElement("path", { d: "M84,48A12,12,0,0,1,72,60H44V72a12,12,0,0,1-24,0V56A20,20,0,0,1,40,36H72A12,12,0,0,1,84,48ZM32,156a12,12,0,0,0,12-12V112a12,12,0,0,0-24,0v32A12,12,0,0,0,32,156Zm40,40H44V184a12,12,0,0,0-24,0v16a20,20,0,0,0,20,20H72a12,12,0,0,0,0-24Zm72,0H112a12,12,0,0,0,0,24h32a12,12,0,0,0,0-24Zm80-24a12,12,0,0,0-12,12v12H184a12,12,0,0,0,0,24h32a20,20,0,0,0,20-20V184A12,12,0,0,0,224,172Zm0-72a12,12,0,0,0-12,12v32a12,12,0,0,0,24,0V112A12,12,0,0,0,224,100Zm-8-64H184a12,12,0,0,0,0,24h28V72a12,12,0,0,0,24,0V56A20,20,0,0,0,216,36Zm-72,0H112a12,12,0,0,0,0,24h32a12,12,0,0,0,0-24Z" }))
+  ],
+  [
+    "duotone",
+    /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, /* @__PURE__ */ reactExports.createElement(
+      "path",
+      {
+        d: "M224,56V200a8,8,0,0,1-8,8H40a8,8,0,0,1-8-8V56a8,8,0,0,1,8-8H216A8,8,0,0,1,224,56Z",
+        opacity: "0.2"
+      }
+    ), /* @__PURE__ */ reactExports.createElement("path", { d: "M80,48a8,8,0,0,1-8,8H40V72a8,8,0,0,1-16,0V56A16,16,0,0,1,40,40H72A8,8,0,0,1,80,48ZM32,152a8,8,0,0,0,8-8V112a8,8,0,0,0-16,0v32A8,8,0,0,0,32,152Zm40,48H40V184a8,8,0,0,0-16,0v16a16,16,0,0,0,16,16H72a8,8,0,0,0,0-16Zm72,0H112a8,8,0,0,0,0,16h32a8,8,0,0,0,0-16Zm80-24a8,8,0,0,0-8,8v16H184a8,8,0,0,0,0,16h32a16,16,0,0,0,16-16V184A8,8,0,0,0,224,176Zm0-72a8,8,0,0,0-8,8v32a8,8,0,0,0,16,0V112A8,8,0,0,0,224,104Zm-8-64H184a8,8,0,0,0,0,16h32V72a8,8,0,0,0,16,0V56A16,16,0,0,0,216,40Zm-72,0H112a8,8,0,0,0,0,16h32a8,8,0,0,0,0-16Z" }))
+  ],
+  [
+    "fill",
+    /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, /* @__PURE__ */ reactExports.createElement("path", { d: "M216,40H40A16,16,0,0,0,24,56V200a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V56A16,16,0,0,0,216,40ZM80,192H64a16,16,0,0,1-16-16V144a8,8,0,0,1,16,0v32H80a8,8,0,0,1,0,16ZM80,80H64v32a8,8,0,0,1-16,0V80A16,16,0,0,1,64,64H80a8,8,0,0,1,0,16Zm64,112H112a8,8,0,0,1,0-16h32a8,8,0,0,1,0,16Zm0-112H112a8,8,0,0,1,0-16h32a8,8,0,0,1,0,16Zm64,96a16,16,0,0,1-16,16H176a8,8,0,0,1,0-16h16V144a8,8,0,0,1,16,0Zm0-64a8,8,0,0,1-16,0V80H176a8,8,0,0,1,0-16h16a16,16,0,0,1,16,16Z" }))
+  ],
+  [
+    "light",
+    /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, /* @__PURE__ */ reactExports.createElement("path", { d: "M78,48a6,6,0,0,1-6,6H40a2,2,0,0,0-2,2V72a6,6,0,0,1-12,0V56A14,14,0,0,1,40,42H72A6,6,0,0,1,78,48ZM32,150a6,6,0,0,0,6-6V112a6,6,0,0,0-12,0v32A6,6,0,0,0,32,150Zm40,52H40a2,2,0,0,1-2-2V184a6,6,0,0,0-12,0v16a14,14,0,0,0,14,14H72a6,6,0,0,0,0-12Zm72,0H112a6,6,0,0,0,0,12h32a6,6,0,0,0,0-12Zm80-24a6,6,0,0,0-6,6v16a2,2,0,0,1-2,2H184a6,6,0,0,0,0,12h32a14,14,0,0,0,14-14V184A6,6,0,0,0,224,178Zm0-72a6,6,0,0,0-6,6v32a6,6,0,0,0,12,0V112A6,6,0,0,0,224,106Zm-8-64H184a6,6,0,0,0,0,12h32a2,2,0,0,1,2,2V72a6,6,0,0,0,12,0V56A14,14,0,0,0,216,42Zm-72,0H112a6,6,0,0,0,0,12h32a6,6,0,0,0,0-12Z" }))
+  ],
+  [
+    "regular",
+    /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, /* @__PURE__ */ reactExports.createElement("path", { d: "M80,48a8,8,0,0,1-8,8H40V72a8,8,0,0,1-16,0V56A16,16,0,0,1,40,40H72A8,8,0,0,1,80,48ZM32,152a8,8,0,0,0,8-8V112a8,8,0,0,0-16,0v32A8,8,0,0,0,32,152Zm40,48H40V184a8,8,0,0,0-16,0v16a16,16,0,0,0,16,16H72a8,8,0,0,0,0-16Zm72,0H112a8,8,0,0,0,0,16h32a8,8,0,0,0,0-16Zm80-24a8,8,0,0,0-8,8v16H184a8,8,0,0,0,0,16h32a16,16,0,0,0,16-16V184A8,8,0,0,0,224,176Zm0-72a8,8,0,0,0-8,8v32a8,8,0,0,0,16,0V112A8,8,0,0,0,224,104Zm-8-64H184a8,8,0,0,0,0,16h32V72a8,8,0,0,0,16,0V56A16,16,0,0,0,216,40Zm-72,0H112a8,8,0,0,0,0,16h32a8,8,0,0,0,0-16Z" }))
+  ],
+  [
+    "thin",
+    /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, /* @__PURE__ */ reactExports.createElement("path", { d: "M76,48a4,4,0,0,1-4,4H40a4,4,0,0,0-4,4V72a4,4,0,0,1-8,0V56A12,12,0,0,1,40,44H72A4,4,0,0,1,76,48ZM32,148a4,4,0,0,0,4-4V112a4,4,0,0,0-8,0v32A4,4,0,0,0,32,148Zm40,56H40a4,4,0,0,1-4-4V184a4,4,0,0,0-8,0v16a12,12,0,0,0,12,12H72a4,4,0,0,0,0-8Zm72,0H112a4,4,0,0,0,0,8h32a4,4,0,0,0,0-8Zm80-24a4,4,0,0,0-4,4v16a4,4,0,0,1-4,4H184a4,4,0,0,0,0,8h32a12,12,0,0,0,12-12V184A4,4,0,0,0,224,180Zm0-72a4,4,0,0,0-4,4v32a4,4,0,0,0,8,0V112A4,4,0,0,0,224,108Zm-8-64H184a4,4,0,0,0,0,8h32a4,4,0,0,1,4,4V72a4,4,0,0,0,8,0V56A12,12,0,0,0,216,44Zm-72,0H112a4,4,0,0,0,0,8h32a4,4,0,0,0,0-8Z" }))
+  ]
+]);
+const e$4 = /* @__PURE__ */ new Map([
+  [
+    "bold",
+    /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, /* @__PURE__ */ reactExports.createElement("path", { d: "M71.49,60.55a12,12,0,0,0-23,0l-36,120A12,12,0,0,0,24,196H96a12,12,0,0,0,11.49-15.45ZM40.13,172,60,105.76,79.87,172ZM212,74a54,54,0,1,0-54,54A54.06,54.06,0,0,0,212,74Zm-84,0a30,30,0,1,1,30,30A30,30,0,0,1,128,74Zm96,70H136a12,12,0,0,0-12,12v52a12,12,0,0,0,12,12h88a12,12,0,0,0,12-12V156A12,12,0,0,0,224,144Zm-12,52H148V168h64Z" }))
+  ],
+  [
+    "duotone",
+    /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, /* @__PURE__ */ reactExports.createElement(
+      "path",
+      {
+        d: "M64,64l40,120H24ZM200,76a44,44,0,1,0-44,44A44,44,0,0,0,200,76Zm-64,76v56h88V152Z",
+        opacity: "0.2"
+      }
+    ), /* @__PURE__ */ reactExports.createElement("path", { d: "M224,144H136a8,8,0,0,0-8,8v56a8,8,0,0,0,8,8h88a8,8,0,0,0,8-8V152A8,8,0,0,0,224,144Zm-8,56H144V160h72ZM71.59,61.47a8,8,0,0,0-15.18,0l-40,120A8,8,0,0,0,24,192h80a8,8,0,0,0,7.59-10.53ZM35.1,176,64,89.3,92.9,176ZM208,76a52,52,0,1,0-52,52A52.06,52.06,0,0,0,208,76Zm-88,0a36,36,0,1,1,36,36A36,36,0,0,1,120,76Z" }))
+  ],
+  [
+    "fill",
+    /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, /* @__PURE__ */ reactExports.createElement("path", { d: "M111.59,181.47A8,8,0,0,1,104,192H24a8,8,0,0,1-7.59-10.53l40-120a8,8,0,0,1,15.18,0ZM208,76a52,52,0,1,0-52,52A52.06,52.06,0,0,0,208,76Zm16,68H136a8,8,0,0,0-8,8v56a8,8,0,0,0,8,8h88a8,8,0,0,0,8-8V152A8,8,0,0,0,224,144Z" }))
+  ],
+  [
+    "light",
+    /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, /* @__PURE__ */ reactExports.createElement("path", { d: "M69.69,62.1a6,6,0,0,0-11.38,0l-40,120A6,6,0,0,0,24,190h80a6,6,0,0,0,5.69-7.9ZM32.32,178,64,83l31.68,95ZM206,76a50,50,0,1,0-50,50A50.06,50.06,0,0,0,206,76Zm-88,0a38,38,0,1,1,38,38A38,38,0,0,1,118,76Zm106,70H136a6,6,0,0,0-6,6v56a6,6,0,0,0,6,6h88a6,6,0,0,0,6-6V152A6,6,0,0,0,224,146Zm-6,56H142V158h76Z" }))
+  ],
+  [
+    "regular",
+    /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, /* @__PURE__ */ reactExports.createElement("path", { d: "M71.59,61.47a8,8,0,0,0-15.18,0l-40,120A8,8,0,0,0,24,192h80a8,8,0,0,0,7.59-10.53ZM35.1,176,64,89.3,92.9,176ZM208,76a52,52,0,1,0-52,52A52.06,52.06,0,0,0,208,76Zm-88,0a36,36,0,1,1,36,36A36,36,0,0,1,120,76Zm104,68H136a8,8,0,0,0-8,8v56a8,8,0,0,0,8,8h88a8,8,0,0,0,8-8V152A8,8,0,0,0,224,144Zm-8,56H144V160h72Z" }))
+  ],
+  [
+    "thin",
+    /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, /* @__PURE__ */ reactExports.createElement("path", { d: "M67.79,62.74a4,4,0,0,0-7.58,0l-40,120A4,4,0,0,0,24,188h80a4,4,0,0,0,3.79-5.26ZM29.55,180,64,76.65,98.45,180ZM204,76a48,48,0,1,0-48,48A48.05,48.05,0,0,0,204,76Zm-88,0a40,40,0,1,1,40,40A40,40,0,0,1,116,76Zm108,72H136a4,4,0,0,0-4,4v56a4,4,0,0,0,4,4h88a4,4,0,0,0,4-4V152A4,4,0,0,0,224,148Zm-4,56H140V156h80Z" }))
+  ]
+]);
+const e$3 = /* @__PURE__ */ new Map([
+  [
+    "bold",
+    /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, /* @__PURE__ */ reactExports.createElement("path", { d: "M212,56V88a12,12,0,0,1-24,0V68H140V188h20a12,12,0,0,1,0,24H96a12,12,0,0,1,0-24h20V68H68V88a12,12,0,0,1-24,0V56A12,12,0,0,1,56,44H200A12,12,0,0,1,212,56Z" }))
+  ],
+  [
+    "duotone",
+    /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, /* @__PURE__ */ reactExports.createElement(
+      "path",
+      {
+        d: "M200,56V184a16,16,0,0,1-16,16H72a16,16,0,0,1-16-16V56Z",
+        opacity: "0.2"
+      }
+    ), /* @__PURE__ */ reactExports.createElement("path", { d: "M208,56V88a8,8,0,0,1-16,0V64H136V192h24a8,8,0,0,1,0,16H96a8,8,0,0,1,0-16h24V64H64V88a8,8,0,0,1-16,0V56a8,8,0,0,1,8-8H200A8,8,0,0,1,208,56Z" }))
+  ],
+  [
+    "fill",
+    /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, /* @__PURE__ */ reactExports.createElement("path", { d: "M208,32H48A16,16,0,0,0,32,48V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V48A16,16,0,0,0,208,32ZM184,96a8,8,0,0,1-16,0V88H136v88h12a8,8,0,0,1,0,16H108a8,8,0,0,1,0-16h12V88H88v8a8,8,0,0,1-16,0V80a8,8,0,0,1,8-8h96a8,8,0,0,1,8,8Z" }))
+  ],
+  [
+    "light",
+    /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, /* @__PURE__ */ reactExports.createElement("path", { d: "M206,56V88a6,6,0,0,1-12,0V62H134V194h26a6,6,0,0,1,0,12H96a6,6,0,0,1,0-12h26V62H62V88a6,6,0,0,1-12,0V56a6,6,0,0,1,6-6H200A6,6,0,0,1,206,56Z" }))
+  ],
+  [
+    "regular",
+    /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, /* @__PURE__ */ reactExports.createElement("path", { d: "M208,56V88a8,8,0,0,1-16,0V64H136V192h24a8,8,0,0,1,0,16H96a8,8,0,0,1,0-16h24V64H64V88a8,8,0,0,1-16,0V56a8,8,0,0,1,8-8H200A8,8,0,0,1,208,56Z" }))
+  ],
+  [
+    "thin",
+    /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, /* @__PURE__ */ reactExports.createElement("path", { d: "M204,56V88a4,4,0,0,1-8,0V60H132V196h28a4,4,0,0,1,0,8H96a4,4,0,0,1,0-8h28V60H60V88a4,4,0,0,1-8,0V56a4,4,0,0,1,4-4H200A4,4,0,0,1,204,56Z" }))
+  ]
+]);
+const o$9 = reactExports.createContext({
+  color: "currentColor",
+  size: "1em",
+  weight: "regular",
+  mirrored: false
+});
+const p$1 = reactExports.forwardRef(
+  (s2, a2) => {
+    const {
+      alt: n2,
+      color: r2,
+      size: t2,
+      weight: o2,
+      mirrored: c2,
+      children: i2,
+      weights: m2,
+      ...x2
+    } = s2, {
+      color: d2 = "currentColor",
+      size: l2,
+      weight: f2 = "regular",
+      mirrored: g2 = false,
+      ...w2
+    } = reactExports.useContext(o$9);
+    return /* @__PURE__ */ reactExports.createElement(
+      "svg",
+      {
+        ref: a2,
+        xmlns: "http://www.w3.org/2000/svg",
+        width: t2 != null ? t2 : l2,
+        height: t2 != null ? t2 : l2,
+        fill: r2 != null ? r2 : d2,
+        viewBox: "0 0 256 256",
+        transform: c2 || g2 ? "scale(-1, 1)" : void 0,
+        ...w2,
+        ...x2
+      },
+      !!n2 && /* @__PURE__ */ reactExports.createElement("title", null, n2),
+      i2,
+      m2.get(o2 != null ? o2 : f2)
+    );
+  }
+);
+p$1.displayName = "IconBase";
+const o$8 = reactExports.forwardRef((a2, t2) => /* @__PURE__ */ reactExports.createElement(p$1, { ref: t2, ...a2, weights: l$2 }));
+o$8.displayName = "ArrowsOutCardinalIcon";
+const m$6 = o$8;
+const o$7 = reactExports.forwardRef((r2, a2) => /* @__PURE__ */ reactExports.createElement(p$1, { ref: a2, ...r2, weights: e$c }));
+o$7.displayName = "CircleDashedIcon";
+const m$5 = o$7;
+const r$2 = reactExports.forwardRef((e2, t2) => /* @__PURE__ */ reactExports.createElement(p$1, { ref: t2, ...e2, weights: e$b }));
+r$2.displayName = "CropIcon";
+const s$3 = r$2;
+const e$2 = reactExports.forwardRef((o2, a2) => /* @__PURE__ */ reactExports.createElement(p$1, { ref: a2, ...o2, weights: e$a }));
+e$2.displayName = "EraserIcon";
+const n$3 = e$2;
+const o$6 = reactExports.forwardRef((r2, p2) => /* @__PURE__ */ reactExports.createElement(p$1, { ref: p2, ...r2, weights: l$1 }));
+o$6.displayName = "EyedropperIcon";
+const s$2 = o$6;
+const o$5 = reactExports.forwardRef((r2, t2) => /* @__PURE__ */ reactExports.createElement(p$1, { ref: t2, ...r2, weights: H$1 }));
+o$5.displayName = "GradientIcon";
+const c$2 = o$5;
+const s$1 = reactExports.forwardRef((a2, e2) => /* @__PURE__ */ reactExports.createElement(p$1, { ref: e2, ...a2, weights: a$5 }));
+s$1.displayName = "LassoIcon";
+const n$2 = s$1;
+const o$4 = reactExports.forwardRef((c2, e2) => /* @__PURE__ */ reactExports.createElement(p$1, { ref: e2, ...c2, weights: e$9 }));
+o$4.displayName = "MagicWandIcon";
+const m$4 = o$4;
+const a$3 = reactExports.forwardRef((o2, n2) => /* @__PURE__ */ reactExports.createElement(p$1, { ref: n2, ...o2, weights: e$8 }));
+a$3.displayName = "MagnifyingGlassPlusIcon";
+const f$1 = a$3;
+const r$1 = reactExports.forwardRef((t2, a2) => /* @__PURE__ */ reactExports.createElement(p$1, { ref: a2, ...t2, weights: a$4 }));
+r$1.displayName = "PaintBrushIcon";
+const m$3 = r$1;
+const e$1 = reactExports.forwardRef((o2, a2) => /* @__PURE__ */ reactExports.createElement(p$1, { ref: a2, ...o2, weights: e$7 }));
+e$1.displayName = "PaintBucketIcon";
+const m$2 = e$1;
+const o$3 = reactExports.forwardRef((i2, m2) => /* @__PURE__ */ reactExports.createElement(p$1, { ref: m2, ...i2, weights: e$6 }));
+o$3.displayName = "PencilSimpleIcon";
+const a$2 = o$3;
+const a$1 = reactExports.forwardRef((o2, t2) => /* @__PURE__ */ reactExports.createElement(p$1, { ref: t2, ...o2, weights: e$5 }));
+a$1.displayName = "RectangleDashedIcon";
+const m$1 = a$1;
+const o$2 = reactExports.forwardRef((a2, r2) => /* @__PURE__ */ reactExports.createElement(p$1, { ref: r2, ...a2, weights: e$4 }));
+o$2.displayName = "ShapesIcon";
+const c$1 = o$2;
+const o$1 = reactExports.forwardRef((t2, r2) => /* @__PURE__ */ reactExports.createElement(p$1, { ref: r2, ...t2, weights: e$3 }));
+o$1.displayName = "TextTIcon";
+const n$1 = o$1;
+function createJSONStorage(getStorage, options) {
+  let storage;
+  try {
+    storage = getStorage();
+  } catch (e2) {
+    return;
+  }
+  const persistStorage = {
+    getItem: (name) => {
+      var _a;
+      const parse2 = (str2) => {
+        if (str2 === null) {
+          return null;
+        }
+        return JSON.parse(str2, void 0);
+      };
+      const str = (_a = storage.getItem(name)) != null ? _a : null;
+      if (str instanceof Promise) {
+        return str.then(parse2);
+      }
+      return parse2(str);
+    },
+    setItem: (name, newValue) => storage.setItem(name, JSON.stringify(newValue, void 0)),
+    removeItem: (name) => storage.removeItem(name)
+  };
+  return persistStorage;
+}
+const toThenable = (fn) => (input) => {
+  try {
+    const result = fn(input);
+    if (result instanceof Promise) {
+      return result;
+    }
+    return {
+      then(onFulfilled) {
+        return toThenable(onFulfilled)(result);
+      },
+      catch(_onRejected) {
+        return this;
+      }
+    };
+  } catch (e2) {
+    return {
+      then(_onFulfilled) {
+        return this;
+      },
+      catch(onRejected) {
+        return toThenable(onRejected)(e2);
+      }
+    };
+  }
+};
+const persistImpl = (config, baseOptions) => (set2, get, api) => {
+  let options = {
+    storage: createJSONStorage(() => window.localStorage),
+    partialize: (state) => state,
+    version: 0,
+    merge: (persistedState, currentState) => ({
+      ...currentState,
+      ...persistedState
+    }),
+    ...baseOptions
+  };
+  let hasHydrated = false;
+  let hydrationVersion = 0;
+  const hydrationListeners = /* @__PURE__ */ new Set();
+  const finishHydrationListeners = /* @__PURE__ */ new Set();
+  let storage = options.storage;
+  if (!storage) {
+    return config(
+      (...args) => {
+        console.warn(
+          `[zustand persist middleware] Unable to update item '${options.name}', the given storage is currently unavailable.`
+        );
+        set2(...args);
+      },
+      get,
+      api
+    );
+  }
+  const setItem = () => {
+    const state = options.partialize({ ...get() });
+    return storage.setItem(options.name, {
+      state,
+      version: options.version
+    });
+  };
+  const savedSetState = api.setState;
+  api.setState = (state, replace) => {
+    savedSetState(state, replace);
+    return setItem();
+  };
+  const configResult = config(
+    (...args) => {
+      set2(...args);
+      return setItem();
+    },
+    get,
+    api
+  );
+  api.getInitialState = () => configResult;
+  let stateFromStorage;
+  const hydrate = () => {
+    var _a, _b;
+    if (!storage) return;
+    const currentVersion = ++hydrationVersion;
+    hasHydrated = false;
+    hydrationListeners.forEach((cb2) => {
+      var _a2;
+      return cb2((_a2 = get()) != null ? _a2 : configResult);
+    });
+    const postRehydrationCallback = ((_b = options.onRehydrateStorage) == null ? void 0 : _b.call(options, (_a = get()) != null ? _a : configResult)) || void 0;
+    return toThenable(storage.getItem.bind(storage))(options.name).then((deserializedStorageValue) => {
+      if (deserializedStorageValue) {
+        if (typeof deserializedStorageValue.version === "number" && deserializedStorageValue.version !== options.version) {
+          if (options.migrate) {
+            const migration = options.migrate(
+              deserializedStorageValue.state,
+              deserializedStorageValue.version
+            );
+            if (migration instanceof Promise) {
+              return migration.then((result) => [true, result]);
+            }
+            return [true, migration];
+          }
+          console.error(
+            `State loaded from storage couldn't be migrated since no migrate function was provided`
+          );
+        } else {
+          return [false, deserializedStorageValue.state];
+        }
+      }
+      return [false, void 0];
+    }).then((migrationResult) => {
+      var _a2;
+      if (currentVersion !== hydrationVersion) {
+        return;
+      }
+      const [migrated, migratedState] = migrationResult;
+      stateFromStorage = options.merge(
+        migratedState,
+        (_a2 = get()) != null ? _a2 : configResult
+      );
+      set2(stateFromStorage, true);
+      if (migrated) {
+        return setItem();
+      }
+    }).then(() => {
+      if (currentVersion !== hydrationVersion) {
+        return;
+      }
+      postRehydrationCallback == null ? void 0 : postRehydrationCallback(get(), void 0);
+      stateFromStorage = get();
+      hasHydrated = true;
+      finishHydrationListeners.forEach((cb2) => cb2(stateFromStorage));
+    }).catch((e2) => {
+      if (currentVersion !== hydrationVersion) {
+        return;
+      }
+      postRehydrationCallback == null ? void 0 : postRehydrationCallback(void 0, e2);
+    });
+  };
+  api.persist = {
+    setOptions: (newOptions) => {
+      options = {
+        ...options,
+        ...newOptions
+      };
+      if (newOptions.storage) {
+        storage = newOptions.storage;
+      }
+    },
+    clearStorage: () => {
+      storage == null ? void 0 : storage.removeItem(options.name);
+    },
+    getOptions: () => options,
+    rehydrate: () => hydrate(),
+    hasHydrated: () => hasHydrated,
+    onHydrate: (cb2) => {
+      hydrationListeners.add(cb2);
+      return () => {
+        hydrationListeners.delete(cb2);
+      };
+    },
+    onFinishHydration: (cb2) => {
+      finishHydrationListeners.add(cb2);
+      return () => {
+        finishHydrationListeners.delete(cb2);
+      };
+    }
+  };
+  if (!options.skipHydration) {
+    hydrate();
+  }
+  return stateFromStorage || configResult;
+};
+const persist = persistImpl;
+const defaultCustomPalette = {
+  void: "",
+  abyss: "",
+  pit: "",
+  crater: "",
+  ash: "",
+  cinder: "",
+  smoke: "",
+  fog: "",
+  mist: "",
+  pale: "",
+  bone: "",
+  white: "",
+  blood: "",
+  ember: "",
+  spark: ""
+};
+const defaultCustomAlpha = {
+  glow: null,
+  glowMid: null,
+  glowFaint: null,
+  panelBorder: null
+};
+const useAppearanceStore = create()(
+  persist(
+    (set2) => ({
+      theme: "obsidian",
+      accent: "ember",
+      iconStyle: "sharp",
+      iconScale: "md",
+      fontPreset: "studio",
+      density: "standard",
+      chrome: "angular",
+      texture: "grain",
+      customPalette: defaultCustomPalette,
+      customAlpha: defaultCustomAlpha,
+      setTheme: (theme) => set2({ theme }),
+      setAccent: (accent) => set2({ accent }),
+      setIconStyle: (iconStyle) => set2({ iconStyle }),
+      setIconScale: (iconScale) => set2({ iconScale }),
+      setFontPreset: (fontPreset) => set2({ fontPreset }),
+      setDensity: (density) => set2({ density }),
+      setChrome: (chrome) => set2({ chrome }),
+      setTexture: (texture) => set2({ texture }),
+      setCustomPaletteColor: (key, value) => set2((state) => ({
+        customPalette: {
+          ...state.customPalette,
+          [key]: value
+        }
+      })),
+      setCustomAlphaValue: (key, value) => set2((state) => ({
+        customAlpha: {
+          ...state.customAlpha,
+          [key]: value
+        }
+      })),
+      applyCustomPalette: (palette) => set2((state) => ({
+        customPalette: {
+          ...state.customPalette,
+          ...palette
+        }
+      })),
+      resetCustomPalette: () => set2({ customPalette: defaultCustomPalette }),
+      resetCustomAlpha: () => set2({ customAlpha: defaultCustomAlpha })
+    }),
+    {
+      name: "miniphotoshop-appearance"
+    }
+  )
+);
 const Tool = {
   Move: "move",
   Brush: "brush",
   Pencil: "pencil",
   Eraser: "eraser",
-  Selection: "selection",
+  SelectionRect: "selectionRect",
+  SelectionEllipse: "selectionEllipse",
   Lasso: "lasso",
-  MagicWand: "magicWand",
+  QuickSelection: "quickSelection",
   Fill: "fill",
   Gradient: "gradient",
   Eyedropper: "eyedropper",
@@ -8435,103 +9415,67 @@ const Tool = {
   Shape: "shape",
   Zoom: "zoom"
 };
+const toolButtons = [
+  { id: Tool.Move, label: "Move", keycap: "V", icon: m$6 },
+  { id: Tool.SelectionRect, label: "Rect Selection", keycap: "M", icon: m$1 },
+  { id: Tool.SelectionEllipse, label: "Ellipse Selection", keycap: "E", icon: m$5 },
+  { id: Tool.Lasso, label: "Lasso", keycap: "L", icon: n$2 },
+  { id: Tool.QuickSelection, label: "Quick Selection", keycap: "W", icon: m$4 },
+  "separator",
+  { id: Tool.Crop, label: "Crop", keycap: "C", icon: s$3 },
+  { id: Tool.Eyedropper, label: "Eyedropper", keycap: "I", icon: s$2 },
+  "separator",
+  { id: Tool.Brush, label: "Brush", keycap: "B", icon: m$3 },
+  { id: Tool.Pencil, label: "Pencil", keycap: "P", icon: a$2 },
+  { id: Tool.Eraser, label: "Eraser", keycap: "E", icon: n$3 },
+  { id: Tool.Fill, label: "Paint Bucket", keycap: "G", icon: m$2 },
+  "separator",
+  { id: Tool.Gradient, label: "Gradient", icon: c$2 },
+  { id: Tool.Text, label: "Text", keycap: "T", icon: n$1 },
+  { id: Tool.Shape, label: "Shape", keycap: "U", icon: c$1 },
+  "separator",
+  { id: Tool.Zoom, label: "Zoom", keycap: "Z", icon: f$1 }
+];
+function ToolButton({
+  tool,
+  activeTool,
+  setTool,
+  iconScale,
+  iconStyle
+}) {
+  const IconComponent = tool.icon;
+  const size = iconScale === "sm" ? 16 : iconScale === "lg" ? 20 : 18;
+  const weight = iconStyle === "sharp" ? "regular" : "light";
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+    "div",
+    {
+      className: `tb ${activeTool === tool.id ? "on" : ""}`,
+      "data-tip": `${tool.label}${tool.keycap ? `  ${tool.keycap}` : ""}`,
+      onClick: () => setTool(tool.id),
+      children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(IconComponent, { size, weight }),
+        tool.keycap ? /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "tsk", children: tool.keycap }) : null
+      ]
+    }
+  );
+}
 function ToolsPanel() {
   const { activeTool, setTool } = useEditorStore();
+  const { iconStyle, iconScale } = useAppearanceStore();
   return /* @__PURE__ */ jsxRuntimeExports.jsxs("aside", { className: "toolpanel", children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: `tb ${activeTool === Tool.Move ? "on" : ""}`, "data-tip": "Move  V", onClick: () => setTool(Tool.Move), children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("svg", { fill: "none", stroke: "currentColor", strokeWidth: 1.5, viewBox: "0 0 16 16", children: /* @__PURE__ */ jsxRuntimeExports.jsx("path", { d: "M8 2v12M2 8h12M8 2L6 4M8 2l2 2M8 14l-2-2M8 14l2-2M2 8l2-2M2 8l2 2M14 8l-2-2M14 8l-2 2", strokeLinecap: "round", strokeLinejoin: "round" }) }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "tsk", children: "V" })
-    ] }),
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: `tb ${activeTool === Tool.Selection ? "on" : ""}`, "data-tip": "Selection  M", onClick: () => setTool(Tool.Selection), children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("svg", { fill: "none", stroke: "currentColor", strokeWidth: 1.5, viewBox: "0 0 16 16", children: /* @__PURE__ */ jsxRuntimeExports.jsx("rect", { x: "3", y: "3", width: "10", height: "10", rx: "0.5", strokeDasharray: "2.5 1.5" }) }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "tsk", children: "M" })
-    ] }),
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: `tb ${activeTool === Tool.Lasso ? "on" : ""}`, "data-tip": "Lasso  L", onClick: () => setTool(Tool.Lasso), children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("svg", { fill: "none", stroke: "currentColor", strokeWidth: 1.5, viewBox: "0 0 16 16", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("path", { d: "M8 3C5 3 2.5 5 2.5 7.5 2.5 10 4.5 12 7 12c1.5 0 2.5-.8 3-2", strokeLinecap: "round" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("path", { d: "M10 10c1-1.5 3-2 3-4 0-1.5-1-2.5-2.5-2.5", strokeLinecap: "round" })
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "tsk", children: "L" })
-    ] }),
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: `tb ${activeTool === Tool.MagicWand ? "on" : ""}`, "data-tip": "Magic Wand  W", onClick: () => setTool(Tool.MagicWand), children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("svg", { fill: "none", stroke: "currentColor", strokeWidth: 1.5, viewBox: "0 0 16 16", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("path", { d: "M3 13L9 7", strokeLinecap: "round" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("path", { d: "M9 3v1M13 7h-1M11.5 4.5l-.7.7M6 4l.7.7", strokeLinecap: "round" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("circle", { cx: "10", cy: "6", r: "2.5" })
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "tsk", children: "W" })
-    ] }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "tsep" }),
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: `tb ${activeTool === Tool.Crop ? "on" : ""}`, "data-tip": "Crop  C", onClick: () => setTool(Tool.Crop), children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("svg", { fill: "none", stroke: "currentColor", strokeWidth: 1.5, viewBox: "0 0 16 16", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("path", { d: "M4 2v8a1 1 0 001 1h8", strokeLinecap: "round" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("path", { d: "M2 4h8a1 1 0 011 1v8", strokeLinecap: "round" })
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "tsk", children: "C" })
-    ] }),
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: `tb ${activeTool === Tool.Eyedropper ? "on" : ""}`, "data-tip": "Eyedropper  I", onClick: () => setTool(Tool.Eyedropper), children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("svg", { fill: "none", stroke: "currentColor", strokeWidth: 1.5, viewBox: "0 0 16 16", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("path", { d: "M10.5 3L13 5.5l-5.5 5.5L5 13l-2-.5L2.5 11l2.5-2.5L10.5 3z", strokeLinecap: "round", strokeLinejoin: "round" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("path", { d: "M9 4.5l2.5 2.5", strokeLinecap: "round" })
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "tsk", children: "I" })
-    ] }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "tsep" }),
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: `tb ${activeTool === Tool.Brush ? "on" : ""}`, "data-tip": "Brush  B", onClick: () => setTool(Tool.Brush), children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("svg", { fill: "none", stroke: "currentColor", strokeWidth: 1.5, viewBox: "0 0 16 16", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("path", { d: "M3 13c2-1 4-3 4-5 0-1-.5-1.5-1-2L9.5 3.5a2 2 0 012.8 2.8L8.5 10", strokeLinecap: "round", strokeLinejoin: "round" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("path", { d: "M3 13c0-1.5.5-2.5 1.5-2.5S6 11.5 6 13c0 .5-.8 1-1.5 1C3.8 14 3 13.5 3 13z" })
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "tsk", children: "B" })
-    ] }),
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: `tb ${activeTool === Tool.Pencil ? "on" : ""}`, "data-tip": "Pencil  P", onClick: () => setTool(Tool.Pencil), children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("svg", { fill: "none", stroke: "currentColor", strokeWidth: 1.5, viewBox: "0 0 16 16", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("path", { d: "M11 2l3 3-8 8H3v-3L11 2z", strokeLinecap: "round", strokeLinejoin: "round" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("path", { d: "M9 4l3 3", strokeLinecap: "round" })
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "tsk", children: "P" })
-    ] }),
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: `tb ${activeTool === Tool.Eraser ? "on" : ""}`, "data-tip": "Eraser  E", onClick: () => setTool(Tool.Eraser), children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("svg", { fill: "none", stroke: "currentColor", strokeWidth: 1.5, viewBox: "0 0 16 16", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("path", { d: "M13 4L7 10l-4 2 2-4 6-6 2 2z", strokeLinecap: "round", strokeLinejoin: "round" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("path", { d: "M3 12h10M7 10l2-2", strokeLinecap: "round" })
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "tsk", children: "E" })
-    ] }),
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: `tb ${activeTool === Tool.Fill ? "on" : ""}`, "data-tip": "Fill  G", onClick: () => setTool(Tool.Fill), children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("svg", { fill: "none", stroke: "currentColor", strokeWidth: 1.5, viewBox: "0 0 16 16", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("path", { d: "M3 13c1-2 3-2 4-4s0-4-1-5l5-1 1 5-1 2", strokeLinecap: "round", strokeLinejoin: "round" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("circle", { cx: "12", cy: "12", r: "1.8", fill: "currentColor", opacity: "0.5" })
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "tsk", children: "G" })
-    ] }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "tsep" }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: `tb ${activeTool === Tool.Gradient ? "on" : ""}`, "data-tip": "Gradient", onClick: () => setTool(Tool.Gradient), children: /* @__PURE__ */ jsxRuntimeExports.jsxs("svg", { fill: "none", stroke: "currentColor", strokeWidth: 1, viewBox: "0 0 16 16", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("defs", { children: /* @__PURE__ */ jsxRuntimeExports.jsxs("linearGradient", { id: "gg", x1: "0", y1: "0", x2: "1", y2: "0", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("stop", { offset: "0%", stopColor: "#444" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("stop", { offset: "100%", stopColor: "#ccc" })
-      ] }) }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("rect", { x: "3", y: "5.5", width: "10", height: "5", rx: "1", fill: "url(#gg)", stroke: "currentColor", strokeWidth: 1 })
-    ] }) }),
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: `tb ${activeTool === Tool.Text ? "on" : ""}`, "data-tip": "Text  T", onClick: () => setTool(Tool.Text), children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("svg", { fill: "none", stroke: "currentColor", strokeWidth: 1.5, viewBox: "0 0 16 16", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("path", { d: "M3 4h10M8 4v9", strokeLinecap: "round" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("path", { d: "M5 13h6", strokeLinecap: "round" })
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "tsk", children: "T" })
-    ] }),
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: `tb ${activeTool === Tool.Shape ? "on" : ""}`, "data-tip": "Shape  U", onClick: () => setTool(Tool.Shape), children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("svg", { fill: "none", stroke: "currentColor", strokeWidth: 1.5, viewBox: "0 0 16 16", children: /* @__PURE__ */ jsxRuntimeExports.jsx("rect", { x: "3", y: "5", width: "10", height: "7", rx: "1" }) }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "tsk", children: "U" })
-    ] }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "tsep" }),
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: `tb ${activeTool === Tool.Zoom ? "on" : ""}`, "data-tip": "Zoom  Z", onClick: () => setTool(Tool.Zoom), children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("svg", { fill: "none", stroke: "currentColor", strokeWidth: 1.5, viewBox: "0 0 16 16", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("circle", { cx: "7", cy: "7", r: "4.5" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("path", { d: "M10.5 10.5L14 14M5.5 7h3M7 5.5v3", strokeLinecap: "round" })
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "tsk", children: "Z" })
-    ] }),
+    toolButtons.map(
+      (entry, index) => entry === "separator" ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "tsep" }, `separator-${index}`) : /* @__PURE__ */ jsxRuntimeExports.jsx(
+        ToolButton,
+        {
+          tool: entry,
+          activeTool,
+          setTool,
+          iconScale,
+          iconStyle
+        },
+        entry.id
+      )
+    ),
     /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "tool-colors", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "cs-wrap", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "cs bg" }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "cs fg", style: { background: "#0c0c0c", borderColor: "#3a3a3a" } }),
@@ -16157,10 +17101,10 @@ class TexturePoolClass {
    * @param textureOptions - options that will be passed to BaseRenderTexture constructor
    * @param {SCALE_MODE} [textureOptions.scaleMode] - See {@link SCALE_MODE} for possible values.
    */
-  constructor(textureOptions) {
+  constructor(textureOptions2) {
     this._poolKeyHash = /* @__PURE__ */ Object.create(null);
     this._texturePool = {};
-    this.textureOptions = textureOptions || {};
+    this.textureOptions = textureOptions2 || {};
     this.enableFullScreen = false;
     this.textureStyle = new TextureStyle(this.textureOptions);
   }
@@ -19596,7 +20540,7 @@ const browserExt = {
   },
   test: () => true,
   load: async () => {
-    await __vitePreload(() => import("./browserAll-CYvDI9SR.js"), true ? __vite__mapDeps([0,1,2]) : void 0, import.meta.url);
+    await __vitePreload(() => import("./browserAll-DAkSBB4r.js"), true ? __vite__mapDeps([0,1,2]) : void 0, import.meta.url);
   }
 };
 const webworkerExt = {
@@ -19607,7 +20551,7 @@ const webworkerExt = {
   },
   test: () => typeof self !== "undefined" && self.WorkerGlobalScope !== void 0,
   load: async () => {
-    await __vitePreload(() => import("./webworkerAll-5EtXhF0n.js"), true ? __vite__mapDeps([1,2]) : void 0, import.meta.url);
+    await __vitePreload(() => import("./webworkerAll-CYbwvZbD.js"), true ? __vite__mapDeps([1,2]) : void 0, import.meta.url);
   }
 };
 function updateQuadBounds(bounds, anchor, texture) {
@@ -22801,7 +23745,7 @@ const spritesheetAsset = {
         // if user need to use preloaded texture
         imageFilename,
         // if user need to use custom filename (not from jsonFile.meta.image)
-        textureOptions,
+        textureOptions: textureOptions2,
         // if user need to set texture options on texture
         cachePrefix
         // if user need to use custom cache prefix
@@ -22815,7 +23759,7 @@ const spritesheetAsset = {
         texture = imageTexture;
       } else {
         const imagePath = copySearchParams(basePath + (imageFilename ?? asset.meta.image), options.src);
-        const assets = await loader.load([{ src: imagePath, data: textureOptions }]);
+        const assets = await loader.load([{ src: imagePath, data: textureOptions2 }]);
         texture = assets[imagePath];
       }
       const spritesheet = new Spritesheet({
@@ -22839,7 +23783,7 @@ const spritesheetAsset = {
           promises.push(loader.load({
             src: itemUrl,
             data: {
-              textureOptions,
+              textureOptions: textureOptions2,
               ignoreMultiPack: true
             }
           }));
@@ -23775,7 +24719,7 @@ async function autoDetectRenderer(options) {
     const rendererType = preferredOrder[i2];
     if (rendererType === "webgpu" && await isWebGPUSupported()) {
       const { WebGPURenderer } = await __vitePreload(async () => {
-        const { WebGPURenderer: WebGPURenderer2 } = await import("./WebGPURenderer-CRoqqgQx.js");
+        const { WebGPURenderer: WebGPURenderer2 } = await import("./WebGPURenderer-D8Vf0Z9J.js");
         return { WebGPURenderer: WebGPURenderer2 };
       }, true ? __vite__mapDeps([3,4,5,2]) : void 0, import.meta.url);
       RendererClass = WebGPURenderer;
@@ -23785,7 +24729,7 @@ async function autoDetectRenderer(options) {
       options.failIfMajorPerformanceCaveat ?? AbstractRenderer.defaultOptions.failIfMajorPerformanceCaveat
     )) {
       const { WebGLRenderer } = await __vitePreload(async () => {
-        const { WebGLRenderer: WebGLRenderer2 } = await import("./WebGLRenderer-DkXxKfCC.js");
+        const { WebGLRenderer: WebGLRenderer2 } = await import("./WebGLRenderer-D7JMZ8M2.js");
         return { WebGLRenderer: WebGLRenderer2 };
       }, true ? __vite__mapDeps([6,4,5,2]) : void 0, import.meta.url);
       RendererClass = WebGLRenderer;
@@ -23793,7 +24737,7 @@ async function autoDetectRenderer(options) {
       break;
     } else if (rendererType === "canvas") {
       const { CanvasRenderer } = await __vitePreload(async () => {
-        const { CanvasRenderer: CanvasRenderer2 } = await import("./CanvasRenderer-653jH_vA.js");
+        const { CanvasRenderer: CanvasRenderer2 } = await import("./CanvasRenderer-ClfeYIuh.js");
         return { CanvasRenderer: CanvasRenderer2 };
       }, true ? __vite__mapDeps([7,5,2]) : void 0, import.meta.url);
       RendererClass = CanvasRenderer;
@@ -24482,8 +25426,8 @@ class Circle {
     const dy = this.y - y2;
     const radius = this.radius;
     const outerWidth = (1 - alignment) * width;
-    const distance = Math.sqrt(dx * dx + dy * dy);
-    return distance <= radius + outerWidth && distance > radius - (width - outerWidth);
+    const distance2 = Math.sqrt(dx * dx + dy * dy);
+    return distance2 <= radius + outerWidth && distance2 > radius - (width - outerWidth);
   }
   /**
    * Returns the framing rectangle of the circle as a Rectangle object.
@@ -25115,8 +26059,8 @@ class Polygon {
 const isCornerWithinStroke = (pX, pY, cornerX, cornerY, radius, strokeWidthInner, strokeWidthOuter) => {
   const dx = pX - cornerX;
   const dy = pY - cornerY;
-  const distance = Math.sqrt(dx * dx + dy * dy);
-  return distance >= radius - strokeWidthInner && distance <= radius + strokeWidthOuter;
+  const distance2 = Math.sqrt(dx * dx + dy * dy);
+  return distance2 >= radius - strokeWidthInner && distance2 <= radius + strokeWidthOuter;
 };
 class RoundedRectangle {
   /**
@@ -28395,7 +29339,7 @@ function roundedShapeArc(g2, points, radius) {
   }
 }
 function roundedShapeQuadraticCurve(g2, points, radius, smoothness) {
-  const distance = (p1, p2) => Math.sqrt((p1.x - p2.x) ** 2 + (p1.y - p2.y) ** 2);
+  const distance2 = (p1, p2) => Math.sqrt((p1.x - p2.x) ** 2 + (p1.y - p2.y) ** 2);
   const pointLerp = (p1, p2, t2) => ({
     x: p1.x + (p2.x - p1.x) * t2,
     y: p1.y + (p2.y - p1.y) * t2
@@ -28414,7 +29358,7 @@ function roundedShapeQuadraticCurve(g2, points, radius, smoothness) {
     }
     const lastPoint = points[i2];
     const nextPoint = points[(i2 + 2) % numPoints];
-    const lastEdgeLength = distance(lastPoint, thisPoint);
+    const lastEdgeLength = distance2(lastPoint, thisPoint);
     let start;
     if (lastEdgeLength < 1e-4) {
       start = thisPoint;
@@ -28426,7 +29370,7 @@ function roundedShapeQuadraticCurve(g2, points, radius, smoothness) {
         lastOffsetDistance / lastEdgeLength
       );
     }
-    const nextEdgeLength = distance(nextPoint, thisPoint);
+    const nextEdgeLength = distance2(nextPoint, thisPoint);
     let end;
     if (nextEdgeLength < 1e-4) {
       end = thisPoint;
@@ -31962,7 +32906,7 @@ class PixiEngine {
         const isEvenRow = Math.floor(y2 / tileSize) % 2 === 0;
         const isEvenCol = Math.floor(x2 / tileSize) % 2 === 0;
         g2.rect(x2, y2, tileSize, tileSize);
-        g2.fill(isEvenRow === isEvenCol ? 1315860 : 921102);
+        g2.fill(isEvenRow === isEvenCol ? 14540253 : 13421772);
       }
     }
     this.checkerboardContainer.addChild(g2);
@@ -32104,6 +33048,11 @@ class LayerStack {
   getVisibleLayers() {
     return this.layers.filter((l2) => l2.visible);
   }
+  reorderLayer(fromIndex, toIndex) {
+    if (fromIndex < 0 || fromIndex >= this.layers.length || toIndex < 0 || toIndex >= this.layers.length || fromIndex === toIndex) return;
+    const [moved] = this.layers.splice(fromIndex, 1);
+    this.layers.splice(toIndex, 0, moved);
+  }
   getLayerCount() {
     return this.layers.length;
   }
@@ -32226,20 +33175,50 @@ class LayerStack {
     return this.layers.some((l2) => l2.dirty);
   }
   /**
-   * Hard-reset the stack, including the last remaining layer.
-   * Used when rebuilding the entire document.
+   * Reconcile the engine's LayerStack with external document state
    */
-  clear() {
-    for (const layer of this.layers) {
-      if (layer.sprite) {
-        layer.sprite.destroy({ texture: true });
+  syncFromDocument(docLayers) {
+    const docIds = new Set(docLayers.map((l2) => l2.id));
+    this.layers = this.layers.filter((engineLayer) => {
+      if (!docIds.has(engineLayer.id)) {
+        if (engineLayer.sprite) engineLayer.sprite.destroy({ texture: true });
+        if (engineLayer.graphics) engineLayer.graphics.destroy();
+        return false;
       }
-      if (layer.graphics) {
-        layer.graphics.destroy();
+      return true;
+    });
+    const newLayers = [];
+    for (const docLayer of docLayers) {
+      let engineLayer = this.layers.find((l2) => l2.id === docLayer.id);
+      if (!engineLayer) {
+        engineLayer = {
+          id: docLayer.id,
+          name: docLayer.name,
+          visible: docLayer.visible,
+          locked: docLayer.locked,
+          opacity: docLayer.opacity,
+          blendMode: docLayer.blendMode,
+          sprite: null,
+          pixelBuffer: docLayer.pixels ? new Uint8ClampedArray(docLayer.pixels) : new Uint8ClampedArray(this.width * this.height * 4),
+          width: this.width,
+          height: this.height,
+          dirty: true
+        };
+      } else {
+        engineLayer.name = docLayer.name;
+        engineLayer.visible = docLayer.visible;
+        engineLayer.locked = docLayer.locked;
+        engineLayer.opacity = docLayer.opacity;
+        engineLayer.blendMode = docLayer.blendMode;
+        if (docLayer.pixels) {
+          engineLayer.pixelBuffer?.set(docLayer.pixels);
+        }
+        engineLayer.dirty = true;
       }
+      newLayers.push(engineLayer);
     }
-    this.layers = [];
-    this.activeLayerId = null;
+    this.layers = newLayers;
+    this.markAllDirty();
   }
 }
 class Compositor {
@@ -32406,6 +33385,271 @@ class Compositor {
     ];
   }
 }
+class SelectionManager {
+  width;
+  height;
+  maskCanvas;
+  maskCtx;
+  constructor(width, height) {
+    this.width = width;
+    this.height = height;
+    this.maskCanvas = document.createElement("canvas");
+    this.maskCanvas.width = width;
+    this.maskCanvas.height = height;
+    this.maskCtx = this.maskCanvas.getContext("2d", { willReadFrequently: true });
+  }
+  resize(w2, h2) {
+    this.width = w2;
+    this.height = h2;
+    this.maskCanvas.width = w2;
+    this.maskCanvas.height = h2;
+    this.maskCtx = this.maskCanvas.getContext("2d", { willReadFrequently: true });
+  }
+  // Set the current canvas state from an existing mask (e.g. from Redo/Undo)
+  loadMask(mask) {
+    this.maskCtx.clearRect(0, 0, this.width, this.height);
+    if (mask && mask.length === this.width * this.height) {
+      const imgData = this.maskCtx.createImageData(this.width, this.height);
+      for (let i2 = 0; i2 < mask.length; ++i2) {
+        const m2 = mask[i2];
+        const idx = i2 * 4;
+        imgData.data[idx] = m2;
+        imgData.data[idx + 1] = m2;
+        imgData.data[idx + 2] = m2;
+        imgData.data[idx + 3] = m2;
+      }
+      this.maskCtx.putImageData(imgData, 0, 0);
+    }
+  }
+  getMask() {
+    const imgData = this.maskCtx.getImageData(0, 0, this.width, this.height);
+    const mask = new Uint8Array(this.width * this.height);
+    for (let i2 = 0; i2 < mask.length; ++i2) {
+      mask[i2] = imgData.data[i2 * 4 + 3];
+    }
+    return mask;
+  }
+  // Primitives
+  drawRect(x2, y2, w2, h2, mode) {
+    this.setCompositeMode(mode);
+    this.maskCtx.fillStyle = "#000000";
+    this.maskCtx.fillRect(x2, y2, w2, h2);
+  }
+  drawEllipse(x2, y2, rx, ry, mode) {
+    this.setCompositeMode(mode);
+    this.maskCtx.fillStyle = "#000000";
+    this.maskCtx.beginPath();
+    this.maskCtx.ellipse(x2, y2, rx, ry, 0, 0, 2 * Math.PI);
+    this.maskCtx.fill();
+  }
+  drawPolygon(points, mode) {
+    if (points.length < 3) return;
+    this.setCompositeMode(mode);
+    this.maskCtx.fillStyle = "#000000";
+    this.maskCtx.beginPath();
+    this.maskCtx.moveTo(points[0].x, points[0].y);
+    for (let i2 = 1; i2 < points.length; ++i2) {
+      this.maskCtx.lineTo(points[i2].x, points[i2].y);
+    }
+    this.maskCtx.closePath();
+    this.maskCtx.fill();
+  }
+  setCompositeMode(mode) {
+    if (mode === "replace") {
+      this.maskCtx.clearRect(0, 0, this.width, this.height);
+      this.maskCtx.globalCompositeOperation = "source-over";
+    } else if (mode === "add") {
+      this.maskCtx.globalCompositeOperation = "source-over";
+    } else if (mode === "subtract") {
+      this.maskCtx.globalCompositeOperation = "destination-out";
+    } else if (mode === "intersect") {
+      this.maskCtx.globalCompositeOperation = "source-in";
+    }
+  }
+  // Quick Selection (Flood Fill) as a brush stroke
+  quickSelect(startX, startY, radius, tolerance, sourcePixels, mode) {
+    const w2 = this.width;
+    const h2 = this.height;
+    if (startX < 0 || startX >= w2 || startY < 0 || startY >= h2) return;
+    const visited = new Uint8Array(w2 * h2);
+    const queue = [];
+    for (let dy = -radius; dy <= radius; dy++) {
+      for (let dx = -radius; dx <= radius; dx++) {
+        if (dx * dx + dy * dy <= radius * radius) {
+          const px = startX + dx;
+          const py = startY + dy;
+          if (px >= 0 && px < w2 && py >= 0 && py < h2) {
+            const seedIdx = py * w2 + px;
+            queue.push(seedIdx);
+            visited[seedIdx] = 1;
+          }
+        }
+      }
+    }
+    if (queue.length === 0) return;
+    const centerIdx = (startY * w2 + startX) * 4;
+    const sr = sourcePixels[centerIdx];
+    const sg2 = sourcePixels[centerIdx + 1];
+    const sb2 = sourcePixels[centerIdx + 2];
+    const sa2 = sourcePixels[centerIdx + 3];
+    const fillMask = new Uint8Array(w2 * h2);
+    let head = 0;
+    while (head < queue.length) {
+      const idx = queue[head++];
+      const x2 = idx % w2;
+      const y2 = Math.floor(idx / w2);
+      fillMask[idx] = 255;
+      const neighbors = [
+        [x2 - 1, y2],
+        [x2 + 1, y2],
+        [x2, y2 - 1],
+        [x2, y2 + 1]
+      ];
+      for (const [nx, ny] of neighbors) {
+        if (nx >= 0 && nx < w2 && ny >= 0 && ny < h2) {
+          const nIdx = ny * w2 + nx;
+          if (!visited[nIdx]) {
+            visited[nIdx] = 1;
+            const pxIdx = nIdx * 4;
+            const r2 = sourcePixels[pxIdx];
+            const g2 = sourcePixels[pxIdx + 1];
+            const b2 = sourcePixels[pxIdx + 2];
+            const a2 = sourcePixels[pxIdx + 3];
+            const dist = Math.sqrt((r2 - sr) ** 2 + (g2 - sg2) ** 2 + (b2 - sb2) ** 2 + (a2 - sa2) ** 2);
+            if (dist <= tolerance) {
+              queue.push(nIdx);
+            }
+          }
+        }
+      }
+    }
+    this.applyMask(fillMask, mode);
+  }
+  applyMask(newMask, mode) {
+    const imgData = this.maskCtx.getImageData(0, 0, this.width, this.height);
+    if (mode === "replace") {
+      for (let i2 = 0; i2 < newMask.length; ++i2) {
+        const m2 = newMask[i2];
+        const idx = i2 * 4;
+        imgData.data[idx] = m2;
+        imgData.data[idx + 1] = m2;
+        imgData.data[idx + 2] = m2;
+        imgData.data[idx + 3] = m2;
+      }
+    } else if (mode === "add") {
+      for (let i2 = 0; i2 < newMask.length; ++i2) {
+        if (newMask[i2] > 0) imgData.data[i2 * 4 + 3] = 255;
+      }
+    } else if (mode === "subtract") {
+      for (let i2 = 0; i2 < newMask.length; ++i2) {
+        if (newMask[i2] > 0) imgData.data[i2 * 4 + 3] = 0;
+      }
+    } else if (mode === "intersect") {
+      for (let i2 = 0; i2 < newMask.length; ++i2) {
+        if (newMask[i2] === 0) imgData.data[i2 * 4 + 3] = 0;
+      }
+    }
+    this.maskCtx.putImageData(imgData, 0, 0);
+  }
+  clear() {
+    this.maskCtx.clearRect(0, 0, this.width, this.height);
+  }
+}
+class SelectionOverlay {
+  container;
+  sprite;
+  antsCanvas;
+  antsCtx;
+  currentMask = null;
+  width = 0;
+  height = 0;
+  time = 0;
+  animating = false;
+  constructor() {
+    this.container = new Container();
+    this.antsCanvas = document.createElement("canvas");
+    this.antsCanvas.width = 1;
+    this.antsCanvas.height = 1;
+    this.antsCtx = this.antsCanvas.getContext("2d", { willReadFrequently: true });
+    this.sprite = new Sprite(Texture.from(this.antsCanvas));
+    this.sprite.visible = false;
+    this.container.addChild(this.sprite);
+  }
+  startAnimation() {
+    this.animating = true;
+  }
+  stopAnimation() {
+    this.animating = false;
+  }
+  updateAnimationAndGetDirty(dt) {
+    if (!this.animating || !this.sprite.visible || !this.currentMask) return false;
+    this.time += dt;
+    this.renderBoundary();
+    return true;
+  }
+  updateMask(mask, width, height) {
+    this.width = width;
+    this.height = height;
+    if (!mask || mask.length !== width * height) {
+      this.currentMask = null;
+      this.sprite.visible = false;
+      return;
+    }
+    if (this.antsCanvas.width !== width || this.antsCanvas.height !== height) {
+      this.antsCanvas.width = width;
+      this.antsCanvas.height = height;
+      this.antsCtx = this.antsCanvas.getContext("2d", { willReadFrequently: true });
+      this.sprite.texture.destroy(true);
+      this.sprite.texture = Texture.from(this.antsCanvas);
+    }
+    this.currentMask = new Uint8Array(mask);
+    this.sprite.visible = true;
+    this.renderBoundary();
+  }
+  renderBoundary() {
+    if (!this.currentMask || this.width <= 0 || this.height <= 0) {
+      this.sprite.visible = false;
+      return;
+    }
+    const phase = Math.floor(this.time * 60);
+    const imageData = this.antsCtx.createImageData(this.width, this.height);
+    const data = imageData.data;
+    const mask = this.currentMask;
+    for (let y2 = 0; y2 < this.height; y2++) {
+      for (let x2 = 0; x2 < this.width; x2++) {
+        const index = y2 * this.width + x2;
+        if (mask[index] === 0) continue;
+        const top = y2 === 0 ? 0 : mask[index - this.width];
+        const bottom = y2 === this.height - 1 ? 0 : mask[index + this.width];
+        const left = x2 === 0 ? 0 : mask[index - 1];
+        const right = x2 === this.width - 1 ? 0 : mask[index + 1];
+        const isBoundary = top === 0 || bottom === 0 || left === 0 || right === 0;
+        if (!isBoundary) continue;
+        const pixel = index * 4;
+        const dark = (x2 + y2 - phase & 15) >= 8;
+        const shade = dark ? 0 : 255;
+        data[pixel] = shade;
+        data[pixel + 1] = shade;
+        data[pixel + 2] = shade;
+        data[pixel + 3] = 255;
+      }
+    }
+    this.antsCtx.putImageData(imageData, 0, 0);
+    this.sprite.texture.source.update();
+  }
+  clear() {
+    this.currentMask = null;
+    this.sprite.visible = false;
+    this.antsCtx.clearRect(0, 0, this.antsCanvas.width, this.antsCanvas.height);
+    this.sprite.texture.source.update();
+  }
+  destroy() {
+    if (this.sprite.texture && this.sprite.texture !== Texture.EMPTY) {
+      this.sprite.texture.destroy(true);
+    }
+    this.container.destroy();
+  }
+}
 class Renderer {
   engine;
   layerStack;
@@ -32419,6 +33663,10 @@ class Renderer {
   vpH = 0;
   offscreen;
   offCtx;
+  selectionManager;
+  selectionOverlay;
+  tempSelectionMask = null;
+  lastTime = performance.now();
   constructor(width, height) {
     this.engine = new PixiEngine();
     this.layerStack = new LayerStack(width, height);
@@ -32429,12 +33677,15 @@ class Renderer {
     this.offscreen.width = width;
     this.offscreen.height = height;
     this.offCtx = this.offscreen.getContext("2d");
+    this.selectionManager = new SelectionManager(width, height);
+    this.selectionOverlay = new SelectionOverlay();
   }
   async init(canvas, vpW, vpH) {
     this.vpW = vpW;
     this.vpH = vpH;
     await this.engine.init(canvas, vpW, vpH);
     this.engine.createCheckerboard(this.docWidth, this.docHeight);
+    this.engine.documentContainer.addChild(this.selectionOverlay.container);
     this.updateTransform();
   }
   /** Composite dirty layers and upload texture. Call from tick(). */
@@ -32449,6 +33700,10 @@ class Renderer {
   render() {
     if (!this.engine.isInitialized) return;
     this.composeDirty();
+    const now = performance.now();
+    const dt = (now - this.lastTime) / 1e3;
+    this.lastTime = now;
+    this.selectionOverlay.updateAnimationAndGetDirty(dt);
     this.engine.render();
   }
   forceRender() {
@@ -32473,10 +33728,17 @@ class Renderer {
   updateTransform() {
     this.engine.setTransform(this.panX, this.panY, this.zoom);
   }
-  screenToCanvas(sx, sy) {
+  screenToCanvasPrecise(sx, sy) {
     return {
-      x: Math.floor((sx - this.panX) / this.zoom),
-      y: Math.floor((sy - this.panY) / this.zoom)
+      x: (sx - this.panX) / this.zoom,
+      y: (sy - this.panY) / this.zoom
+    };
+  }
+  screenToCanvas(sx, sy) {
+    const precise = this.screenToCanvasPrecise(sx, sy);
+    return {
+      x: Math.floor(precise.x),
+      y: Math.floor(precise.y)
     };
   }
   canvasToScreen(cx, cy) {
@@ -32504,6 +33766,159 @@ class Renderer {
   }
   getLayerStack() {
     return this.layerStack;
+  }
+  getSelectionState() {
+    const mask = this.selectionManager.getMask();
+    let hasActiveSelection = false;
+    for (let i2 = 0; i2 < mask.length; i2++) {
+      if (mask[i2] > 0) {
+        hasActiveSelection = true;
+        break;
+      }
+    }
+    return { mask, hasActiveSelection };
+  }
+  canAffectPixel(x2, y2, selectionMask, hasActiveSelection) {
+    if (x2 < 0 || x2 >= this.docWidth || y2 < 0 || y2 >= this.docHeight) {
+      return false;
+    }
+    if (!hasActiveSelection) {
+      return true;
+    }
+    return selectionMask[y2 * this.docWidth + x2] > 0;
+  }
+  /**
+   * Brush drawing logic
+   */
+  drawBrush(x2, y2, color, size) {
+    const layer = this.layerStack.getActiveLayer();
+    if (!layer || layer.locked || !layer.pixelBuffer) return;
+    const radius = Math.floor(size / 2);
+    const w2 = this.docWidth;
+    const h2 = this.docHeight;
+    const { mask: selectionMask, hasActiveSelection } = this.getSelectionState();
+    for (let dy = -radius; dy <= radius; dy++) {
+      for (let dx = -radius; dx <= radius; dx++) {
+        const px = x2 + dx;
+        const py = y2 + dy;
+        if (px >= 0 && px < w2 && py >= 0 && py < h2) {
+          if (dx * dx + dy * dy <= radius * radius) {
+            if (!this.canAffectPixel(px, py, selectionMask, hasActiveSelection)) {
+              continue;
+            }
+            const idx = (py * w2 + px) * 4;
+            layer.pixelBuffer[idx] = color.r;
+            layer.pixelBuffer[idx + 1] = color.g;
+            layer.pixelBuffer[idx + 2] = color.b;
+            layer.pixelBuffer[idx + 3] = color.a;
+          }
+        }
+      }
+    }
+    layer.dirty = true;
+    this.render();
+  }
+  fill(x2, y2, color, tolerance, contiguous) {
+    const layer = this.layerStack.getActiveLayer();
+    if (!layer || layer.locked || !layer.pixelBuffer) return;
+    if (x2 < 0 || x2 >= this.docWidth || y2 < 0 || y2 >= this.docHeight) return;
+    const pixels = layer.pixelBuffer;
+    const width = this.docWidth;
+    const height = this.docHeight;
+    const { mask: selectionMask, hasActiveSelection } = this.getSelectionState();
+    if (!this.canAffectPixel(x2, y2, selectionMask, hasActiveSelection)) return;
+    const startIndex = (y2 * width + x2) * 4;
+    const source = {
+      r: pixels[startIndex],
+      g: pixels[startIndex + 1],
+      b: pixels[startIndex + 2],
+      a: pixels[startIndex + 3]
+    };
+    if (source.r === color.r && source.g === color.g && source.b === color.b && source.a === color.a) {
+      return;
+    }
+    const withinTolerance = (index) => {
+      const dr = pixels[index] - source.r;
+      const dg2 = pixels[index + 1] - source.g;
+      const db2 = pixels[index + 2] - source.b;
+      const da2 = pixels[index + 3] - source.a;
+      return Math.sqrt(dr * dr + dg2 * dg2 + db2 * db2 + da2 * da2) <= tolerance;
+    };
+    const applyAtIndex = (index) => {
+      pixels[index] = color.r;
+      pixels[index + 1] = color.g;
+      pixels[index + 2] = color.b;
+      pixels[index + 3] = color.a;
+    };
+    if (!contiguous) {
+      for (let py = 0; py < height; py++) {
+        for (let px = 0; px < width; px++) {
+          if (!this.canAffectPixel(px, py, selectionMask, hasActiveSelection)) {
+            continue;
+          }
+          const index = (py * width + px) * 4;
+          if (withinTolerance(index)) {
+            applyAtIndex(index);
+          }
+        }
+      }
+      layer.dirty = true;
+      this.render();
+      return;
+    }
+    const visited = new Uint8Array(width * height);
+    const queue = [y2 * width + x2];
+    visited[y2 * width + x2] = 1;
+    let head = 0;
+    while (head < queue.length) {
+      const current2 = queue[head++];
+      const px = current2 % width;
+      const py = Math.floor(current2 / width);
+      if (!this.canAffectPixel(px, py, selectionMask, hasActiveSelection)) {
+        continue;
+      }
+      const index = current2 * 4;
+      if (!withinTolerance(index)) {
+        continue;
+      }
+      applyAtIndex(index);
+      const neighbors = [
+        [px - 1, py],
+        [px + 1, py],
+        [px, py - 1],
+        [px, py + 1]
+      ];
+      for (const [nx, ny] of neighbors) {
+        if (nx < 0 || nx >= width || ny < 0 || ny >= height) continue;
+        const next = ny * width + nx;
+        if (visited[next]) continue;
+        visited[next] = 1;
+        queue.push(next);
+      }
+    }
+    layer.dirty = true;
+    this.render();
+  }
+  /**
+   * Invert current layer pixels
+   */
+  invertLayer() {
+    const layer = this.layerStack.getActiveLayer();
+    if (!layer || layer.locked || !layer.pixelBuffer) return;
+    const { mask: selectionMask, hasActiveSelection } = this.getSelectionState();
+    for (let i2 = 0; i2 < layer.pixelBuffer.length; i2 += 4) {
+      const pixelIndex = i2 / 4;
+      const px = pixelIndex % this.docWidth;
+      const py = Math.floor(pixelIndex / this.docWidth);
+      if (!this.canAffectPixel(px, py, selectionMask, hasActiveSelection)) {
+        continue;
+      }
+      layer.pixelBuffer[i2] = 255 - layer.pixelBuffer[i2];
+      layer.pixelBuffer[i2 + 1] = 255 - layer.pixelBuffer[i2 + 1];
+      layer.pixelBuffer[i2 + 2] = 255 - layer.pixelBuffer[i2 + 2];
+    }
+    layer.dirty = true;
+    this.render();
   }
   /**
    * Create a white background Graphics object as the bottommost layer
@@ -32535,7 +33950,8 @@ class Renderer {
     this.docHeight = h2;
     this.compositor.resize(w2, h2);
     this.layerStack.resize(w2, h2);
-    this.layerStack.clear();
+    this.selectionManager.resize(w2, h2);
+    this.layerStack.markAllDirty();
     this.engine.removeBackgroundGraphics();
     this.offscreen.width = w2;
     this.offscreen.height = h2;
@@ -32543,6 +33959,11 @@ class Renderer {
     if (this.vpW > 0 && this.vpH > 0) {
       this.fitToViewport(this.vpW, this.vpH);
     }
+  }
+  syncDocument(doc, activeLayerId) {
+    this.layerStack.syncFromDocument(doc.layers);
+    this.layerStack.setActiveLayer(activeLayerId);
+    this.forceRender();
   }
   destroy() {
     this.engine.destroy();
@@ -32577,9 +33998,212 @@ class Renderer {
     this.composeDirty();
     return this.offscreen.toDataURL("image/png");
   }
+  // ============================================
+  // SELECTION INTERACTIVE DRAFTING API
+  // ============================================
+  beginSelectionDraft(originalMask) {
+    this.tempSelectionMask = originalMask;
+    this.selectionManager.loadMask(originalMask);
+  }
+  updateSelectionRectDraft(x2, y2, w2, h2, mode) {
+    this.selectionManager.loadMask(this.tempSelectionMask);
+    this.selectionManager.drawRect(x2, y2, w2, h2, mode);
+    this.updateOverlayFromManager();
+  }
+  updateSelectionEllipseDraft(x2, y2, rx, ry, mode) {
+    this.selectionManager.loadMask(this.tempSelectionMask);
+    this.selectionManager.drawEllipse(x2, y2, rx, ry, mode);
+    this.updateOverlayFromManager();
+  }
+  updateSelectionPolygonDraft(points, mode) {
+    this.selectionManager.loadMask(this.tempSelectionMask);
+    this.selectionManager.drawPolygon(points, mode);
+    this.updateOverlayFromManager();
+  }
+  updateSelectionQuickDraft(startX, startY, radius, tolerance, mode) {
+    this.composeDirty();
+    const pixels = this.offCtx.getImageData(0, 0, this.docWidth, this.docHeight).data;
+    this.selectionManager.quickSelect(startX, startY, radius, tolerance, pixels, mode);
+    this.updateOverlayFromManager();
+  }
+  commitSelectionDraft() {
+    return this.selectionManager.getMask();
+  }
+  updateOverlayFromManager() {
+    const mask = this.selectionManager.getMask();
+    this.selectionOverlay.updateMask(mask, this.docWidth, this.docHeight);
+    this.render();
+  }
+  // ============================================
+  // STORE SYNC API
+  // ============================================
+  syncSelection(selection) {
+    if (selection && selection.mask) {
+      this.selectionManager.loadMask(selection.mask);
+      this.selectionOverlay.updateMask(selection.mask, this.docWidth, this.docHeight);
+      this.selectionOverlay.startAnimation();
+    } else {
+      this.selectionManager.clear();
+      this.selectionOverlay.clear();
+      this.selectionOverlay.stopAnimation();
+    }
+    this.render();
+  }
 }
+const defaultBrushSettings = {
+  size: 10,
+  opacity: 100,
+  hardness: 100,
+  flow: 100
+};
+const defaultEraserSettings = {
+  size: 10,
+  opacity: 100,
+  hardness: 100,
+  mode: "brush"
+};
+const defaultFillSettings = {
+  tolerance: 32,
+  contiguous: true
+};
+const defaultSelectionSettings = {
+  feather: 0,
+  antiAlias: true,
+  mode: "add"
+};
+const defaultGradientSettings = {
+  type: "linear",
+  reverse: false
+};
+const defaultTextSettings = {
+  fontFamily: "Arial",
+  fontSize: 48,
+  fontWeight: 400,
+  fontStyle: "normal",
+  alignment: "left",
+  color: { r: 0, g: 0, b: 0, a: 255 }
+};
+const defaultShapeSettings = {
+  type: "rectangle",
+  fillColor: { r: 255, g: 255, b: 255, a: 255 },
+  strokeColor: { r: 0, g: 0, b: 0, a: 255 },
+  strokeWidth: 1,
+  cornerRadius: 0
+};
+const initialState = {
+  brush: defaultBrushSettings,
+  pencil: { ...defaultBrushSettings },
+  eraser: defaultEraserSettings,
+  fill: defaultFillSettings,
+  selection: defaultSelectionSettings,
+  magicWand: { ...defaultFillSettings },
+  gradient: defaultGradientSettings,
+  text: defaultTextSettings,
+  shape: defaultShapeSettings
+};
+const useToolStore = create()(
+  immer((setFn) => ({
+    ...initialState,
+    setBrushSize: (size) => setFn((state) => {
+      state.brush.size = Math.max(1, Math.min(500, size));
+    }),
+    setBrushOpacity: (opacity) => setFn((state) => {
+      state.brush.opacity = Math.max(0, Math.min(100, opacity));
+    }),
+    setBrushHardness: (hardness) => setFn((state) => {
+      state.brush.hardness = Math.max(0, Math.min(100, hardness));
+    }),
+    setBrushFlow: (flow) => setFn((state) => {
+      state.brush.flow = Math.max(0, Math.min(100, flow));
+    }),
+    setEraserSize: (size) => setFn((state) => {
+      state.eraser.size = Math.max(1, Math.min(500, size));
+    }),
+    setEraserMode: (mode) => setFn((state) => {
+      state.eraser.mode = mode;
+    }),
+    setFillTolerance: (tolerance) => setFn((state) => {
+      state.fill.tolerance = Math.max(0, Math.min(255, tolerance));
+    }),
+    setFillContiguous: (contiguous) => setFn((state) => {
+      state.fill.contiguous = contiguous;
+    }),
+    setSelectionFeather: (feather) => setFn((state) => {
+      state.selection.feather = Math.max(0, feather);
+    }),
+    setGradientType: (type) => setFn((state) => {
+      state.gradient.type = type;
+    }),
+    setGradientReverse: (reverse) => setFn((state) => {
+      state.gradient.reverse = reverse;
+    }),
+    setTextSettings: (settings) => setFn((state) => {
+      Object.assign(state.text, settings);
+    }),
+    setShapeSettings: (settings) => setFn((state) => {
+      Object.assign(state.shape, settings);
+    }),
+    resetToolSettings: (tool) => setFn((state) => {
+      switch (tool) {
+        case "brush":
+          state.brush = { ...defaultBrushSettings };
+          break;
+        case "pencil":
+          state.pencil = { ...defaultBrushSettings };
+          break;
+        case "eraser":
+          state.eraser = { ...defaultEraserSettings };
+          break;
+        case "fill":
+          state.fill = { ...defaultFillSettings };
+          break;
+        case "selectionRect":
+        case "selectionEllipse":
+        case "lasso":
+          state.selection = { ...defaultSelectionSettings };
+          break;
+        case "quickSelection":
+        case "magicWand":
+          state.magicWand = { ...defaultFillSettings };
+          break;
+        case "gradient":
+          state.gradient = { ...defaultGradientSettings };
+          break;
+        case "text":
+          state.text = { ...defaultTextSettings };
+          break;
+        case "shape":
+          state.shape = { ...defaultShapeSettings };
+          break;
+      }
+    })
+  }))
+);
 const DEFAULT_W = 800;
 const DEFAULT_H = 600;
+function getSelectionBounds(mask, width, height) {
+  let minX = width;
+  let minY = height;
+  let maxX = -1;
+  let maxY = -1;
+  for (let y2 = 0; y2 < height; y2++) {
+    for (let x2 = 0; x2 < width; x2++) {
+      if (mask[y2 * width + x2] > 0) {
+        if (x2 < minX) minX = x2;
+        if (y2 < minY) minY = y2;
+        if (x2 > maxX) maxX = x2;
+        if (y2 > maxY) maxY = y2;
+      }
+    }
+  }
+  if (maxX === -1 || maxY === -1) return null;
+  return {
+    x: minX,
+    y: minY,
+    width: maxX - minX + 1,
+    height: maxY - minY + 1
+  };
+}
 function CanvasArea() {
   const canvasRef = reactExports.useRef(null);
   const vpRef = reactExports.useRef(null);
@@ -32587,8 +34211,63 @@ function CanvasArea() {
   const frameRef = reactExports.useRef(0);
   const panningRef = reactExports.useRef(false);
   const lastRef = reactExports.useRef({ x: 0, y: 0 });
-  const { setZoom, setPan, setCursor, setViewport, setRendererRef } = useEditorStore();
-  const { setDocument, document: doc } = useDocumentStore();
+  const { activeTool, setZoom, setPan, setCursor, setViewport, setRendererRef } = useEditorStore();
+  const fillSettings = useToolStore((state) => state.fill);
+  const { setDocument, document: doc, undo, redo, commitHistory, syncPixels, activeLayerId, setSelection, clearSelection } = useDocumentStore();
+  const isSelectingRef = reactExports.useRef(false);
+  const selectionStartRef = reactExports.useRef({ x: 0, y: 0 });
+  const selectionPointsRef = reactExports.useRef([]);
+  const selectionModeRef = reactExports.useRef("replace");
+  const applyToolStroke = reactExports.useCallback((x2, y2) => {
+    const renderer = rendererRef.current;
+    if (!renderer) return;
+    const px = Math.round(x2);
+    const py = Math.round(y2);
+    switch (activeTool) {
+      case Tool.Brush:
+        renderer.drawBrush(px, py, { r: 50, g: 150, b: 250, a: 255 }, 20);
+        break;
+      case Tool.Pencil:
+        renderer.drawBrush(px, py, { r: 50, g: 150, b: 250, a: 255 }, 6);
+        break;
+      case Tool.Eraser:
+        renderer.drawBrush(px, py, { r: 0, g: 0, b: 0, a: 0 }, 20);
+        break;
+      case Tool.Fill:
+        renderer.fill(
+          px,
+          py,
+          { r: 50, g: 150, b: 250, a: 255 },
+          fillSettings.tolerance,
+          fillSettings.contiguous
+        );
+        break;
+    }
+  }, [activeTool, fillSettings.contiguous, fillSettings.tolerance]);
+  reactExports.useEffect(() => {
+    const onKeyDown = (e2) => {
+      const isMod = e2.ctrlKey || e2.metaKey;
+      if (e2.key === "Escape" || isMod && e2.key === "d") {
+        e2.preventDefault();
+        clearSelection();
+      } else if (isMod && e2.key === "z") {
+        e2.preventDefault();
+        undo();
+      } else if (isMod && e2.key === "y") {
+        e2.preventDefault();
+        redo();
+      }
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [undo, redo, clearSelection]);
+  reactExports.useEffect(() => {
+    const renderer = rendererRef.current;
+    if (renderer && doc) {
+      renderer.syncDocument(doc, activeLayerId);
+      renderer.syncSelection(doc.selection ?? null);
+    }
+  }, [doc, activeLayerId]);
   reactExports.useEffect(() => {
     const canvas = canvasRef.current;
     const vp = vpRef.current;
@@ -32596,12 +34275,10 @@ function CanvasArea() {
     const w2 = Math.max(10, vp.clientWidth);
     const h2 = Math.max(10, vp.clientHeight);
     setViewport(w2, h2);
-    console.log(`[CanvasArea] Mounting. vp size: ${w2}x${h2}`);
     const renderer = new Renderer(DEFAULT_W, DEFAULT_H);
     let isDestroyed = false;
     renderer.init(canvas, w2, h2).then(() => {
       if (isDestroyed) return;
-      console.log(`[CanvasArea] Renderer.init() resolved! Canvas: ${canvas.width}x${canvas.height}`);
       const newDoc = createDefaultDocument(DEFAULT_W, DEFAULT_H, {
         r: 255,
         g: 255,
@@ -32633,7 +34310,6 @@ function CanvasArea() {
       setDocument(newDoc);
       renderer.fitToViewport(w2, h2);
       renderer.forceRender();
-      console.log(`[CanvasArea] forceRender done. Zoom: ${renderer.getZoom()}, Pan: ${JSON.stringify(renderer.getPan())}`);
       rendererRef.current = renderer;
       setRendererRef(renderer);
       setZoom(renderer.getZoom() * 100);
@@ -32645,19 +34321,14 @@ function CanvasArea() {
         }
       };
       frameRef.current = requestAnimationFrame(loop);
-    }).catch((err) => {
-      console.error("[CanvasArea] Renderer init FAILED:", err);
-    });
+    }).catch((err) => console.error(err));
     const rob = new ResizeObserver((entries) => {
       for (const entry of entries) {
         if (rendererRef.current && !isDestroyed) {
           const newW = Math.max(10, entry.contentRect.width);
           const newH = Math.max(10, entry.contentRect.height);
           rendererRef.current.resizeViewport(newW, newH);
-          rendererRef.current.fitToViewport(newW, newH);
           setViewport(newW, newH);
-          setZoom(rendererRef.current.getZoom() * 100);
-          setPan(rendererRef.current.getPan());
         }
       }
     });
@@ -32668,56 +34339,6 @@ function CanvasArea() {
       cancelAnimationFrame(frameRef.current);
       renderer.destroy();
     };
-  }, []);
-  reactExports.useEffect(() => {
-    const unsubscribe = useDocumentStore.subscribe((state) => {
-      const renderer = rendererRef.current;
-      if (!renderer) return;
-      const storeLayers = selectLayers(state);
-      const layerStack = renderer.getLayerStack();
-      const engineLayers = layerStack.getLayers();
-      const storeLayerIds = new Set(storeLayers.map((layer) => layer.id));
-      const engineLayerIds = new Set(engineLayers.map((layer) => layer.id));
-      for (const engineLayer of engineLayers) {
-        if (!storeLayerIds.has(engineLayer.id)) {
-          layerStack.deleteLayer(engineLayer.id);
-        }
-      }
-      for (const storeLayer of storeLayers) {
-        if (!engineLayerIds.has(storeLayer.id)) {
-          layerStack.createLayer(storeLayer.name, void 0, storeLayer.id);
-        }
-      }
-      layerStack.setActiveLayer(state.activeLayerId ?? null);
-      for (const storeLayer of storeLayers) {
-        const engineLayer = layerStack.getLayer(storeLayer.id);
-        if (!engineLayer) continue;
-        if (engineLayer.name !== storeLayer.name) {
-          engineLayer.name = storeLayer.name;
-          engineLayer.dirty = true;
-        }
-        if (engineLayer.locked !== storeLayer.locked) {
-          engineLayer.locked = storeLayer.locked;
-        }
-        if (engineLayer.visible !== storeLayer.visible) {
-          engineLayer.visible = storeLayer.visible;
-          engineLayer.dirty = true;
-          if (engineLayer.graphics) {
-            engineLayer.graphics.visible = storeLayer.visible;
-          }
-        }
-        if (engineLayer.opacity !== storeLayer.opacity) {
-          engineLayer.opacity = storeLayer.opacity;
-          engineLayer.dirty = true;
-        }
-        if (engineLayer.blendMode !== storeLayer.blendMode) {
-          engineLayer.blendMode = storeLayer.blendMode;
-          engineLayer.dirty = true;
-        }
-      }
-      renderer.forceRender();
-    });
-    return unsubscribe;
   }, []);
   const onWheel = reactExports.useCallback(
     (e2) => {
@@ -32749,19 +34370,51 @@ function CanvasArea() {
     return () => vp.removeEventListener("wheel", onWheel);
   }, [onWheel]);
   const onDown = reactExports.useCallback((e2) => {
+    const r2 = rendererRef.current;
+    const vp = vpRef.current;
+    if (!r2 || !vp) return;
     if (e2.button === 1 || e2.altKey) {
-      panningRef.current = true;
+      if (activeTool !== Tool.SelectionRect && activeTool !== Tool.SelectionEllipse && activeTool !== Tool.Lasso && activeTool !== Tool.QuickSelection) {
+        panningRef.current = true;
+        lastRef.current = { x: e2.clientX, y: e2.clientY };
+        return;
+      }
+    }
+    const { left, top } = vp.getBoundingClientRect();
+    const cp = r2.screenToCanvasPrecise(e2.clientX - left, e2.clientY - top);
+    const isSelectionTool = activeTool === Tool.SelectionRect || activeTool === Tool.SelectionEllipse || activeTool === Tool.Lasso || activeTool === Tool.QuickSelection;
+    if (isSelectionTool) {
+      isSelectingRef.current = true;
+      selectionStartRef.current = cp;
+      selectionPointsRef.current = [cp];
+      let mode = "replace";
+      if (e2.shiftKey) mode = "add";
+      else if (e2.altKey) mode = "subtract";
+      selectionModeRef.current = mode;
+      const currentMask = doc?.selection?.mask || null;
+      r2.beginSelectionDraft(mode === "replace" ? null : currentMask);
+      if (activeTool === Tool.QuickSelection) {
+        r2.updateSelectionQuickDraft(Math.round(cp.x), Math.round(cp.y), 10, 32, mode);
+      }
+    } else {
+      const activeLayer = r2.getLayerStack().getActiveLayer();
+      if (activeLayer && activeLayer.pixelBuffer) {
+        syncPixels(activeLayer.id, activeLayer.pixelBuffer);
+      }
+      commitHistory();
+      applyToolStroke(cp.x, cp.y);
+      panningRef.current = false;
       lastRef.current = { x: e2.clientX, y: e2.clientY };
     }
-  }, []);
+  }, [activeTool, applyToolStroke, commitHistory, syncPixels, doc?.selection?.mask]);
   const onMove = reactExports.useCallback(
     (e2) => {
       const r2 = rendererRef.current;
       const vp = vpRef.current;
       if (!r2 || !vp) return;
       const { left, top } = vp.getBoundingClientRect();
-      const cp = r2.screenToCanvas(e2.clientX - left, e2.clientY - top);
-      setCursor(cp.x, cp.y);
+      const cp = r2.screenToCanvasPrecise(e2.clientX - left, e2.clientY - top);
+      setCursor(Math.round(cp.x), Math.round(cp.y));
       if (panningRef.current) {
         const dx = e2.clientX - lastRef.current.x;
         const dy = e2.clientY - lastRef.current.y;
@@ -32769,65 +34422,87 @@ function CanvasArea() {
         r2.setPan(p2.x + dx, p2.y + dy);
         setPan(r2.getPan());
         lastRef.current = { x: e2.clientX, y: e2.clientY };
+      } else if (isSelectingRef.current) {
+        const mode = selectionModeRef.current;
+        const startX = selectionStartRef.current.x;
+        const startY = selectionStartRef.current.y;
+        const wRaw = Math.abs(cp.x - startX);
+        const hRaw = Math.abs(cp.y - startY);
+        const w2 = e2.shiftKey ? Math.max(wRaw, hRaw) : wRaw;
+        const h2 = e2.shiftKey ? Math.max(wRaw, hRaw) : hRaw;
+        const rx = cp.x < startX ? startX - w2 : startX;
+        const ry = cp.y < startY ? startY - h2 : startY;
+        if (activeTool === Tool.SelectionRect) {
+          r2.updateSelectionRectDraft(rx, ry, w2, h2, mode);
+        } else if (activeTool === Tool.SelectionEllipse) {
+          r2.updateSelectionEllipseDraft(rx + w2 / 2, ry + h2 / 2, w2 / 2, h2 / 2, mode);
+        } else if (activeTool === Tool.Lasso) {
+          selectionPointsRef.current.push(cp);
+          r2.updateSelectionPolygonDraft(selectionPointsRef.current, mode);
+        } else if (activeTool === Tool.QuickSelection) {
+          r2.updateSelectionQuickDraft(Math.round(cp.x), Math.round(cp.y), 10, 32, mode);
+        }
+      } else if (e2.buttons === 1 && activeTool !== Tool.Fill) {
+        applyToolStroke(cp.x, cp.y);
       }
     },
-    [setCursor, setPan]
+    [activeTool, applyToolStroke, setCursor, setPan]
   );
   const onUp = reactExports.useCallback(() => {
     panningRef.current = false;
-  }, []);
+    const r2 = rendererRef.current;
+    if (isSelectingRef.current && r2) {
+      isSelectingRef.current = false;
+      const finalMask = r2.commitSelectionDraft();
+      const bounds = getSelectionBounds(finalMask, r2.getDocWidth(), r2.getDocHeight());
+      if (!bounds) {
+        clearSelection();
+        return;
+      }
+      setSelection({ mask: finalMask, bounds, isActive: true });
+    } else if (r2) {
+      const activeLayer = r2.getLayerStack().getActiveLayer();
+      if (activeLayer && activeLayer.pixelBuffer) {
+        syncPixels(activeLayer.id, activeLayer.pixelBuffer);
+      }
+    }
+  }, [clearSelection, setSelection, syncPixels]);
+  const handleInvert = () => {
+    const r2 = rendererRef.current;
+    if (!r2) return;
+    const activeLayer = r2.getLayerStack().getActiveLayer();
+    if (activeLayer && activeLayer.pixelBuffer) {
+      syncPixels(activeLayer.id, activeLayer.pixelBuffer);
+    }
+    commitHistory();
+    r2.invertLayer();
+    if (activeLayer && activeLayer.pixelBuffer) {
+      syncPixels(activeLayer.id, activeLayer.pixelBuffer);
+    }
+  };
   return /* @__PURE__ */ jsxRuntimeExports.jsxs("main", { className: "canvas-area", children: [
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "opts", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "og", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "ol", children: "Mode" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "button",
-          {
-            className: "ob",
-            style: {
-              color: "var(--ember)",
-              borderColor: "rgba(192,57,43,0.3)"
-            },
-            children: "Rectangle"
-          }
-        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("button", { className: "ob active", children: "Rectangle" }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("button", { className: "ob", children: "Fixed Ratio" }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("button", { className: "ob", children: "Fixed Size" })
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "osep" }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "og", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "ol", children: "Feather" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "input",
-          {
-            type: "range",
-            className: "osl",
-            min: "0",
-            max: "100",
-            defaultValue: "0"
-          }
-        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("input", { type: "range", className: "osl", min: "0", max: "100", defaultValue: "0" }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "ov", children: "0px" })
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "osep" }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "og", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "ol", children: "AA" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "button",
-          {
-            className: "ob",
-            style: {
-              color: "var(--ember)",
-              borderColor: "rgba(192,57,43,0.3)"
-            },
-            children: "ON"
-          }
-        )
+        /* @__PURE__ */ jsxRuntimeExports.jsx("button", { className: "ob active", children: "ON" })
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "osep" }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "og", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx("button", { className: "ob d", children: "✕ Deselect" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("button", { className: "ob", style: { marginLeft: 3 }, children: "Invert" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("button", { className: "ob", onClick: handleInvert, style: { marginLeft: 3 }, children: "Invert" }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("button", { className: "ob", style: { marginLeft: 3 }, children: "Grow" })
       ] })
     ] }),
@@ -32845,24 +34520,12 @@ function CanvasArea() {
           onMouseUp: onUp,
           onMouseLeave: onUp,
           children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
-              "canvas",
-              {
-                ref: canvasRef,
-                style: {
-                  position: "absolute",
-                  top: 0,
-                  left: 0,
-                  display: "block"
-                }
-              }
-            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("canvas", { ref: canvasRef, style: { position: "absolute", top: 0, left: 0, display: "block" } }),
             doc && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "clabel", children: [
               /* @__PURE__ */ jsxRuntimeExports.jsx("em", { children: doc.layers[0]?.name ?? "Untitled" }),
               " — ",
               doc.width,
-              " ×",
-              " ",
+              " × ",
               doc.height,
               " px"
             ] })
@@ -32879,11 +34542,29 @@ function RightPanel() {
     setActiveLayer,
     updateLayer,
     addLayer,
-    removeLayer
+    removeLayer,
+    moveLayer
   } = useDocumentStore();
   const layers = document2?.layers || [];
   const canDeleteActiveLayer = canRemoveLayer(document2, activeLayerId);
   const { rendererRef } = useEditorStore();
+  const [dragFrom, setDragFrom] = reactExports.useState(null);
+  const [dragOver, setDragOver] = reactExports.useState(null);
+  const [dragY, setDragY] = reactExports.useState(0);
+  const [rowH, setRowH] = reactExports.useState(40);
+  const isDragging = dragFrom !== null;
+  const listRef = reactExports.useRef(null);
+  const dragFromRef = reactExports.useRef(null);
+  const dragOverRef = reactExports.useRef(null);
+  const moveLayerRef = reactExports.useRef(moveLayer);
+  const rendererRefRef = reactExports.useRef(rendererRef);
+  const layersLenRef = reactExports.useRef(layers.length);
+  reactExports.useEffect(() => {
+    moveLayerRef.current = moveLayer;
+    rendererRefRef.current = rendererRef;
+    layersLenRef.current = layers.length;
+  });
+  const displayLayers = [...layers].reverse();
   const handleAddLayer = () => {
     const id2 = `layer-${Date.now()}`;
     const name = `Layer ${(document2?.layers.length || 0) + 1}`;
@@ -32911,6 +34592,83 @@ function RightPanel() {
     if (!canDeleteActiveLayer || !activeLayerId) return;
     removeLayer(activeLayerId);
   };
+  const handleGripMouseDown = reactExports.useCallback(
+    (e2, displayIndex) => {
+      if (e2.button !== 0) return;
+      e2.preventDefault();
+      e2.stopPropagation();
+      const listEl = listRef.current;
+      if (!listEl) return;
+      const rows = listEl.querySelectorAll(".li");
+      if (rows.length === 0) return;
+      const measuredRowH = rows[0].getBoundingClientRect().height;
+      const listRect = listEl.getBoundingClientRect();
+      const startMouseY = e2.clientY - listRect.top + listEl.scrollTop;
+      const count2 = rows.length;
+      setRowH(measuredRowH);
+      setDragFrom(displayIndex);
+      setDragOver(displayIndex);
+      setDragY(startMouseY);
+      dragFromRef.current = displayIndex;
+      dragOverRef.current = displayIndex;
+      const onMove = (me2) => {
+        const mouseY = me2.clientY - listRect.top + listEl.scrollTop;
+        const rawIdx = Math.round(mouseY / measuredRowH - 0.5);
+        const clamped = Math.max(0, Math.min(count2 - 1, rawIdx));
+        setDragY(mouseY);
+        setDragOver(clamped);
+        dragOverRef.current = clamped;
+      };
+      const onUp = () => {
+        window.removeEventListener("mousemove", onMove);
+        window.removeEventListener("mouseup", onUp);
+        const finalFrom = dragFromRef.current;
+        const finalOver = dragOverRef.current;
+        if (finalFrom !== null && finalOver !== null && finalFrom !== finalOver) {
+          const len = layersLenRef.current;
+          const fromData = len - 1 - finalFrom;
+          const toData = len - 1 - finalOver;
+          console.log("[DRAG] REORDER fromData:", fromData, "toData:", toData);
+          moveLayerRef.current(fromData, toData);
+          rendererRefRef.current?.getLayerStack().reorderLayer(fromData, toData);
+          rendererRefRef.current?.forceRender();
+        }
+        dragFromRef.current = null;
+        dragOverRef.current = null;
+        setDragFrom(null);
+        setDragOver(null);
+      };
+      window.addEventListener("mousemove", onMove);
+      window.addEventListener("mouseup", onUp);
+    },
+    []
+  );
+  function getRowStyle(displayIndex) {
+    if (dragFrom === null || dragOver === null) return {};
+    if (displayIndex === dragFrom) {
+      const restY = (dragFrom + 0.5) * rowH;
+      const delta = dragY - restY;
+      return {
+        transform: `translateY(${delta}px)`,
+        zIndex: 10,
+        opacity: 0.9,
+        boxShadow: "0 4px 20px rgba(0,0,0,0.5), 0 0 0 1px rgba(192,57,43,0.3)",
+        transition: "none",
+        pointerEvents: "none"
+      };
+    }
+    const t2 = "transform 0.15s cubic-bezier(.2,.8,.4,1)";
+    if (dragFrom < dragOver) {
+      if (displayIndex > dragFrom && displayIndex <= dragOver) {
+        return { transform: `translateY(-${rowH}px)`, transition: t2 };
+      }
+    } else if (dragFrom > dragOver) {
+      if (displayIndex >= dragOver && displayIndex < dragFrom) {
+        return { transform: `translateY(${rowH}px)`, transition: t2 };
+      }
+    }
+    return { transition: t2 };
+  }
   return /* @__PURE__ */ jsxRuntimeExports.jsxs("aside", { className: "rp", children: [
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "ptabs", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "ptab on", children: "Layers" }),
@@ -32936,41 +34694,105 @@ function RightPanel() {
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "opv", id: "opval", children: "100%" })
         ] })
       ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "ll", children: [...layers].reverse().map((layer) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
         "div",
         {
-          className: `li ${activeLayerId === layer.id ? "on" : ""}`,
-          onClick: () => onSelectLayer(layer.id),
-          children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: `lvis ${layer.visible ? "" : "off"}`, onClick: (e2) => {
-              e2.stopPropagation();
-              updateLayer(layer.id, { visible: !layer.visible });
-            }, children: layer.visible ? /* @__PURE__ */ jsxRuntimeExports.jsxs("svg", { fill: "none", stroke: "currentColor", viewBox: "0 0 10 10", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("circle", { cx: "5", cy: "5", r: "3.5" }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("circle", { cx: "5", cy: "5", r: "1.5", fill: "currentColor" })
-            ] }) : /* @__PURE__ */ jsxRuntimeExports.jsxs("svg", { fill: "none", stroke: "currentColor", viewBox: "0 0 10 10", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("path", { d: "M1 5s1.5-3 4-3 4 3 4 3-1.5 3-4 3-4-3-4-3z" }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("path", { d: "M2 2l6 6", strokeLinecap: "round" })
-            ] }) }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "lthumb", style: { opacity: layer.visible ? 1 : 0.3 }, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "lthumb-img", style: { background: "linear-gradient(135deg,rgba(192,57,43,0.45),transparent)" } }) }),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "linfo", style: { opacity: layer.visible ? 1 : 0.35 }, children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "lname", children: layer.name }),
-              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "lmeta", children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { style: { textTransform: "capitalize" }, children: layer.blendMode }),
-                layer.opacity < 100 && /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { children: [
-                  layer.opacity,
-                  "%"
-                ] })
-              ] })
-            ] }),
-            layer.locked && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "llock", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("svg", { fill: "none", stroke: "currentColor", viewBox: "0 0 8 8", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("rect", { x: "1.5", y: "3.5", width: "5", height: "4", rx: "0.5" }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("path", { d: "M2.5 3.5V2.5a1.5 1.5 0 013 0v1" })
-            ] }) })
-          ]
-        },
-        layer.id
-      )) }),
+          className: "ll",
+          ref: listRef,
+          style: {
+            cursor: isDragging ? "grabbing" : void 0,
+            userSelect: isDragging ? "none" : void 0
+          },
+          children: displayLayers.map((layer, di2) => {
+            const isActive = activeLayerId === layer.id;
+            const isBeingDragged = dragFrom === di2;
+            const rowStyle = getRowStyle(di2);
+            const showIndicator = isDragging && !isBeingDragged && dragOver === di2;
+            return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+              "div",
+              {
+                className: `li ${isActive ? "on" : ""}${isBeingDragged ? " dragging" : ""}`,
+                onClick: () => {
+                  if (!isDragging) onSelectLayer(layer.id);
+                },
+                style: { position: "relative", ...rowStyle },
+                children: [
+                  showIndicator && /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    "div",
+                    {
+                      style: {
+                        position: "absolute",
+                        left: 4,
+                        right: 4,
+                        height: "2px",
+                        background: "#c0392b",
+                        borderRadius: "1px",
+                        zIndex: 5,
+                        boxShadow: "0 0 6px rgba(192,57,43,0.5)",
+                        ...dragFrom < dragOver ? { bottom: -1 } : { top: -1 }
+                      }
+                    }
+                  ),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    "div",
+                    {
+                      className: "grip-handle",
+                      onMouseDown: (e2) => handleGripMouseDown(e2, di2),
+                      style: {
+                        width: "10px",
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        cursor: isDragging ? "grabbing" : "grab",
+                        flexShrink: 0,
+                        opacity: 0.3,
+                        padding: "4px 0",
+                        marginRight: "2px"
+                      },
+                      title: "Drag to reorder",
+                      children: /* @__PURE__ */ jsxRuntimeExports.jsxs("svg", { width: "6", height: "10", viewBox: "0 0 6 10", fill: "currentColor", children: [
+                        /* @__PURE__ */ jsxRuntimeExports.jsx("circle", { cx: "1.5", cy: "1.5", r: "1" }),
+                        /* @__PURE__ */ jsxRuntimeExports.jsx("circle", { cx: "4.5", cy: "1.5", r: "1" }),
+                        /* @__PURE__ */ jsxRuntimeExports.jsx("circle", { cx: "1.5", cy: "5", r: "1" }),
+                        /* @__PURE__ */ jsxRuntimeExports.jsx("circle", { cx: "4.5", cy: "5", r: "1" }),
+                        /* @__PURE__ */ jsxRuntimeExports.jsx("circle", { cx: "1.5", cy: "8.5", r: "1" }),
+                        /* @__PURE__ */ jsxRuntimeExports.jsx("circle", { cx: "4.5", cy: "8.5", r: "1" })
+                      ] })
+                    }
+                  ),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: `lvis ${layer.visible ? "" : "off"}`, onClick: (e2) => {
+                    e2.stopPropagation();
+                    updateLayer(layer.id, { visible: !layer.visible });
+                  }, children: layer.visible ? /* @__PURE__ */ jsxRuntimeExports.jsxs("svg", { fill: "none", stroke: "currentColor", viewBox: "0 0 10 10", children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("circle", { cx: "5", cy: "5", r: "3.5" }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("circle", { cx: "5", cy: "5", r: "1.5", fill: "currentColor" })
+                  ] }) : /* @__PURE__ */ jsxRuntimeExports.jsxs("svg", { fill: "none", stroke: "currentColor", viewBox: "0 0 10 10", children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("path", { d: "M1 5s1.5-3 4-3 4 3 4 3-1.5 3-4 3-4-3-4-3z" }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("path", { d: "M2 2l6 6", strokeLinecap: "round" })
+                  ] }) }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "lthumb", style: { opacity: layer.visible ? 1 : 0.3 }, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "lthumb-img", style: { background: "linear-gradient(135deg,rgba(192,57,43,0.45),transparent)" } }) }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "linfo", style: { opacity: layer.visible ? 1 : 0.35 }, children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "lname", children: layer.name }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "lmeta", children: [
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { style: { textTransform: "capitalize" }, children: layer.blendMode }),
+                      layer.opacity < 100 && /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { children: [
+                        layer.opacity,
+                        "%"
+                      ] })
+                    ] })
+                  ] }),
+                  layer.locked && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "llock", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("svg", { fill: "none", stroke: "currentColor", viewBox: "0 0 8 8", children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("rect", { x: "1.5", y: "3.5", width: "5", height: "4", rx: "0.5" }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("path", { d: "M2.5 3.5V2.5a1.5 1.5 0 013 0v1" })
+                  ] }) })
+                ]
+              },
+              layer.id
+            );
+          })
+        }
+      ),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "lftr", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "ib", title: "New Layer", onClick: handleAddLayer, children: /* @__PURE__ */ jsxRuntimeExports.jsxs("svg", { fill: "none", stroke: "currentColor", viewBox: "0 0 10 10", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx("rect", { x: "1", y: "1", width: "8", height: "8", rx: "1" }),
@@ -33048,14 +34870,736 @@ function StatusBar() {
     ] })
   ] });
 }
+function rgbToHex({ r: r2, g: g2, b: b2 }) {
+  return `#${[r2, g2, b2].map((channel) => channel.toString(16).padStart(2, "0")).join("")}`;
+}
+function clamp(value, min, max) {
+  return Math.max(min, Math.min(max, value));
+}
+function luminance({ r: r2, g: g2, b: b2 }) {
+  return 0.2126 * r2 + 0.7152 * g2 + 0.0722 * b2;
+}
+function saturation({ r: r2, g: g2, b: b2 }) {
+  const max = Math.max(r2, g2, b2);
+  const min = Math.min(r2, g2, b2);
+  if (max === 0) return 0;
+  return (max - min) / max;
+}
+function hue({ r: r2, g: g2, b: b2 }) {
+  const rn = r2 / 255;
+  const gn = g2 / 255;
+  const bn = b2 / 255;
+  const max = Math.max(rn, gn, bn);
+  const min = Math.min(rn, gn, bn);
+  const delta = max - min;
+  if (delta === 0) return 0;
+  let value = 0;
+  if (max === rn) value = (gn - bn) / delta % 6;
+  else if (max === gn) value = (bn - rn) / delta + 2;
+  else value = (rn - gn) / delta + 4;
+  return Math.round((value * 60 + 360) % 360);
+}
+function mix(a2, b2, amount) {
+  const t2 = clamp(amount, 0, 1);
+  return {
+    r: Math.round(a2.r + (b2.r - a2.r) * t2),
+    g: Math.round(a2.g + (b2.g - a2.g) * t2),
+    b: Math.round(a2.b + (b2.b - a2.b) * t2)
+  };
+}
+function distance(a2, b2) {
+  const dr = a2.r - b2.r;
+  const dg2 = a2.g - b2.g;
+  const db2 = a2.b - b2.b;
+  return Math.sqrt(dr * dr + dg2 * dg2 + db2 * db2);
+}
+function contrast(a2, b2) {
+  return Math.abs(luminance(a2) - luminance(b2));
+}
+function classifyAccentPreset(color) {
+  const h2 = hue(color);
+  if (h2 >= 165 && h2 <= 220) return "cyan";
+  if (h2 >= 65 && h2 <= 155) return "lime";
+  if (h2 >= 25 && h2 <= 64) return "amber";
+  return "ember";
+}
+function classifyTheme(background, accent) {
+  const backgroundLuma = luminance(background);
+  const accentHue = hue(accent);
+  if (backgroundLuma > 170) return "paper";
+  if (backgroundLuma < 95 && accentHue >= 170 && accentHue <= 235) {
+    return "blueprint";
+  }
+  return "obsidian";
+}
+async function loadImageFromFile(file) {
+  const objectUrl = URL.createObjectURL(file);
+  try {
+    const img = new Image();
+    await new Promise((resolve, reject) => {
+      img.onload = () => resolve();
+      img.onerror = () => reject(new Error("Failed to load palette image"));
+      img.src = objectUrl;
+    });
+    return img;
+  } finally {
+    URL.revokeObjectURL(objectUrl);
+  }
+}
+function extractRepresentativeColors(img) {
+  const maxDimension = 160;
+  const scale = Math.min(1, maxDimension / Math.max(img.width, img.height));
+  const width = Math.max(1, Math.round(img.width * scale));
+  const height = Math.max(1, Math.round(img.height * scale));
+  const canvas = document.createElement("canvas");
+  canvas.width = width;
+  canvas.height = height;
+  const ctx = canvas.getContext("2d", { willReadFrequently: true });
+  if (!ctx) return [];
+  ctx.drawImage(img, 0, 0, width, height);
+  const { data } = ctx.getImageData(0, 0, width, height);
+  const buckets = /* @__PURE__ */ new Map();
+  for (let i2 = 0; i2 < data.length; i2 += 4) {
+    const alpha = data[i2 + 3];
+    if (alpha < 200) continue;
+    const r2 = data[i2];
+    const g2 = data[i2 + 1];
+    const b2 = data[i2 + 2];
+    const pixelIndex = i2 / 4;
+    const x2 = pixelIndex % width;
+    const y2 = Math.floor(pixelIndex / width);
+    const isEdge = x2 < width * 0.12 || x2 > width * 0.88 || y2 < height * 0.12 || y2 > height * 0.88;
+    const weight = isEdge ? 2.4 : 1;
+    const key = `${Math.round(r2 / 24)}-${Math.round(g2 / 24)}-${Math.round(
+      b2 / 24
+    )}`;
+    const bucket = buckets.get(key) ?? { weight: 0, r: 0, g: 0, b: 0 };
+    bucket.weight += weight;
+    bucket.r += r2 * weight;
+    bucket.g += g2 * weight;
+    bucket.b += b2 * weight;
+    buckets.set(key, bucket);
+  }
+  const sorted = [...buckets.values()].sort((a2, b2) => b2.weight - a2.weight).map((bucket) => ({
+    r: Math.round(bucket.r / bucket.weight),
+    g: Math.round(bucket.g / bucket.weight),
+    b: Math.round(bucket.b / bucket.weight),
+    weight: bucket.weight
+  }));
+  const filtered = [];
+  for (const color of sorted) {
+    if (filtered.every((existing) => distance(existing, color) > 36)) {
+      filtered.push(color);
+    }
+    if (filtered.length >= 8) break;
+  }
+  return filtered;
+}
+function chooseBackground(colors) {
+  const ranked = [...colors].sort((a2, b2) => {
+    const aScore = a2.weight * 1.2 - saturation(a2) * 8;
+    const bScore = b2.weight * 1.2 - saturation(b2) * 8;
+    return bScore - aScore;
+  });
+  return ranked[0] ?? colors[0];
+}
+function chooseForeground(colors, background) {
+  const best = [...colors].sort((a2, b2) => {
+    const aScore = contrast(a2, background) + saturation(a2) * 18;
+    const bScore = contrast(b2, background) + saturation(b2) * 18;
+    return bScore - aScore;
+  })[0] ?? background;
+  const target = luminance(background) > 150 ? { r: 16, g: 16, b: 16 } : { r: 245, g: 245, b: 245 };
+  return mix(best, target, 0.18);
+}
+function chooseAccent(colors, background) {
+  const scored = [...colors].sort((a2, b2) => {
+    const aScore = saturation(a2) * 90 + contrast(a2, background) * 0.35 + Math.min(a2.weight, 160) * 0.2;
+    const bScore = saturation(b2) * 90 + contrast(b2, background) * 0.35 + Math.min(b2.weight, 160) * 0.2;
+    return bScore - aScore;
+  })[0] ?? background;
+  const luma = luminance(scored);
+  if (luma < 90) return mix(scored, { r: 255, g: 255, b: 255 }, 0.18);
+  if (luma > 210) return mix(scored, { r: 0, g: 0, b: 0 }, 0.18);
+  return scored;
+}
+function chooseSurfaceColors(colors, background, foreground) {
+  const darker = colors.filter((color) => luminance(color) <= luminance(background) + 35);
+  const lighter = colors.filter((color) => luminance(color) >= luminance(background) - 10);
+  const abyssSource = darker[0] ?? background;
+  const craterSource = [...colors].sort(
+    (a2, b2) => Math.abs(luminance(a2) - (luminance(background) + luminance(foreground)) / 2) - Math.abs(luminance(b2) - (luminance(background) + luminance(foreground)) / 2)
+  )[0] ?? background;
+  const cinderSource = lighter[0] ?? foreground;
+  return {
+    abyss: mix(background, abyssSource, 0.42),
+    crater: mix(craterSource, background, 0.3),
+    cinder: mix(cinderSource, foreground, 0.22)
+  };
+}
+async function buildThemeFromPaletteImage(file) {
+  const img = await loadImageFromFile(file);
+  const colors = extractRepresentativeColors(img);
+  if (colors.length === 0) {
+    throw new Error("Palette image did not contain readable colors");
+  }
+  const background = chooseBackground(colors);
+  const foreground = chooseForeground(colors, background);
+  const accent = chooseAccent(colors, background);
+  const surfaces = chooseSurfaceColors(colors, background, foreground);
+  const darkAnchor = mix(background, { r: 0, g: 0, b: 0 }, 0.1);
+  const brightAccent = mix(accent, foreground, 0.26);
+  const theme = classifyTheme(background, accent);
+  const accentPreset = classifyAccentPreset(accent);
+  const palette = {
+    void: rgbToHex(darkAnchor),
+    abyss: rgbToHex(surfaces.abyss),
+    crater: rgbToHex(surfaces.crater),
+    cinder: rgbToHex(surfaces.cinder),
+    bone: rgbToHex(foreground),
+    blood: rgbToHex(accent),
+    ember: rgbToHex(brightAccent)
+  };
+  return {
+    theme,
+    accent: accentPreset,
+    palette
+  };
+}
+const themeOptions = [
+  { id: "obsidian", label: "Obsidian" },
+  { id: "graphite", label: "Graphite" },
+  { id: "paper", label: "Paper" },
+  { id: "blueprint", label: "Blueprint" }
+];
+const accentOptions = [
+  { id: "ember", label: "Ember" },
+  { id: "cyan", label: "Cyan" },
+  { id: "lime", label: "Lime" },
+  { id: "amber", label: "Amber" }
+];
+const iconStyleOptions = [
+  { id: "sharp", label: "Sharp" },
+  { id: "rounded", label: "Rounded" }
+];
+const iconScaleOptions = [
+  { id: "sm", label: "Compact" },
+  { id: "md", label: "Standard" },
+  { id: "lg", label: "Large" }
+];
+const fontOptions = [
+  { id: "studio", label: "Studio" },
+  { id: "editorial", label: "Editorial" },
+  { id: "technical", label: "Technical" }
+];
+const densityOptions = [
+  { id: "compact", label: "Compact" },
+  { id: "standard", label: "Standard" },
+  { id: "spacious", label: "Spacious" }
+];
+const chromeOptions = [
+  { id: "angular", label: "Angular" },
+  { id: "soft", label: "Soft" }
+];
+const textureOptions = [
+  { id: "none", label: "None" },
+  { id: "grain", label: "Grain" },
+  { id: "scanlines", label: "Scanlines" }
+];
+function isHexColor(value) {
+  return /^#[0-9a-fA-F]{6}$/.test(value);
+}
+function adjustHexColor(hex, amount) {
+  if (!isHexColor(hex)) return hex;
+  const normalized = hex.replace("#", "");
+  const channels = [0, 2, 4].map(
+    (start) => Number.parseInt(normalized.slice(start, start + 2), 16)
+  );
+  const adjusted = channels.map(
+    (channel) => Math.max(0, Math.min(255, channel + amount))
+  );
+  return `#${adjusted.map((channel) => channel.toString(16).padStart(2, "0")).join("")}`;
+}
+function clampPercent(value) {
+  if (Number.isNaN(value)) return 0;
+  return Math.max(0, Math.min(100, value));
+}
+function AppearanceDialog({
+  open,
+  onClose
+}) {
+  const paletteFileInputRef = reactExports.useRef(null);
+  const [paletteImportError, setPaletteImportError] = reactExports.useState("");
+  const [activeCustomField, setActiveCustomField] = reactExports.useState("blood");
+  const {
+    theme,
+    accent,
+    iconStyle,
+    iconScale,
+    fontPreset,
+    density,
+    chrome,
+    texture,
+    customPalette,
+    customAlpha,
+    setTheme,
+    setAccent,
+    setIconStyle,
+    setIconScale,
+    setFontPreset,
+    setDensity,
+    setChrome,
+    setTexture,
+    setCustomPaletteColor,
+    setCustomAlphaValue,
+    applyCustomPalette,
+    resetCustomPalette,
+    resetCustomAlpha
+  } = useAppearanceStore();
+  const customPaletteFields = [
+    { key: "void", label: "Outer Background", fallback: "#080808" },
+    { key: "abyss", label: "Panels", fallback: "#0d0d0d" },
+    { key: "pit", label: "Canvas Chrome", fallback: "#111111" },
+    { key: "crater", label: "Controls", fallback: "#181818" },
+    { key: "ash", label: "Raised Surfaces", fallback: "#222222" },
+    { key: "cinder", label: "Borders", fallback: "#2e2e2e" },
+    { key: "smoke", label: "Low Text", fallback: "#404040" },
+    { key: "fog", label: "Muted Text", fallback: "#666666" },
+    { key: "mist", label: "UI Text", fallback: "#888888" },
+    { key: "pale", label: "Soft Highlight", fallback: "#aaaaaa" },
+    { key: "bone", label: "Primary Text", fallback: "#cccccc" },
+    { key: "white", label: "Bright Text", fallback: "#e8e8e8" },
+    { key: "blood", label: "Accent Base", fallback: "#c0392b" },
+    { key: "ember", label: "Accent Bright", fallback: "#e74c3c" },
+    { key: "spark", label: "Accent Pop", fallback: "#ff6b6b" }
+  ];
+  const customPaletteFieldsMap = {
+    void: customPaletteFields[0],
+    abyss: customPaletteFields[1],
+    pit: customPaletteFields[2],
+    crater: customPaletteFields[3],
+    ash: customPaletteFields[4],
+    cinder: customPaletteFields[5],
+    smoke: customPaletteFields[6],
+    fog: customPaletteFields[7],
+    mist: customPaletteFields[8],
+    pale: customPaletteFields[9],
+    bone: customPaletteFields[10],
+    white: customPaletteFields[11],
+    blood: customPaletteFields[12],
+    ember: customPaletteFields[13],
+    spark: customPaletteFields[14]
+  };
+  const paletteSuggestions = [
+    "#080808",
+    "#1f2937",
+    "#312e81",
+    "#064e3b",
+    "#7c2d12",
+    "#f5f0e7",
+    "#0ea5b7",
+    "#8fd652",
+    "#ec9f31",
+    "#e74c3c"
+  ];
+  const alphaFields = [
+    { key: "glow", label: "Glow", fallback: 16 },
+    { key: "glowMid", label: "Glow Mid", fallback: 8 },
+    { key: "glowFaint", label: "Glow Faint", fallback: 4 },
+    { key: "panelBorder", label: "Panel Border", fallback: 16 }
+  ];
+  const activeField = customPaletteFieldsMap[activeCustomField];
+  const activeRawValue = customPalette[activeField.key];
+  const activeTextValue = activeRawValue || activeField.fallback;
+  const activeWheelValue = isHexColor(activeRawValue) ? activeRawValue : activeField.fallback;
+  if (!open) return null;
+  const handleImportPaletteImage = async (e2) => {
+    const file = e2.target.files?.[0];
+    if (!file) return;
+    try {
+      setPaletteImportError("");
+      const result = await buildThemeFromPaletteImage(file);
+      setTheme(result.theme);
+      setAccent(result.accent);
+      applyCustomPalette(result.palette);
+    } catch (error) {
+      setPaletteImportError(
+        error instanceof Error ? error.message : "Failed to import palette image"
+      );
+    } finally {
+      e2.target.value = "";
+    }
+  };
+  return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "dialog-overlay", onClick: onClose, children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "dialog appearance-dialog", onClick: (e2) => e2.stopPropagation(), children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "dialog-header", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "dialog-title", children: "Appearance" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("button", { className: "dialog-close", onClick: onClose, children: "×" })
+    ] }),
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "dialog-body appearance-body", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "appearance-section", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "appearance-label", children: "Theme" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "appearance-grid", children: themeOptions.map((option) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "button",
+          {
+            className: `appearance-chip ${theme === option.id ? "on" : ""}`,
+            onClick: () => setTheme(option.id),
+            children: option.label
+          },
+          option.id
+        )) })
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "appearance-section", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "appearance-label", children: "Accent" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "appearance-grid", children: accentOptions.map((option) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          "button",
+          {
+            className: `appearance-chip ${accent === option.id ? "on" : ""}`,
+            onClick: () => setAccent(option.id),
+            children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: `appearance-swatch ${option.id}` }),
+              option.label
+            ]
+          },
+          option.id
+        )) })
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "appearance-section", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "appearance-label", children: "Icon Style" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "appearance-grid compact", children: iconStyleOptions.map((option) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "button",
+          {
+            className: `appearance-chip ${iconStyle === option.id ? "on" : ""}`,
+            onClick: () => setIconStyle(option.id),
+            children: option.label
+          },
+          option.id
+        )) })
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "appearance-section", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "appearance-label", children: "Icon Size" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "appearance-grid compact", children: iconScaleOptions.map((option) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "button",
+          {
+            className: `appearance-chip ${iconScale === option.id ? "on" : ""}`,
+            onClick: () => setIconScale(option.id),
+            children: option.label
+          },
+          option.id
+        )) })
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "appearance-section", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "appearance-label", children: "Typography" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "appearance-grid compact", children: fontOptions.map((option) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "button",
+          {
+            className: `appearance-chip ${fontPreset === option.id ? "on" : ""}`,
+            onClick: () => setFontPreset(option.id),
+            children: option.label
+          },
+          option.id
+        )) })
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "appearance-section", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "appearance-label", children: "Density" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "appearance-grid compact", children: densityOptions.map((option) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "button",
+          {
+            className: `appearance-chip ${density === option.id ? "on" : ""}`,
+            onClick: () => setDensity(option.id),
+            children: option.label
+          },
+          option.id
+        )) })
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "appearance-section", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "appearance-label", children: "Chrome" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "appearance-grid compact", children: chromeOptions.map((option) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "button",
+          {
+            className: `appearance-chip ${chrome === option.id ? "on" : ""}`,
+            onClick: () => setChrome(option.id),
+            children: option.label
+          },
+          option.id
+        )) })
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "appearance-section", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "appearance-label", children: "Texture" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "appearance-grid compact", children: textureOptions.map((option) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "button",
+          {
+            className: `appearance-chip ${texture === option.id ? "on" : ""}`,
+            onClick: () => setTexture(option.id),
+            children: option.label
+          },
+          option.id
+        )) })
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "appearance-section", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "appearance-header-row", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "appearance-label", children: "Custom Colors" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "appearance-actions", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "button",
+              {
+                className: "appearance-reset",
+                onClick: () => paletteFileInputRef.current?.click(),
+                children: "Import Palette Image"
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("button", { className: "appearance-reset", onClick: resetCustomPalette, children: "Reset Colors" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("button", { className: "appearance-reset", onClick: resetCustomAlpha, children: "Reset Alpha" })
+          ] })
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "input",
+          {
+            ref: paletteFileInputRef,
+            type: "file",
+            accept: "image/jpeg,image/png",
+            style: { display: "none" },
+            onChange: handleImportPaletteImage
+          }
+        ),
+        paletteImportError ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "appearance-error", children: paletteImportError }) : null,
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "token-picker-grid", children: customPaletteFields.map((field) => {
+          const value = customPalette[field.key] || field.fallback;
+          const isActive = activeCustomField === field.key;
+          return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            "button",
+            {
+              className: `token-chip ${isActive ? "on" : ""}`,
+              onClick: () => setActiveCustomField(field.key),
+              children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  "span",
+                  {
+                    className: "token-chip-swatch",
+                    style: { background: value }
+                  }
+                ),
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "token-chip-copy", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "token-chip-label", children: field.label }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "token-chip-value", children: value })
+                ] })
+              ]
+            },
+            field.key
+          );
+        }) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "alpha-editor-grid", children: alphaFields.map((field) => {
+          const value = customAlpha[field.key] ?? field.fallback;
+          return /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { className: "alpha-row", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "alpha-row-label", children: field.label }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "alpha-row-controls", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                "input",
+                {
+                  type: "range",
+                  min: 0,
+                  max: 100,
+                  value,
+                  className: "alpha-slider",
+                  onChange: (e2) => setCustomAlphaValue(
+                    field.key,
+                    clampPercent(Number(e2.target.value))
+                  )
+                }
+              ),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                "input",
+                {
+                  type: "number",
+                  min: 0,
+                  max: 100,
+                  value,
+                  className: "dialog-input alpha-number-input",
+                  onChange: (e2) => setCustomAlphaValue(
+                    field.key,
+                    clampPercent(Number(e2.target.value))
+                  )
+                }
+              )
+            ] })
+          ] }, field.key);
+        }) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "color-editor-card", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "appearance-header-row", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "appearance-label", children: "Editing" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "color-editor-title", children: activeField.label })
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "button",
+              {
+                className: "appearance-reset",
+                onClick: () => setCustomPaletteColor(activeField.key, ""),
+                children: "Reset Token"
+              }
+            )
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "color-editor-main", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "input",
+              {
+                type: "color",
+                className: "color-wheel-input large",
+                value: activeWheelValue,
+                onChange: (e2) => setCustomPaletteColor(activeField.key, e2.target.value)
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "input",
+              {
+                type: "text",
+                className: "dialog-input color-hex-input",
+                value: activeTextValue,
+                onChange: (e2) => setCustomPaletteColor(activeField.key, e2.target.value)
+              }
+            )
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "color-editor-actions", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "button",
+              {
+                className: "appearance-reset",
+                onClick: () => setCustomPaletteColor(
+                  activeField.key,
+                  adjustHexColor(activeWheelValue, -18)
+                ),
+                children: "Darken"
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "button",
+              {
+                className: "appearance-reset",
+                onClick: () => setCustomPaletteColor(
+                  activeField.key,
+                  adjustHexColor(activeWheelValue, 18)
+                ),
+                children: "Lighten"
+              }
+            )
+          ] })
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "palette-suggestions", children: paletteSuggestions.map((color) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "button",
+          {
+            className: "palette-swatch",
+            style: { background: color },
+            title: color,
+            onClick: () => setCustomPaletteColor(activeField.key, color)
+          },
+          color
+        )) })
+      ] })
+    ] })
+  ] }) });
+}
+function hexToRgb(value) {
+  const normalized = value.replace("#", "");
+  if (normalized.length !== 6) return "192, 57, 43";
+  const r2 = Number.parseInt(normalized.slice(0, 2), 16);
+  const g2 = Number.parseInt(normalized.slice(2, 4), 16);
+  const b2 = Number.parseInt(normalized.slice(4, 6), 16);
+  if ([r2, g2, b2].some((channel) => Number.isNaN(channel))) {
+    return "192, 57, 43";
+  }
+  return `${r2}, ${g2}, ${b2}`;
+}
 function AppShell() {
+  const [appearanceOpen, setAppearanceOpen] = reactExports.useState(false);
+  const { theme, accent, iconStyle, iconScale, fontPreset, density, chrome, texture, customPalette, customAlpha } = useAppearanceStore();
+  reactExports.useEffect(() => {
+    const root = document.documentElement;
+    root.dataset.theme = theme;
+    root.dataset.accent = accent;
+    root.dataset.iconStyle = iconStyle;
+    root.dataset.iconScale = iconScale;
+    root.dataset.fontPreset = fontPreset;
+    root.dataset.density = density;
+    root.dataset.chrome = chrome;
+    root.dataset.texture = texture;
+    const tokenMap = {
+      "--void": customPalette.void,
+      "--abyss": customPalette.abyss,
+      "--pit": customPalette.pit,
+      "--crater": customPalette.crater,
+      "--ash": customPalette.ash,
+      "--cinder": customPalette.cinder,
+      "--smoke": customPalette.smoke,
+      "--fog": customPalette.fog,
+      "--mist": customPalette.mist,
+      "--pale": customPalette.pale,
+      "--bone": customPalette.bone,
+      "--white": customPalette.white,
+      "--blood": customPalette.blood,
+      "--ember": customPalette.ember,
+      "--spark": customPalette.spark
+    };
+    for (const [token, value] of Object.entries(tokenMap)) {
+      if (value) {
+        root.style.setProperty(token, value);
+      } else {
+        root.style.removeProperty(token);
+      }
+    }
+    if (customPalette.blood) {
+      const accentRgb = hexToRgb(customPalette.blood);
+      root.style.setProperty("--accent-rgb", accentRgb);
+      root.style.setProperty(
+        "--glow",
+        `rgba(${accentRgb}, ${(customAlpha.glow ?? 16) / 100})`
+      );
+      root.style.setProperty(
+        "--glow-mid",
+        `rgba(${accentRgb}, ${(customAlpha.glowMid ?? 8) / 100})`
+      );
+      root.style.setProperty(
+        "--glow-faint",
+        `rgba(${accentRgb}, ${(customAlpha.glowFaint ?? 4) / 100})`
+      );
+    } else {
+      root.style.removeProperty("--accent-rgb");
+      root.style.removeProperty("--glow");
+      root.style.removeProperty("--glow-mid");
+      root.style.removeProperty("--glow-faint");
+    }
+    if (customAlpha.panelBorder !== null) {
+      root.style.setProperty(
+        "--panel-border",
+        `1px solid rgba(114, 122, 132, ${customAlpha.panelBorder / 100})`
+      );
+    } else {
+      root.style.removeProperty("--panel-border");
+    }
+  }, [
+    theme,
+    accent,
+    iconStyle,
+    iconScale,
+    fontPreset,
+    density,
+    chrome,
+    texture,
+    customPalette,
+    customAlpha
+  ]);
   return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "app", children: [
     /* @__PURE__ */ jsxRuntimeExports.jsx(TitleBar, {}),
-    /* @__PURE__ */ jsxRuntimeExports.jsx(MenuBar, {}),
+    /* @__PURE__ */ jsxRuntimeExports.jsx(MenuBar, { onOpenAppearance: () => setAppearanceOpen(true) }),
     /* @__PURE__ */ jsxRuntimeExports.jsx(ToolsPanel, {}),
     /* @__PURE__ */ jsxRuntimeExports.jsx(CanvasArea, {}),
     /* @__PURE__ */ jsxRuntimeExports.jsx(RightPanel, {}),
-    /* @__PURE__ */ jsxRuntimeExports.jsx(StatusBar, {})
+    /* @__PURE__ */ jsxRuntimeExports.jsx(StatusBar, {}),
+    /* @__PURE__ */ jsxRuntimeExports.jsx(
+      AppearanceDialog,
+      {
+        open: appearanceOpen,
+        onClose: () => setAppearanceOpen(false)
+      }
+    )
   ] });
 }
 class ErrorBoundary extends reactExports.Component {

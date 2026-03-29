@@ -15,8 +15,12 @@ const PRESETS = [
   { label: "3840×2160", w: 3840, h: 2160 },
 ];
 
-export function MenuBar() {
-  const { setDocument, document: doc, addLayer, setActiveLayer } = useDocumentStore();
+interface MenuBarProps {
+  onOpenAppearance: () => void;
+}
+
+export function MenuBar({ onOpenAppearance }: MenuBarProps) {
+  const { setDocument, document: doc, addLayer, setActiveLayer, undo, redo, undoStack, redoStack } = useDocumentStore();
   const { setZoom, setPan, rendererRef } = useEditorStore();
 
   const [showNewModal, setShowNewModal] = useState(false);
@@ -24,22 +28,28 @@ export function MenuBar() {
   const [newHeight, setNewHeight] = useState(600);
   const [activePreset, setActivePreset] = useState<string | null>("800×600");
 
-  // File menu dropdown state
+  // Menu dropdown states
   const [fileMenuOpen, setFileMenuOpen] = useState(false);
+  const [editMenuOpen, setEditMenuOpen] = useState(false);
   const [exportMenuOpen, setExportMenuOpen] = useState(false);
+  
   const fileMenuRef = useRef<HTMLDivElement>(null);
+  const editMenuRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // JPEG quality dialog
   const [showQualityDialog, setShowQualityDialog] = useState(false);
   const [jpegQuality, setJpegQuality] = useState(90);
 
-  // Close file menu when clicking outside
+  // Close menus when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (fileMenuRef.current && !fileMenuRef.current.contains(event.target as Node)) {
         setFileMenuOpen(false);
         setExportMenuOpen(false);
+      }
+      if (editMenuRef.current && !editMenuRef.current.contains(event.target as Node)) {
+        setEditMenuOpen(false);
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
@@ -400,7 +410,10 @@ export function MenuBar() {
     <>
       <nav className="menubar">
         <div className="mi" ref={fileMenuRef} style={{ position: "relative" }}>
-          <span onClick={() => setFileMenuOpen(!fileMenuOpen)} style={{ cursor: "pointer" }}>
+          <span onClick={() => {
+            setFileMenuOpen(!fileMenuOpen);
+            setEditMenuOpen(false);
+          }} style={{ cursor: "pointer" }}>
             File
           </span>
           {fileMenuOpen && (
@@ -530,11 +543,79 @@ export function MenuBar() {
             </div>
           )}
         </div>
-        <div className="mi">Edit</div>
+        
+        <div className="mi" ref={editMenuRef} style={{ position: "relative" }}>
+          <span onClick={() => {
+            setEditMenuOpen(!editMenuOpen);
+            setFileMenuOpen(false);
+          }} style={{ cursor: "pointer" }}>
+            Edit
+          </span>
+          {editMenuOpen && (
+            <div
+              style={{
+                position: "absolute",
+                top: "100%",
+                left: 0,
+                backgroundColor: "#2a2a2a",
+                border: "1px solid #3a3a3a",
+                borderRadius: "4px",
+                minWidth: "180px",
+                zIndex: 1000,
+                boxShadow: "0 4px 12px rgba(0,0,0,0.4)",
+              }}
+            >
+              <div
+                style={{
+                  padding: "8px 16px",
+                  cursor: undoStack.length > 0 ? "pointer" : "default",
+                  color: undoStack.length > 0 ? "#e0e0e0" : "#666",
+                  fontSize: "13px",
+                  display: "flex",
+                  justifyContent: "space-between",
+                }}
+                onMouseEnter={(e) => undoStack.length > 0 && (e.currentTarget.style.backgroundColor = "#3a3a3a")}
+                onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "transparent")}
+                onClick={() => {
+                  if (undoStack.length > 0) {
+                    undo();
+                    setEditMenuOpen(false);
+                  }
+                }}
+              >
+                <span>Undo</span>
+                <span style={{ opacity: 0.5, marginLeft: "20px" }}>Ctrl+Z</span>
+              </div>
+              <div
+                style={{
+                  padding: "8px 16px",
+                  cursor: redoStack.length > 0 ? "pointer" : "default",
+                  color: redoStack.length > 0 ? "#e0e0e0" : "#666",
+                  fontSize: "13px",
+                  display: "flex",
+                  justifyContent: "space-between",
+                }}
+                onMouseEnter={(e) => redoStack.length > 0 && (e.currentTarget.style.backgroundColor = "#3a3a3a")}
+                onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "transparent")}
+                onClick={() => {
+                  if (redoStack.length > 0) {
+                    redo();
+                    setEditMenuOpen(false);
+                  }
+                }}
+              >
+                <span>Redo</span>
+                <span style={{ opacity: 0.5, marginLeft: "20px" }}>Ctrl+Y</span>
+              </div>
+            </div>
+          )}
+        </div>
+
         <div className="mi">Image</div>
         <div className="mi">Layer</div>
         <div className="mi">Filter</div>
         <div className="mi">View</div>
+        <div className="mi" onClick={onOpenAppearance}>Customize</div>
         <div className="msep"></div>
         <div className="mi">Window</div>
         <div className="mr">

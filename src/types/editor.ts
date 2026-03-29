@@ -17,8 +17,10 @@ export const Tool = {
   Brush: "brush",
   Pencil: "pencil",
   Eraser: "eraser",
-  Selection: "selection",
+  SelectionRect: "selectionRect",
+  SelectionEllipse: "selectionEllipse",
   Lasso: "lasso",
+  QuickSelection: "quickSelection",
   MagicWand: "magicWand",
   Fill: "fill",
   Gradient: "gradient",
@@ -71,6 +73,7 @@ export interface Document {
   height: number;
   layers: Layer[];
   backgroundColor: RGBA;
+  selection: Selection | null;
 }
 
 // 2D point for pan offset
@@ -85,15 +88,28 @@ export interface Viewport {
   height: number;
 }
 
+// Selection modes
+export type SelectionMode = "replace" | "add" | "subtract" | "intersect";
+
+// Selection tools
+export const SelectionTool = {
+  Rect: "rect",
+  Ellipse: "ellipse",
+  Lasso: "lasso",
+  Quick: "quick",
+} as const;
+
+export type SelectionTool = (typeof SelectionTool)[keyof typeof SelectionTool];
+
+
 // Selection descriptor
 export interface Selection {
-  mask: Uint8ClampedArray | null; // 1-bit per pixel
+  mask: Uint8Array; // 1 byte per pixel (0 = unselected, 255 = selected)
   bounds: {
     x: number;
     y: number;
     width: number;
     height: number;
   } | null;
-  feather: number;
-  antiAlias: boolean;
+  isActive: boolean;
 }

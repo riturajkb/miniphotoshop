@@ -290,20 +290,60 @@ export class LayerStack {
   }
 
   /**
-   * Hard-reset the stack, including the last remaining layer.
-   * Used when rebuilding the entire document.
+   * Reconcile the engine's LayerStack with external document state
    */
-  clear(): void {
-    for (const layer of this.layers) {
-      if (layer.sprite) {
-        layer.sprite.destroy({ texture: true });
+  syncFromDocument(docLayers: import("../types/editor").Layer[]): void {
+    // 1. Identify layers to remove
+    const docIds = new Set(docLayers.map((l) => l.id));
+    this.layers = this.layers.filter((engineLayer) => {
+      if (!docIds.has(engineLayer.id)) {
+        if (engineLayer.sprite) engineLayer.sprite.destroy({ texture: true });
+        if (engineLayer.graphics) engineLayer.graphics.destroy();
+        return false;
       }
-      if (layer.graphics) {
-        layer.graphics.destroy();
+      return true;
+    });
+
+    // 2. Identify and create/update layers
+    const newLayers: LayerData[] = [];
+
+    for (const docLayer of docLayers) {
+      let engineLayer = this.layers.find((l) => l.id === docLayer.id);
+
+      if (!engineLayer) {
+        // Create new engine layer
+        engineLayer = {
+          id: docLayer.id,
+          name: docLayer.name,
+          visible: docLayer.visible,
+          locked: docLayer.locked,
+          opacity: docLayer.opacity,
+          blendMode: docLayer.blendMode,
+          sprite: null,
+          pixelBuffer: docLayer.pixels ? new Uint8ClampedArray(docLayer.pixels) : new Uint8ClampedArray(this.width * this.height * 4),
+          width: this.width,
+          height: this.height,
+          dirty: true,
+        };
+      } else {
+        // Update existing layer properties
+        engineLayer.name = docLayer.name;
+        engineLayer.visible = docLayer.visible;
+        engineLayer.locked = docLayer.locked;
+        engineLayer.opacity = docLayer.opacity;
+        engineLayer.blendMode = docLayer.blendMode;
+
+        // Sync pixels if they exist in doc and are different (or simply always sync for simplicity in undo/redo)
+        if (docLayer.pixels) {
+          engineLayer.pixelBuffer?.set(docLayer.pixels);
+        }
+        engineLayer.dirty = true;
       }
+
+      newLayers.push(engineLayer);
     }
 
-    this.layers = [];
-    this.activeLayerId = null;
+    this.layers = newLayers;
+    this.markAllDirty();
   }
 }
