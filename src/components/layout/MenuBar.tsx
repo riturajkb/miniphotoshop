@@ -1,5 +1,5 @@
 import { useState, useCallback, useRef, useEffect } from "react";
-import type { Layer } from "../../types/editor";
+import { Tool, type Layer } from "../../types/editor";
 import {
   useDocumentStore,
   createDefaultDocument,
@@ -19,9 +19,51 @@ interface MenuBarProps {
   onOpenAppearance: () => void;
 }
 
+type ElectronAPI = {
+  onMenuNew?: (callback: () => void) => () => void;
+  onMenuUndo?: (callback: () => void) => () => void;
+  onMenuRedo?: (callback: () => void) => () => void;
+  onFileOpen?: (callback: (filePath: string) => void) => () => void;
+};
+
+function createLayerWithPixels(
+  id: string,
+  name: string,
+  pixels: Uint8ClampedArray,
+  transformSource: Layer["transformSource"] = null,
+): Layer {
+  return {
+    id,
+    name,
+    visible: true,
+    locked: false,
+    opacity: 100,
+    blendMode: "normal",
+    pixels,
+    transformSource,
+  };
+}
+
+function createFilledLayer(
+  id: string,
+  name: string,
+  width: number,
+  height: number,
+  color: { r: number; g: number; b: number; a: number },
+): Layer {
+  const pixels = new Uint8ClampedArray(width * height * 4);
+  for (let i = 0; i < pixels.length; i += 4) {
+    pixels[i] = color.r;
+    pixels[i + 1] = color.g;
+    pixels[i + 2] = color.b;
+    pixels[i + 3] = color.a;
+  }
+  return createLayerWithPixels(id, name, pixels);
+}
+
 export function MenuBar({ onOpenAppearance }: MenuBarProps) {
   const { setDocument, document: doc, addLayer, setActiveLayer, undo, redo, undoStack, redoStack } = useDocumentStore();
-  const { setZoom, setPan, rendererRef } = useEditorStore();
+  const { setZoom, setPan, setTool, rendererRef } = useEditorStore();
 
   const [showNewModal, setShowNewModal] = useState(false);
   const [newWidth, setNewWidth] = useState(800);
@@ -66,6 +108,26 @@ export function MenuBar({ onOpenAppearance }: MenuBarProps) {
     setNewHeight(h);
   }, []);
 
+  const syncEditorState = useCallback(() => {
+    if (!rendererRef) return;
+    rendererRef.forceRender();
+    setZoom(rendererRef.getZoom() * 100);
+    setPan(rendererRef.getPan());
+  }, [rendererRef, setPan, setZoom]);
+
+  const applyDocumentState = useCallback(
+    (nextDoc: ReturnType<typeof createDefaultDocument>, activeLayerId: string) => {
+      if (rendererRef) {
+        rendererRef.resizeDocument(nextDoc.width, nextDoc.height);
+        rendererRef.syncDocument(nextDoc, activeLayerId);
+      }
+      setDocument(nextDoc);
+      setActiveLayer(activeLayerId);
+      syncEditorState();
+    },
+    [rendererRef, setActiveLayer, setDocument, syncEditorState],
+  );
+
   const confirmNewFile = useCallback(() => {
     setShowNewModal(false);
 
@@ -78,130 +140,33 @@ export function MenuBar({ onOpenAppearance }: MenuBarProps) {
       b: 255,
       a: 0,
     });
-
-    if (rendererRef) {
-      // resizeDocument now internally calls fitToViewport to center the new canvas
-      rendererRef.resizeDocument(width, height);
-
-      // Create a white background Graphics object as the bottommost layer in the scene graph
-      // This is a real PixiJS Graphics object that can be exported and flattened correctly
-      rendererRef.createBackgroundGraphics();
-
-      // Add a corresponding layer entry for the Background with solid white pixels
-      const layerStack = rendererRef.getLayerStack();
-      const backgroundLayer = layerStack.createLayer("Background", {
+    newDoc.layers.push(
+      createFilledLayer("layer-bg", "Background", width, height, {
         r: 255,
         g: 255,
         b: 255,
         a: 255,
-      }, "layer-bg");
-
-      // Associate the Graphics object with the layer so it gets cleaned up on deletion
-      const bgGraphics = rendererRef.getBackgroundGraphics();
-      if (bgGraphics) {
-        backgroundLayer.graphics = bgGraphics;
-      }
-
-      // Add the Background layer to the document before setting it
-      const backgroundLayerForStore: Layer = {
-        id: "layer-bg",
-        name: "Background",
-        visible: true,
-        locked: false,
-        opacity: 100,
-        blendMode: "normal",
-        pixels: null,
-      };
-      newDoc.layers.push(backgroundLayerForStore);
-      setDocument(newDoc);
-
-      rendererRef.forceRender();
-
-      // Sync zoom/pan state back to Zustand store
-      setZoom(rendererRef.getZoom() * 100);
-      setPan(rendererRef.getPan());
-    } else {
-      setDocument(newDoc);
-    }
-  }, [newWidth, newHeight, setDocument, setZoom, setPan, rendererRef]);
-
-  const isPristineStartupDocument = useCallback(() => {
-    const currentDoc = useDocumentStore.getState().document;
-    if (!currentDoc) return false;
-    return currentDoc.layers.length === 1 && currentDoc.layers[0]?.id === "layer-bg";
-  }, []);
-
-  const rebuildDocumentWithBackground = useCallback(
-    (width: number, height: number) => {
-      if (!rendererRef) return;
-
-      const nextDoc = createDefaultDocument(width, height, {
-        r: 255,
-        g: 255,
-        b: 255,
-        a: 0,
-      });
-
-      rendererRef.resizeDocument(width, height);
-      rendererRef.createBackgroundGraphics();
-
-      const layerStack = rendererRef.getLayerStack();
-      const bgLayerData = layerStack.createLayer(
-        "Background",
-        { r: 255, g: 255, b: 255, a: 255 },
-        "layer-bg",
-      );
-
-      const bgGraphics = rendererRef.getBackgroundGraphics();
-      if (bgGraphics) {
-        bgLayerData.graphics = bgGraphics;
-      }
-
-      const bgLayerForStore: Layer = {
-        id: "layer-bg",
-        name: "Background",
-        visible: true,
-        locked: false,
-        opacity: 100,
-        blendMode: "normal",
-        pixels: null,
-      };
-
-      nextDoc.layers.push(bgLayerForStore);
-      setDocument(nextDoc);
-
-      rendererRef.forceRender();
-      setZoom(rendererRef.getZoom() * 100);
-      setPan(rendererRef.getPan());
-    },
-    [rendererRef, setDocument, setPan, setZoom],
-  );
+      }),
+    );
+    applyDocumentState(newDoc, "layer-bg");
+  }, [applyDocumentState, newHeight, newWidth]);
 
   const openImageAsDocument = useCallback(
     (img: HTMLImageElement, fileName: string) => {
-      if (!rendererRef) return;
-
       const nextDoc = createDefaultDocument(img.width, img.height, {
         r: 255,
         g: 255,
         b: 255,
         a: 0,
       });
-
-      rendererRef.resizeDocument(img.width, img.height);
-      rendererRef.createBackgroundGraphics();
-
-      const layerStack = rendererRef.getLayerStack();
-      const bgLayerData = layerStack.createLayer(
-        "Background",
-        { r: 255, g: 255, b: 255, a: 255 },
-        "layer-bg",
+      nextDoc.layers.push(
+        createFilledLayer("layer-bg", "Background", img.width, img.height, {
+          r: 255,
+          g: 255,
+          b: 255,
+          a: 255,
+        }),
       );
-
-      const bgGraphics = rendererRef.getBackgroundGraphics();
-      if (bgGraphics) {
-        bgLayerData.graphics = bgGraphics;
-      }
 
       const tempCanvas = document.createElement("canvas");
       tempCanvas.width = img.width;
@@ -210,39 +175,18 @@ export function MenuBar({ onOpenAppearance }: MenuBarProps) {
       tempCtx.drawImage(img, 0, 0);
       const imageData = tempCtx.getImageData(0, 0, img.width, img.height);
 
-      const imageLayer = layerStack.createLayer(fileName);
-      imageLayer.pixelBuffer = new Uint8ClampedArray(imageData.data);
-      imageLayer.width = img.width;
-      imageLayer.height = img.height;
-      imageLayer.dirty = true;
+      const imageLayerId = `layer-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+      nextDoc.layers.push(
+        createLayerWithPixels(
+          imageLayerId,
+          fileName,
+          new Uint8ClampedArray(imageData.data),
+        ),
+      );
 
-      nextDoc.layers.push({
-        id: "layer-bg",
-        name: "Background",
-        visible: true,
-        locked: false,
-        opacity: 100,
-        blendMode: "normal",
-        pixels: null,
-      });
-
-      nextDoc.layers.push({
-        id: imageLayer.id,
-        name: fileName,
-        visible: true,
-        locked: false,
-        opacity: 100,
-        blendMode: "normal",
-        pixels: null,
-      });
-
-      setDocument(nextDoc);
-      setActiveLayer(imageLayer.id);
-      rendererRef.forceRender();
-      setZoom(rendererRef.getZoom() * 100);
-      setPan(rendererRef.getPan());
+      applyDocumentState(nextDoc, imageLayerId);
     },
-    [rendererRef, setActiveLayer, setDocument, setPan, setZoom],
+    [applyDocumentState],
   );
 
   // Import Image handler
@@ -250,6 +194,18 @@ export function MenuBar({ onOpenAppearance }: MenuBarProps) {
     fileInputRef.current?.click();
     setFileMenuOpen(false);
   }, []);
+
+  const openImageFromPath = useCallback(
+    (filePath: string) => {
+      const img = new Image();
+      const fileName = filePath.split(/[\\/]/).pop() || "image";
+
+      img.onload = () => openImageAsDocument(img, fileName);
+      img.onerror = () => console.error(`Failed to open image: ${filePath}`);
+      img.src = encodeURI(`file://${filePath}`);
+    },
+    [openImageAsDocument],
+  );
 
   // Handle file selection for import
   const handleFileSelect = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -261,54 +217,29 @@ export function MenuBar({ onOpenAppearance }: MenuBarProps) {
 
     img.onload = () => {
       const fileName = file.name;
-      if (isPristineStartupDocument()) {
-        openImageAsDocument(img, fileName);
-        URL.revokeObjectURL(objectURL);
-        if (fileInputRef.current) {
-          fileInputRef.current.value = "";
-        }
-        return;
-      }
-
       const currentDoc = useDocumentStore.getState().document;
       if (!currentDoc) {
         URL.revokeObjectURL(objectURL);
         return;
       }
 
-      const layerStack = rendererRef.getLayerStack();
-
-      // Create a new layer named after the file
-      const newLayer = layerStack.createLayer(fileName);
-
-      // Draw image to a temporary canvas to get pixel data
       const tempCanvas = document.createElement("canvas");
       tempCanvas.width = img.width;
       tempCanvas.height = img.height;
       const tempCtx = tempCanvas.getContext("2d")!;
       tempCtx.drawImage(img, 0, 0);
 
-      // Get pixel data
       const imageData = tempCtx.getImageData(0, 0, img.width, img.height);
-      newLayer.pixelBuffer = imageData.data;
-      newLayer.width = img.width;
-      newLayer.height = img.height;
-      newLayer.dirty = true;
-
-      // Center the image on the canvas
       const docWidth = currentDoc.width;
       const docHeight = currentDoc.height;
+      const nextLayerId = `layer-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+      const layerStack = rendererRef.getLayerStack();
+      const newLayer = layerStack.createLayer(fileName, undefined, nextLayerId);
+
       const offsetX = Math.floor((docWidth - img.width) / 2);
       const offsetY = Math.floor((docHeight - img.height) / 2);
-
-      // Create pixel buffer for the full document size, positioned at center
       const docPixelBuffer = new Uint8ClampedArray(docWidth * docHeight * 4);
-      // Fill with transparent
-      for (let i = 3; i < docPixelBuffer.length; i += 4) {
-        docPixelBuffer[i] = 0;
-      }
 
-      // Copy image pixels to centered position
       for (let y = 0; y < img.height; y++) {
         const destY = y + offsetY;
         if (destY < 0 || destY >= docHeight) continue;
@@ -319,34 +250,41 @@ export function MenuBar({ onOpenAppearance }: MenuBarProps) {
           const srcIdx = (y * img.width + x) * 4;
           const destIdx = (destY * docWidth + destX) * 4;
 
-          docPixelBuffer[destIdx] = newLayer.pixelBuffer![srcIdx];
-          docPixelBuffer[destIdx + 1] = newLayer.pixelBuffer![srcIdx + 1];
-          docPixelBuffer[destIdx + 2] = newLayer.pixelBuffer![srcIdx + 2];
-          docPixelBuffer[destIdx + 3] = newLayer.pixelBuffer![srcIdx + 3];
+          docPixelBuffer[destIdx] = imageData.data[srcIdx];
+          docPixelBuffer[destIdx + 1] = imageData.data[srcIdx + 1];
+          docPixelBuffer[destIdx + 2] = imageData.data[srcIdx + 2];
+          docPixelBuffer[destIdx + 3] = imageData.data[srcIdx + 3];
         }
       }
 
       newLayer.pixelBuffer = docPixelBuffer;
       newLayer.width = docWidth;
       newLayer.height = docHeight;
+      newLayer.dirty = true;
 
-      // Add layer to store
-      const storeLayer: Layer = {
-        id: newLayer.id,
-        name: newLayer.name,
-        visible: true,
-        locked: false,
-        opacity: 100,
-        blendMode: "normal",
-        pixels: null,
-      };
+      const storeLayer = createLayerWithPixels(
+        newLayer.id,
+        newLayer.name,
+        new Uint8ClampedArray(docPixelBuffer),
+        {
+          pixels: new Uint8ClampedArray(imageData.data),
+          width: img.width,
+          height: img.height,
+          bounds: {
+            x: offsetX,
+            y: offsetY,
+            width: img.width,
+            height: img.height,
+          },
+        },
+      );
       addLayer(storeLayer);
       setActiveLayer(storeLayer.id);
-
+      setTool(Tool.Move);
       rendererRef.forceRender();
+
       URL.revokeObjectURL(objectURL);
 
-      // Reset file input
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
       }
@@ -361,7 +299,25 @@ export function MenuBar({ onOpenAppearance }: MenuBarProps) {
     };
 
     img.src = objectURL;
-  }, [rendererRef, doc, addLayer, isPristineStartupDocument, openImageAsDocument, setActiveLayer]);
+  }, [rendererRef, doc, addLayer, setActiveLayer, setTool]);
+
+  useEffect(() => {
+    const electronAPI = (window as Window & { electronAPI?: ElectronAPI }).electronAPI;
+    if (!electronAPI) return;
+
+    const disposers = [
+      electronAPI.onMenuNew?.(handleNewFile),
+      electronAPI.onMenuUndo?.(undo),
+      electronAPI.onMenuRedo?.(redo),
+      electronAPI.onFileOpen?.(openImageFromPath),
+    ].filter((value): value is () => void => typeof value === "function");
+
+    return () => {
+      for (const dispose of disposers) {
+        dispose();
+      }
+    };
+  }, [handleNewFile, openImageFromPath, redo, undo]);
 
   // Export handlers
   const triggerDownload = useCallback((dataURL: string, filename: string) => {

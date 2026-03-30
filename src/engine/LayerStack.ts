@@ -36,6 +36,22 @@ export class LayerStack {
     this.height = height;
   }
 
+  reset(width = this.width, height = this.height): void {
+    for (const layer of this.layers) {
+      if (layer.sprite) {
+        layer.sprite.destroy({ texture: true });
+      }
+      if (layer.graphics) {
+        layer.graphics.destroy();
+      }
+    }
+
+    this.layers = [];
+    this.activeLayerId = null;
+    this.width = width;
+    this.height = height;
+  }
+
   createLayer(name: string, fillColor?: RGBA, id?: string): LayerData {
     const layerId = id || `layer-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
     const pixelBuffer = new Uint8ClampedArray(this.width * this.height * 4);
@@ -333,10 +349,21 @@ export class LayerStack {
         engineLayer.opacity = docLayer.opacity;
         engineLayer.blendMode = docLayer.blendMode;
 
+        if (
+          !engineLayer.pixelBuffer ||
+          engineLayer.pixelBuffer.length !== this.width * this.height * 4
+        ) {
+          engineLayer.pixelBuffer = new Uint8ClampedArray(
+            this.width * this.height * 4,
+          );
+        }
+
         // Sync pixels if they exist in doc and are different (or simply always sync for simplicity in undo/redo)
         if (docLayer.pixels) {
           engineLayer.pixelBuffer?.set(docLayer.pixels);
         }
+        engineLayer.width = this.width;
+        engineLayer.height = this.height;
         engineLayer.dirty = true;
       }
 

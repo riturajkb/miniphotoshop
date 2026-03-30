@@ -393,9 +393,8 @@ export class Renderer {
     this.docWidth = w;
     this.docHeight = h;
     this.compositor.resize(w, h);
-    this.layerStack.resize(w, h);
+    this.layerStack.reset(w, h);
     this.selectionManager.resize(w, h);
-    this.layerStack.markAllDirty();
     this.engine.removeBackgroundGraphics();
 
     this.offscreen.width = w;

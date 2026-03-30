@@ -1,4 +1,4 @@
-const __vite__mapDeps=(i,m=__vite__mapDeps,d=(m.f||(m.f=["./browserAll-DAkSBB4r.js","./webworkerAll-CYbwvZbD.js","./Filter-BwbujZFC.js","./WebGPURenderer-D8Vf0Z9J.js","./GpuStencilModesToPixi-D1QluwRF.js","./RenderTargetSystem-BoAEBTSB.js","./WebGLRenderer-D7JMZ8M2.js","./CanvasRenderer-ClfeYIuh.js"])))=>i.map(i=>d[i]);
+const __vite__mapDeps=(i,m=__vite__mapDeps,d=(m.f||(m.f=["./browserAll-Dt03pJY5.js","./webworkerAll-DmOUSEPI.js","./Filter-ClqMLBDG.js","./WebGPURenderer-Cv3wpFZf.js","./GpuStencilModesToPixi-BvJO11Ks.js","./RenderTargetSystem-WRCEUZOq.js","./WebGLRenderer-D0BH9d1j.js","./CanvasRenderer-C41xwh-h.js"])))=>i.map(i=>d[i]);
 function getDefaultExportFromCjs(x2) {
   return x2 && x2.__esModule && Object.prototype.hasOwnProperty.call(x2, "default") ? x2["default"] : x2;
 }
@@ -7699,7 +7699,12 @@ function cloneDocument(doc) {
     ...doc,
     layers: doc.layers.map((l2) => ({
       ...l2,
-      pixels: l2.pixels ? new Uint8ClampedArray(l2.pixels) : null
+      pixels: l2.pixels ? new Uint8ClampedArray(l2.pixels) : null,
+      transformSource: l2.transformSource ? {
+        ...l2.transformSource,
+        pixels: new Uint8ClampedArray(l2.transformSource.pixels),
+        bounds: { ...l2.transformSource.bounds }
+      } : null
     })),
     selection: doc.selection ? {
       ...doc.selection,
@@ -7813,6 +7818,9 @@ const useDocumentStore = create()(
         if (state.document) {
           const layer = state.document.layers.find((l2) => l2.id === layerId);
           if (layer) {
+            if ("pixels" in updates && !("transformSource" in updates)) {
+              layer.transformSource = null;
+            }
             Object.assign(layer, updates);
           }
         }
@@ -7823,6 +7831,7 @@ const useDocumentStore = create()(
         const layer = state.document.layers.find((l2) => l2.id === layerId);
         if (layer) {
           layer.pixels = new Uint8ClampedArray(pixels);
+          layer.transformSource = null;
         }
       }
     }),
@@ -7876,6 +7885,23 @@ function TitleBar() {
     ] })
   ] });
 }
+const Tool = {
+  Move: "move",
+  Brush: "brush",
+  Pencil: "pencil",
+  Eraser: "eraser",
+  SelectionRect: "selectionRect",
+  SelectionEllipse: "selectionEllipse",
+  Lasso: "lasso",
+  QuickSelection: "quickSelection",
+  Fill: "fill",
+  Gradient: "gradient",
+  Eyedropper: "eyedropper",
+  Crop: "crop",
+  Text: "text",
+  Shape: "shape",
+  Zoom: "zoom"
+};
 const initialState$1 = {
   activeTool: "brush",
   zoom: 100,
@@ -7919,9 +7945,31 @@ const PRESETS = [
   { label: "2560×1440", w: 2560, h: 1440 },
   { label: "3840×2160", w: 3840, h: 2160 }
 ];
+function createLayerWithPixels(id2, name, pixels, transformSource = null) {
+  return {
+    id: id2,
+    name,
+    visible: true,
+    locked: false,
+    opacity: 100,
+    blendMode: "normal",
+    pixels,
+    transformSource
+  };
+}
+function createFilledLayer(id2, name, width, height, color) {
+  const pixels = new Uint8ClampedArray(width * height * 4);
+  for (let i2 = 0; i2 < pixels.length; i2 += 4) {
+    pixels[i2] = color.r;
+    pixels[i2 + 1] = color.g;
+    pixels[i2 + 2] = color.b;
+    pixels[i2 + 3] = color.a;
+  }
+  return createLayerWithPixels(id2, name, pixels);
+}
 function MenuBar({ onOpenAppearance }) {
   const { setDocument, document: doc, addLayer, setActiveLayer, undo, redo, undoStack, redoStack } = useDocumentStore();
-  const { setZoom, setPan, rendererRef } = useEditorStore();
+  const { setZoom, setPan, setTool, rendererRef } = useEditorStore();
   const [showNewModal, setShowNewModal] = reactExports.useState(false);
   const [newWidth, setNewWidth] = reactExports.useState(800);
   const [newHeight, setNewHeight] = reactExports.useState(600);
@@ -7955,6 +8003,24 @@ function MenuBar({ onOpenAppearance }) {
     setNewWidth(w2);
     setNewHeight(h2);
   }, []);
+  const syncEditorState = reactExports.useCallback(() => {
+    if (!rendererRef) return;
+    rendererRef.forceRender();
+    setZoom(rendererRef.getZoom() * 100);
+    setPan(rendererRef.getPan());
+  }, [rendererRef, setPan, setZoom]);
+  const applyDocumentState = reactExports.useCallback(
+    (nextDoc, activeLayerId) => {
+      if (rendererRef) {
+        rendererRef.resizeDocument(nextDoc.width, nextDoc.height);
+        rendererRef.syncDocument(nextDoc, activeLayerId);
+      }
+      setDocument(nextDoc);
+      setActiveLayer(activeLayerId);
+      syncEditorState();
+    },
+    [rendererRef, setActiveLayer, setDocument, syncEditorState]
+  );
   const confirmNewFile = reactExports.useCallback(() => {
     setShowNewModal(false);
     const width = Math.max(1, Math.min(16384, newWidth));
@@ -7965,143 +8031,64 @@ function MenuBar({ onOpenAppearance }) {
       b: 255,
       a: 0
     });
-    if (rendererRef) {
-      rendererRef.resizeDocument(width, height);
-      rendererRef.createBackgroundGraphics();
-      const layerStack = rendererRef.getLayerStack();
-      const backgroundLayer = layerStack.createLayer("Background", {
+    newDoc.layers.push(
+      createFilledLayer("layer-bg", "Background", width, height, {
         r: 255,
         g: 255,
         b: 255,
         a: 255
-      }, "layer-bg");
-      const bgGraphics = rendererRef.getBackgroundGraphics();
-      if (bgGraphics) {
-        backgroundLayer.graphics = bgGraphics;
-      }
-      const backgroundLayerForStore = {
-        id: "layer-bg",
-        name: "Background",
-        visible: true,
-        locked: false,
-        opacity: 100,
-        blendMode: "normal",
-        pixels: null
-      };
-      newDoc.layers.push(backgroundLayerForStore);
-      setDocument(newDoc);
-      rendererRef.forceRender();
-      setZoom(rendererRef.getZoom() * 100);
-      setPan(rendererRef.getPan());
-    } else {
-      setDocument(newDoc);
-    }
-  }, [newWidth, newHeight, setDocument, setZoom, setPan, rendererRef]);
-  const isPristineStartupDocument = reactExports.useCallback(() => {
-    const currentDoc = useDocumentStore.getState().document;
-    if (!currentDoc) return false;
-    return currentDoc.layers.length === 1 && currentDoc.layers[0]?.id === "layer-bg";
-  }, []);
-  reactExports.useCallback(
-    (width, height) => {
-      if (!rendererRef) return;
-      const nextDoc = createDefaultDocument(width, height, {
-        r: 255,
-        g: 255,
-        b: 255,
-        a: 0
-      });
-      rendererRef.resizeDocument(width, height);
-      rendererRef.createBackgroundGraphics();
-      const layerStack = rendererRef.getLayerStack();
-      const bgLayerData = layerStack.createLayer(
-        "Background",
-        { r: 255, g: 255, b: 255, a: 255 },
-        "layer-bg"
-      );
-      const bgGraphics = rendererRef.getBackgroundGraphics();
-      if (bgGraphics) {
-        bgLayerData.graphics = bgGraphics;
-      }
-      const bgLayerForStore = {
-        id: "layer-bg",
-        name: "Background",
-        visible: true,
-        locked: false,
-        opacity: 100,
-        blendMode: "normal",
-        pixels: null
-      };
-      nextDoc.layers.push(bgLayerForStore);
-      setDocument(nextDoc);
-      rendererRef.forceRender();
-      setZoom(rendererRef.getZoom() * 100);
-      setPan(rendererRef.getPan());
-    },
-    [rendererRef, setDocument, setPan, setZoom]
-  );
+      })
+    );
+    applyDocumentState(newDoc, "layer-bg");
+  }, [applyDocumentState, newHeight, newWidth]);
   const openImageAsDocument = reactExports.useCallback(
     (img, fileName) => {
-      if (!rendererRef) return;
       const nextDoc = createDefaultDocument(img.width, img.height, {
         r: 255,
         g: 255,
         b: 255,
         a: 0
       });
-      rendererRef.resizeDocument(img.width, img.height);
-      rendererRef.createBackgroundGraphics();
-      const layerStack = rendererRef.getLayerStack();
-      const bgLayerData = layerStack.createLayer(
-        "Background",
-        { r: 255, g: 255, b: 255, a: 255 },
-        "layer-bg"
+      nextDoc.layers.push(
+        createFilledLayer("layer-bg", "Background", img.width, img.height, {
+          r: 255,
+          g: 255,
+          b: 255,
+          a: 255
+        })
       );
-      const bgGraphics = rendererRef.getBackgroundGraphics();
-      if (bgGraphics) {
-        bgLayerData.graphics = bgGraphics;
-      }
       const tempCanvas = document.createElement("canvas");
       tempCanvas.width = img.width;
       tempCanvas.height = img.height;
       const tempCtx = tempCanvas.getContext("2d");
       tempCtx.drawImage(img, 0, 0);
       const imageData = tempCtx.getImageData(0, 0, img.width, img.height);
-      const imageLayer = layerStack.createLayer(fileName);
-      imageLayer.pixelBuffer = new Uint8ClampedArray(imageData.data);
-      imageLayer.width = img.width;
-      imageLayer.height = img.height;
-      imageLayer.dirty = true;
-      nextDoc.layers.push({
-        id: "layer-bg",
-        name: "Background",
-        visible: true,
-        locked: false,
-        opacity: 100,
-        blendMode: "normal",
-        pixels: null
-      });
-      nextDoc.layers.push({
-        id: imageLayer.id,
-        name: fileName,
-        visible: true,
-        locked: false,
-        opacity: 100,
-        blendMode: "normal",
-        pixels: null
-      });
-      setDocument(nextDoc);
-      setActiveLayer(imageLayer.id);
-      rendererRef.forceRender();
-      setZoom(rendererRef.getZoom() * 100);
-      setPan(rendererRef.getPan());
+      const imageLayerId = `layer-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+      nextDoc.layers.push(
+        createLayerWithPixels(
+          imageLayerId,
+          fileName,
+          new Uint8ClampedArray(imageData.data)
+        )
+      );
+      applyDocumentState(nextDoc, imageLayerId);
     },
-    [rendererRef, setActiveLayer, setDocument, setPan, setZoom]
+    [applyDocumentState]
   );
   const handleImportImage = reactExports.useCallback(() => {
     fileInputRef.current?.click();
     setFileMenuOpen(false);
   }, []);
+  const openImageFromPath = reactExports.useCallback(
+    (filePath) => {
+      const img = new Image();
+      const fileName = filePath.split(/[\\/]/).pop() || "image";
+      img.onload = () => openImageAsDocument(img, fileName);
+      img.onerror = () => console.error(`Failed to open image: ${filePath}`);
+      img.src = encodeURI(`file://${filePath}`);
+    },
+    [openImageAsDocument]
+  );
   const handleFileSelect = reactExports.useCallback(async (e2) => {
     const file = e2.target.files?.[0];
     if (!file || !rendererRef || !doc) return;
@@ -8109,39 +8096,25 @@ function MenuBar({ onOpenAppearance }) {
     const img = new Image();
     img.onload = () => {
       const fileName = file.name;
-      if (isPristineStartupDocument()) {
-        openImageAsDocument(img, fileName);
-        URL.revokeObjectURL(objectURL);
-        if (fileInputRef.current) {
-          fileInputRef.current.value = "";
-        }
-        return;
-      }
       const currentDoc = useDocumentStore.getState().document;
       if (!currentDoc) {
         URL.revokeObjectURL(objectURL);
         return;
       }
-      const layerStack = rendererRef.getLayerStack();
-      const newLayer = layerStack.createLayer(fileName);
       const tempCanvas = document.createElement("canvas");
       tempCanvas.width = img.width;
       tempCanvas.height = img.height;
       const tempCtx = tempCanvas.getContext("2d");
       tempCtx.drawImage(img, 0, 0);
       const imageData = tempCtx.getImageData(0, 0, img.width, img.height);
-      newLayer.pixelBuffer = imageData.data;
-      newLayer.width = img.width;
-      newLayer.height = img.height;
-      newLayer.dirty = true;
       const docWidth = currentDoc.width;
       const docHeight = currentDoc.height;
+      const nextLayerId = `layer-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+      const layerStack = rendererRef.getLayerStack();
+      const newLayer = layerStack.createLayer(fileName, void 0, nextLayerId);
       const offsetX = Math.floor((docWidth - img.width) / 2);
       const offsetY = Math.floor((docHeight - img.height) / 2);
       const docPixelBuffer = new Uint8ClampedArray(docWidth * docHeight * 4);
-      for (let i2 = 3; i2 < docPixelBuffer.length; i2 += 4) {
-        docPixelBuffer[i2] = 0;
-      }
       for (let y2 = 0; y2 < img.height; y2++) {
         const destY = y2 + offsetY;
         if (destY < 0 || destY >= docHeight) continue;
@@ -8150,26 +8123,35 @@ function MenuBar({ onOpenAppearance }) {
           if (destX < 0 || destX >= docWidth) continue;
           const srcIdx = (y2 * img.width + x2) * 4;
           const destIdx = (destY * docWidth + destX) * 4;
-          docPixelBuffer[destIdx] = newLayer.pixelBuffer[srcIdx];
-          docPixelBuffer[destIdx + 1] = newLayer.pixelBuffer[srcIdx + 1];
-          docPixelBuffer[destIdx + 2] = newLayer.pixelBuffer[srcIdx + 2];
-          docPixelBuffer[destIdx + 3] = newLayer.pixelBuffer[srcIdx + 3];
+          docPixelBuffer[destIdx] = imageData.data[srcIdx];
+          docPixelBuffer[destIdx + 1] = imageData.data[srcIdx + 1];
+          docPixelBuffer[destIdx + 2] = imageData.data[srcIdx + 2];
+          docPixelBuffer[destIdx + 3] = imageData.data[srcIdx + 3];
         }
       }
       newLayer.pixelBuffer = docPixelBuffer;
       newLayer.width = docWidth;
       newLayer.height = docHeight;
-      const storeLayer = {
-        id: newLayer.id,
-        name: newLayer.name,
-        visible: true,
-        locked: false,
-        opacity: 100,
-        blendMode: "normal",
-        pixels: null
-      };
+      newLayer.dirty = true;
+      const storeLayer = createLayerWithPixels(
+        newLayer.id,
+        newLayer.name,
+        new Uint8ClampedArray(docPixelBuffer),
+        {
+          pixels: new Uint8ClampedArray(imageData.data),
+          width: img.width,
+          height: img.height,
+          bounds: {
+            x: offsetX,
+            y: offsetY,
+            width: img.width,
+            height: img.height
+          }
+        }
+      );
       addLayer(storeLayer);
       setActiveLayer(storeLayer.id);
+      setTool(Tool.Move);
       rendererRef.forceRender();
       URL.revokeObjectURL(objectURL);
       if (fileInputRef.current) {
@@ -8184,7 +8166,22 @@ function MenuBar({ onOpenAppearance }) {
       }
     };
     img.src = objectURL;
-  }, [rendererRef, doc, addLayer, isPristineStartupDocument, openImageAsDocument, setActiveLayer]);
+  }, [rendererRef, doc, addLayer, setActiveLayer, setTool]);
+  reactExports.useEffect(() => {
+    const electronAPI = window.electronAPI;
+    if (!electronAPI) return;
+    const disposers = [
+      electronAPI.onMenuNew?.(handleNewFile),
+      electronAPI.onMenuUndo?.(undo),
+      electronAPI.onMenuRedo?.(redo),
+      electronAPI.onFileOpen?.(openImageFromPath)
+    ].filter((value) => typeof value === "function");
+    return () => {
+      for (const dispose of disposers) {
+        dispose();
+      }
+    };
+  }, [handleNewFile, openImageFromPath, redo, undo]);
   const triggerDownload = reactExports.useCallback((dataURL, filename) => {
     const link = document.createElement("a");
     link.href = dataURL;
@@ -9398,23 +9395,6 @@ const useAppearanceStore = create()(
     }
   )
 );
-const Tool = {
-  Move: "move",
-  Brush: "brush",
-  Pencil: "pencil",
-  Eraser: "eraser",
-  SelectionRect: "selectionRect",
-  SelectionEllipse: "selectionEllipse",
-  Lasso: "lasso",
-  QuickSelection: "quickSelection",
-  Fill: "fill",
-  Gradient: "gradient",
-  Eyedropper: "eyedropper",
-  Crop: "crop",
-  Text: "text",
-  Shape: "shape",
-  Zoom: "zoom"
-};
 const toolButtons = [
   { id: Tool.Move, label: "Move", keycap: "V", icon: m$6 },
   { id: Tool.SelectionRect, label: "Rect Selection", keycap: "M", icon: m$1 },
@@ -20540,7 +20520,7 @@ const browserExt = {
   },
   test: () => true,
   load: async () => {
-    await __vitePreload(() => import("./browserAll-DAkSBB4r.js"), true ? __vite__mapDeps([0,1,2]) : void 0, import.meta.url);
+    await __vitePreload(() => import("./browserAll-Dt03pJY5.js"), true ? __vite__mapDeps([0,1,2]) : void 0, import.meta.url);
   }
 };
 const webworkerExt = {
@@ -20551,7 +20531,7 @@ const webworkerExt = {
   },
   test: () => typeof self !== "undefined" && self.WorkerGlobalScope !== void 0,
   load: async () => {
-    await __vitePreload(() => import("./webworkerAll-CYbwvZbD.js"), true ? __vite__mapDeps([1,2]) : void 0, import.meta.url);
+    await __vitePreload(() => import("./webworkerAll-DmOUSEPI.js"), true ? __vite__mapDeps([1,2]) : void 0, import.meta.url);
   }
 };
 function updateQuadBounds(bounds, anchor, texture) {
@@ -24719,7 +24699,7 @@ async function autoDetectRenderer(options) {
     const rendererType = preferredOrder[i2];
     if (rendererType === "webgpu" && await isWebGPUSupported()) {
       const { WebGPURenderer } = await __vitePreload(async () => {
-        const { WebGPURenderer: WebGPURenderer2 } = await import("./WebGPURenderer-D8Vf0Z9J.js");
+        const { WebGPURenderer: WebGPURenderer2 } = await import("./WebGPURenderer-Cv3wpFZf.js");
         return { WebGPURenderer: WebGPURenderer2 };
       }, true ? __vite__mapDeps([3,4,5,2]) : void 0, import.meta.url);
       RendererClass = WebGPURenderer;
@@ -24729,7 +24709,7 @@ async function autoDetectRenderer(options) {
       options.failIfMajorPerformanceCaveat ?? AbstractRenderer.defaultOptions.failIfMajorPerformanceCaveat
     )) {
       const { WebGLRenderer } = await __vitePreload(async () => {
-        const { WebGLRenderer: WebGLRenderer2 } = await import("./WebGLRenderer-D7JMZ8M2.js");
+        const { WebGLRenderer: WebGLRenderer2 } = await import("./WebGLRenderer-D0BH9d1j.js");
         return { WebGLRenderer: WebGLRenderer2 };
       }, true ? __vite__mapDeps([6,4,5,2]) : void 0, import.meta.url);
       RendererClass = WebGLRenderer;
@@ -24737,7 +24717,7 @@ async function autoDetectRenderer(options) {
       break;
     } else if (rendererType === "canvas") {
       const { CanvasRenderer } = await __vitePreload(async () => {
-        const { CanvasRenderer: CanvasRenderer2 } = await import("./CanvasRenderer-ClfeYIuh.js");
+        const { CanvasRenderer: CanvasRenderer2 } = await import("./CanvasRenderer-C41xwh-h.js");
         return { CanvasRenderer: CanvasRenderer2 };
       }, true ? __vite__mapDeps([7,5,2]) : void 0, import.meta.url);
       RendererClass = CanvasRenderer;
@@ -32981,6 +32961,20 @@ class LayerStack {
     this.width = width;
     this.height = height;
   }
+  reset(width = this.width, height = this.height) {
+    for (const layer of this.layers) {
+      if (layer.sprite) {
+        layer.sprite.destroy({ texture: true });
+      }
+      if (layer.graphics) {
+        layer.graphics.destroy();
+      }
+    }
+    this.layers = [];
+    this.activeLayerId = null;
+    this.width = width;
+    this.height = height;
+  }
   createLayer(name, fillColor, id2) {
     const layerId = id2 || `layer-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
     const pixelBuffer = new Uint8ClampedArray(this.width * this.height * 4);
@@ -33210,9 +33204,16 @@ class LayerStack {
         engineLayer.locked = docLayer.locked;
         engineLayer.opacity = docLayer.opacity;
         engineLayer.blendMode = docLayer.blendMode;
+        if (!engineLayer.pixelBuffer || engineLayer.pixelBuffer.length !== this.width * this.height * 4) {
+          engineLayer.pixelBuffer = new Uint8ClampedArray(
+            this.width * this.height * 4
+          );
+        }
         if (docLayer.pixels) {
           engineLayer.pixelBuffer?.set(docLayer.pixels);
         }
+        engineLayer.width = this.width;
+        engineLayer.height = this.height;
         engineLayer.dirty = true;
       }
       newLayers.push(engineLayer);
@@ -33949,9 +33950,8 @@ class Renderer {
     this.docWidth = w2;
     this.docHeight = h2;
     this.compositor.resize(w2, h2);
-    this.layerStack.resize(w2, h2);
+    this.layerStack.reset(w2, h2);
     this.selectionManager.resize(w2, h2);
-    this.layerStack.markAllDirty();
     this.engine.removeBackgroundGraphics();
     this.offscreen.width = w2;
     this.offscreen.height = h2;
@@ -34204,6 +34204,59 @@ function getSelectionBounds(mask, width, height) {
     height: maxY - minY + 1
   };
 }
+function getLayerBounds(pixels, width, height) {
+  let minX = width;
+  let minY = height;
+  let maxX = -1;
+  let maxY = -1;
+  for (let y2 = 0; y2 < height; y2++) {
+    for (let x2 = 0; x2 < width; x2++) {
+      if (pixels[(y2 * width + x2) * 4 + 3] > 0) {
+        if (x2 < minX) minX = x2;
+        if (y2 < minY) minY = y2;
+        if (x2 > maxX) maxX = x2;
+        if (y2 > maxY) maxY = y2;
+      }
+    }
+  }
+  if (maxX === -1 || maxY === -1) return null;
+  return {
+    x: minX,
+    y: minY,
+    width: maxX - minX + 1,
+    height: maxY - minY + 1
+  };
+}
+function renderTransformedPixels(sourcePixels, sourceWidth, sourceHeight, docWidth, docHeight, targetBounds) {
+  const output = new Uint8ClampedArray(docWidth * docHeight * 4);
+  const targetWidth = Math.max(1, Math.round(targetBounds.width));
+  const targetHeight = Math.max(1, Math.round(targetBounds.height));
+  const targetX = Math.round(targetBounds.x);
+  const targetY = Math.round(targetBounds.y);
+  for (let y2 = 0; y2 < targetHeight; y2++) {
+    const destY = targetY + y2;
+    if (destY < 0 || destY >= docHeight) continue;
+    const srcY = Math.min(
+      sourceHeight - 1,
+      Math.max(0, Math.floor(y2 / targetHeight * sourceHeight))
+    );
+    for (let x2 = 0; x2 < targetWidth; x2++) {
+      const destX = targetX + x2;
+      if (destX < 0 || destX >= docWidth) continue;
+      const srcX = Math.min(
+        sourceWidth - 1,
+        Math.max(0, Math.floor(x2 / targetWidth * sourceWidth))
+      );
+      const srcIdx = (srcY * sourceWidth + srcX) * 4;
+      const destIdx = (destY * docWidth + destX) * 4;
+      output[destIdx] = sourcePixels[srcIdx];
+      output[destIdx + 1] = sourcePixels[srcIdx + 1];
+      output[destIdx + 2] = sourcePixels[srcIdx + 2];
+      output[destIdx + 3] = sourcePixels[srcIdx + 3];
+    }
+  }
+  return output;
+}
 function CanvasArea() {
   const canvasRef = reactExports.useRef(null);
   const vpRef = reactExports.useRef(null);
@@ -34211,13 +34264,146 @@ function CanvasArea() {
   const frameRef = reactExports.useRef(0);
   const panningRef = reactExports.useRef(false);
   const lastRef = reactExports.useRef({ x: 0, y: 0 });
-  const { activeTool, setZoom, setPan, setCursor, setViewport, setRendererRef } = useEditorStore();
+  const transformPreviewRef = reactExports.useRef(null);
+  const transformBoundsRef = reactExports.useRef(null);
+  const previousToolRef = reactExports.useRef(Tool.Brush);
+  const transformSessionRef = reactExports.useRef(null);
+  const transformDragRef = reactExports.useRef(null);
+  const [transformBounds, setTransformBounds] = reactExports.useState(null);
+  const { activeTool, setTool, setZoom, setPan, setCursor, setViewport, setRendererRef, zoom, pan } = useEditorStore();
   const fillSettings = useToolStore((state) => state.fill);
-  const { setDocument, document: doc, undo, redo, commitHistory, syncPixels, activeLayerId, setSelection, clearSelection } = useDocumentStore();
+  const { setDocument, document: doc, undo, redo, commitHistory, syncPixels, updateLayer, activeLayerId, setSelection, clearSelection } = useDocumentStore();
   const isSelectingRef = reactExports.useRef(false);
   const selectionStartRef = reactExports.useRef({ x: 0, y: 0 });
   const selectionPointsRef = reactExports.useRef([]);
   const selectionModeRef = reactExports.useRef("replace");
+  const getCanvasPoint = reactExports.useCallback((clientX, clientY) => {
+    const r2 = rendererRef.current;
+    const vp = vpRef.current;
+    if (!r2 || !vp) return null;
+    const { left, top } = vp.getBoundingClientRect();
+    return r2.screenToCanvasPrecise(clientX - left, clientY - top);
+  }, []);
+  const previewTransform = reactExports.useCallback((bounds) => {
+    const renderer = rendererRef.current;
+    const docState = useDocumentStore.getState().document;
+    const session = transformSessionRef.current;
+    if (!renderer || !docState || !session) return;
+    const nextPixels = renderTransformedPixels(
+      session.sourcePixels,
+      session.sourceWidth,
+      session.sourceHeight,
+      docState.width,
+      docState.height,
+      bounds
+    );
+    const layer = renderer.getLayerStack().getLayer(session.layerId);
+    if (!layer) return;
+    layer.pixelBuffer = nextPixels;
+    layer.width = docState.width;
+    layer.height = docState.height;
+    layer.dirty = true;
+    transformPreviewRef.current = nextPixels;
+    renderer.forceRender();
+  }, []);
+  const beginTransformDrag = reactExports.useCallback(
+    (handle, e2) => {
+      const session = transformSessionRef.current;
+      const bounds = transformBoundsRef.current;
+      if (!session || !bounds) return;
+      const startPoint = getCanvasPoint(e2.clientX, e2.clientY);
+      if (!startPoint) return;
+      e2.preventDefault();
+      e2.stopPropagation();
+      transformDragRef.current = {
+        handle,
+        startPoint,
+        startBounds: bounds
+      };
+      const onMove2 = (event) => {
+        const currentPoint = getCanvasPoint(event.clientX, event.clientY);
+        const dragState = transformDragRef.current;
+        if (!currentPoint || !dragState) return;
+        let nextBounds;
+        if (dragState.handle === "move") {
+          nextBounds = {
+            ...dragState.startBounds,
+            x: dragState.startBounds.x + (currentPoint.x - dragState.startPoint.x),
+            y: dragState.startBounds.y + (currentPoint.y - dragState.startPoint.y)
+          };
+        } else {
+          const start = dragState.startBounds;
+          const right = start.x + start.width;
+          const bottom = start.y + start.height;
+          switch (dragState.handle) {
+            case "nw":
+              nextBounds = {
+                x: Math.min(currentPoint.x, right - 1),
+                y: Math.min(currentPoint.y, bottom - 1),
+                width: Math.max(1, right - currentPoint.x),
+                height: Math.max(1, bottom - currentPoint.y)
+              };
+              break;
+            case "ne":
+              nextBounds = {
+                x: start.x,
+                y: Math.min(currentPoint.y, bottom - 1),
+                width: Math.max(1, currentPoint.x - start.x),
+                height: Math.max(1, bottom - currentPoint.y)
+              };
+              break;
+            case "sw":
+              nextBounds = {
+                x: Math.min(currentPoint.x, right - 1),
+                y: start.y,
+                width: Math.max(1, right - currentPoint.x),
+                height: Math.max(1, currentPoint.y - start.y)
+              };
+              break;
+            case "se":
+            default:
+              nextBounds = {
+                x: start.x,
+                y: start.y,
+                width: Math.max(1, currentPoint.x - start.x),
+                height: Math.max(1, currentPoint.y - start.y)
+              };
+              break;
+          }
+        }
+        transformBoundsRef.current = nextBounds;
+        setTransformBounds(nextBounds);
+        previewTransform(nextBounds);
+      };
+      const onUp2 = () => {
+        window.removeEventListener("mousemove", onMove2);
+        window.removeEventListener("mouseup", onUp2);
+        const previewPixels = transformPreviewRef.current;
+        const activeSession = transformSessionRef.current;
+        const currentBounds = transformBoundsRef.current;
+        if (previewPixels && activeSession && currentBounds) {
+          updateLayer(activeSession.layerId, {
+            pixels: new Uint8ClampedArray(previewPixels),
+            transformSource: {
+              pixels: new Uint8ClampedArray(activeSession.sourcePixels),
+              width: activeSession.sourceWidth,
+              height: activeSession.sourceHeight,
+              bounds: {
+                x: currentBounds.x,
+                y: currentBounds.y,
+                width: currentBounds.width,
+                height: currentBounds.height
+              }
+            }
+          });
+        }
+        transformDragRef.current = null;
+      };
+      window.addEventListener("mousemove", onMove2);
+      window.addEventListener("mouseup", onUp2);
+    },
+    [getCanvasPoint, previewTransform, updateLayer]
+  );
   const applyToolStroke = reactExports.useCallback((x2, y2) => {
     const renderer = rendererRef.current;
     if (!renderer) return;
@@ -34247,7 +34433,15 @@ function CanvasArea() {
   reactExports.useEffect(() => {
     const onKeyDown = (e2) => {
       const isMod = e2.ctrlKey || e2.metaKey;
-      if (e2.key === "Escape" || isMod && e2.key === "d") {
+      if (isMod && e2.key.toLowerCase() === "t") {
+        e2.preventDefault();
+        if (doc && activeLayerId && activeLayerId !== "layer-bg") {
+          setTool(Tool.Move);
+        }
+      } else if (e2.key === "Enter" && activeTool === Tool.Move) {
+        e2.preventDefault();
+        setTool(previousToolRef.current);
+      } else if (e2.key === "Escape" || isMod && e2.key === "d") {
         e2.preventDefault();
         clearSelection();
       } else if (isMod && e2.key === "z") {
@@ -34260,7 +34454,12 @@ function CanvasArea() {
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [undo, redo, clearSelection]);
+  }, [activeLayerId, activeTool, clearSelection, doc, redo, setTool, undo]);
+  reactExports.useEffect(() => {
+    if (activeTool !== Tool.Move) {
+      previousToolRef.current = activeTool;
+    }
+  }, [activeTool]);
   reactExports.useEffect(() => {
     const renderer = rendererRef.current;
     if (renderer && doc) {
@@ -34268,6 +34467,44 @@ function CanvasArea() {
       renderer.syncSelection(doc.selection ?? null);
     }
   }, [doc, activeLayerId]);
+  reactExports.useEffect(() => {
+    if (activeTool !== Tool.Move || !doc || !activeLayerId || transformDragRef.current) {
+      if (activeTool !== Tool.Move) {
+        transformSessionRef.current = null;
+        transformPreviewRef.current = null;
+        transformBoundsRef.current = null;
+        setTransformBounds(null);
+      }
+      return;
+    }
+    const activeLayer = doc.layers.find((layer) => layer.id === activeLayerId);
+    if (!activeLayer?.pixels || activeLayer.id === "layer-bg") {
+      transformSessionRef.current = null;
+      transformPreviewRef.current = null;
+      transformBoundsRef.current = null;
+      setTransformBounds(null);
+      return;
+    }
+    const bounds = activeLayer.transformSource?.bounds ?? getLayerBounds(activeLayer.pixels, doc.width, doc.height);
+    if (!bounds) {
+      transformSessionRef.current = null;
+      transformPreviewRef.current = null;
+      transformBoundsRef.current = null;
+      setTransformBounds(null);
+      return;
+    }
+    transformSessionRef.current = {
+      layerId: activeLayer.id,
+      sourcePixels: new Uint8ClampedArray(
+        activeLayer.transformSource?.pixels ?? activeLayer.pixels
+      ),
+      sourceWidth: activeLayer.transformSource?.width ?? doc.width,
+      sourceHeight: activeLayer.transformSource?.height ?? doc.height
+    };
+    transformPreviewRef.current = null;
+    transformBoundsRef.current = bounds;
+    setTransformBounds(bounds);
+  }, [activeLayerId, activeTool, doc]);
   reactExports.useEffect(() => {
     const canvas = canvasRef.current;
     const vp = vpRef.current;
@@ -34285,18 +34522,6 @@ function CanvasArea() {
         b: 255,
         a: 0
       });
-      const layerStack = renderer.getLayerStack();
-      const bgLayerData = layerStack.createLayer("Background", {
-        r: 255,
-        g: 255,
-        b: 255,
-        a: 255
-      }, "layer-bg");
-      renderer.createBackgroundGraphics();
-      const bgGraphics = renderer.getBackgroundGraphics();
-      if (bgGraphics) {
-        bgLayerData.graphics = bgGraphics;
-      }
       const bgLayerForStore = {
         id: "layer-bg",
         name: "Background",
@@ -34304,7 +34529,16 @@ function CanvasArea() {
         locked: false,
         opacity: 100,
         blendMode: "normal",
-        pixels: null
+        pixels: (() => {
+          const pixels = new Uint8ClampedArray(DEFAULT_W * DEFAULT_H * 4);
+          for (let i2 = 0; i2 < pixels.length; i2 += 4) {
+            pixels[i2] = 255;
+            pixels[i2 + 1] = 255;
+            pixels[i2 + 2] = 255;
+            pixels[i2 + 3] = 255;
+          }
+          return pixels;
+        })()
       };
       newDoc.layers.push(bgLayerForStore);
       setDocument(newDoc);
@@ -34397,6 +34631,10 @@ function CanvasArea() {
         r2.updateSelectionQuickDraft(Math.round(cp.x), Math.round(cp.y), 10, 32, mode);
       }
     } else {
+      if (activeTool === Tool.Move) {
+        panningRef.current = false;
+        return;
+      }
       const activeLayer = r2.getLayerStack().getActiveLayer();
       if (activeLayer && activeLayer.pixelBuffer) {
         syncPixels(activeLayer.id, activeLayer.pixelBuffer);
@@ -34442,7 +34680,7 @@ function CanvasArea() {
         } else if (activeTool === Tool.QuickSelection) {
           r2.updateSelectionQuickDraft(Math.round(cp.x), Math.round(cp.y), 10, 32, mode);
         }
-      } else if (e2.buttons === 1 && activeTool !== Tool.Fill) {
+      } else if (e2.buttons === 1 && activeTool !== Tool.Fill && activeTool !== Tool.Move) {
         applyToolStroke(cp.x, cp.y);
       }
     },
@@ -34480,6 +34718,12 @@ function CanvasArea() {
       syncPixels(activeLayer.id, activeLayer.pixelBuffer);
     }
   };
+  const transformScreenBounds = transformBounds ? {
+    left: transformBounds.x * (zoom / 100) + pan.x,
+    top: transformBounds.y * (zoom / 100) + pan.y,
+    width: transformBounds.width * (zoom / 100),
+    height: transformBounds.height * (zoom / 100)
+  } : null;
   return /* @__PURE__ */ jsxRuntimeExports.jsxs("main", { className: "canvas-area", children: [
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "opts", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "og", children: [
@@ -34521,6 +34765,42 @@ function CanvasArea() {
           onMouseLeave: onUp,
           children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx("canvas", { ref: canvasRef, style: { position: "absolute", top: 0, left: 0, display: "block" } }),
+            activeTool === Tool.Move && transformScreenBounds && /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "div",
+              {
+                onMouseDown: (e2) => beginTransformDrag("move", e2),
+                style: {
+                  position: "absolute",
+                  left: transformScreenBounds.left,
+                  top: transformScreenBounds.top,
+                  width: Math.max(transformScreenBounds.width, 1),
+                  height: Math.max(transformScreenBounds.height, 1),
+                  border: "1px solid #4aa3ff",
+                  boxShadow: "0 0 0 1px rgba(74,163,255,0.25)",
+                  cursor: "move",
+                  boxSizing: "border-box"
+                },
+                children: ["nw", "ne", "sw", "se"].map((handle) => {
+                  const positionStyle = handle === "nw" ? { left: -5, top: -5, cursor: "nwse-resize" } : handle === "ne" ? { right: -5, top: -5, cursor: "nesw-resize" } : handle === "sw" ? { left: -5, bottom: -5, cursor: "nesw-resize" } : { right: -5, bottom: -5, cursor: "nwse-resize" };
+                  return /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    "div",
+                    {
+                      onMouseDown: (e2) => beginTransformDrag(handle, e2),
+                      style: {
+                        position: "absolute",
+                        width: 10,
+                        height: 10,
+                        background: "#ffffff",
+                        border: "1px solid #4aa3ff",
+                        boxSizing: "border-box",
+                        ...positionStyle
+                      }
+                    },
+                    handle
+                  );
+                })
+              }
+            ),
             doc && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "clabel", children: [
               /* @__PURE__ */ jsxRuntimeExports.jsx("em", { children: doc.layers[0]?.name ?? "Untitled" }),
               " — ",
@@ -34566,8 +34846,9 @@ function RightPanel() {
   });
   const displayLayers = [...layers].reverse();
   const handleAddLayer = () => {
+    if (!document2) return;
     const id2 = `layer-${Date.now()}`;
-    const name = `Layer ${(document2?.layers.length || 0) + 1}`;
+    const name = `Layer ${document2.layers.length + 1}`;
     addLayer({
       id: id2,
       name,
@@ -34575,7 +34856,7 @@ function RightPanel() {
       locked: false,
       opacity: 100,
       blendMode: "normal",
-      pixels: null
+      pixels: new Uint8ClampedArray(document2.width * document2.height * 4)
     });
     if (rendererRef) {
       rendererRef.getLayerStack().createLayer(name, void 0, id2);

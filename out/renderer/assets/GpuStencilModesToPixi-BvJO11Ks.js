@@ -1,4 +1,4 @@
-import { w as warn, g as getAttributeInfoFromFormat, c as STENCIL_MODES } from "./index-R3pYnx9K.js";
+import { w as warn, g as getAttributeInfoFromFormat, c as STENCIL_MODES } from "./index-Bw4ZL0-d.js";
 const localUniformBit = {
   name: "local-uniform-bit",
   vertex: {

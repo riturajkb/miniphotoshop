@@ -44,8 +44,10 @@ export function RightPanel() {
   const displayLayers = [...layers].reverse();
 
   const handleAddLayer = () => {
+    if (!document) return;
+
     const id = `layer-${Date.now()}`;
-    const name = `Layer ${(document?.layers.length || 0) + 1}`;
+    const name = `Layer ${document.layers.length + 1}`;
 
     addLayer({
       id,
@@ -54,7 +56,7 @@ export function RightPanel() {
       locked: false,
       opacity: 100,
       blendMode: "normal",
-      pixels: null,
+      pixels: new Uint8ClampedArray(document.width * document.height * 4),
     });
 
     if (rendererRef) {

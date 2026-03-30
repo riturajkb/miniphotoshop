@@ -65,6 +65,17 @@ export interface Layer {
   opacity: number; // 0-100
   blendMode: BlendMode;
   pixels: Uint8ClampedArray | null; // RGBA pixel data
+  transformSource?: {
+    pixels: Uint8ClampedArray;
+    width: number;
+    height: number;
+    bounds: {
+      x: number;
+      y: number;
+      width: number;
+      height: number;
+    };
+  } | null;
 }
 
 // Document representation

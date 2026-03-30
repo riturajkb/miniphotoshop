@@ -1,7 +1,7 @@
-import { D as DOMAdapter, q as nextPow2, t as GlobalResourceRegistry, u as getTextureBatchBindGroup, a as State, E as ExtensionType, v as GCManagedHash, x as uid, y as fastCopy, c as STENCIL_MODES, B as BufferUsage, z as Buffer, H as BufferResource, I as BindGroup, J as createIdFromString, w as warn, K as CLEAR, k as CanvasSource, L as TextureSource, N as UniformGroup, M as Matrix, O as compileHighShaderGpuProgram, Q as colorBit, V as roundPixelsBit, W as generateTextureBatchBit, S as Shader, T as Texture, A as AbstractRenderer, R as RendererType, l as extensions, X as GpuUboSystem } from "./index-R3pYnx9K.js";
-import { G as GpuStencilModesToPixi, e as ensureAttributes, l as localUniformBitGroup2, a as localUniformBit, t as textureBit } from "./GpuStencilModesToPixi-D1QluwRF.js";
-import { R as RenderTargetSystem, S as SharedSystems, d as SharedRenderPipes } from "./RenderTargetSystem-BoAEBTSB.js";
-import "./Filter-BwbujZFC.js";
+import { D as DOMAdapter, q as nextPow2, t as GlobalResourceRegistry, u as getTextureBatchBindGroup, a as State, E as ExtensionType, v as GCManagedHash, x as uid, y as fastCopy, c as STENCIL_MODES, B as BufferUsage, z as Buffer, H as BufferResource, I as BindGroup, J as createIdFromString, w as warn, K as CLEAR, k as CanvasSource, L as TextureSource, N as UniformGroup, M as Matrix, O as compileHighShaderGpuProgram, Q as colorBit, V as roundPixelsBit, W as generateTextureBatchBit, S as Shader, T as Texture, A as AbstractRenderer, R as RendererType, l as extensions, X as GpuUboSystem } from "./index-Bw4ZL0-d.js";
+import { G as GpuStencilModesToPixi, e as ensureAttributes, l as localUniformBitGroup2, a as localUniformBit, t as textureBit } from "./GpuStencilModesToPixi-BvJO11Ks.js";
+import { R as RenderTargetSystem, S as SharedSystems, d as SharedRenderPipes } from "./RenderTargetSystem-WRCEUZOq.js";
+import "./Filter-ClqMLBDG.js";
 class CanvasPoolClass {
   constructor(canvasOptions) {
     this._canvasPool = /* @__PURE__ */ Object.create(null);

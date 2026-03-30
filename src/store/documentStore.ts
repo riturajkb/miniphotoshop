@@ -42,6 +42,11 @@ function cloneDocument(doc: Document): Document {
     layers: doc.layers.map((l) => ({
       ...l,
       pixels: l.pixels ? new Uint8ClampedArray(l.pixels) : null,
+      transformSource: l.transformSource ? {
+        ...l.transformSource,
+        pixels: new Uint8ClampedArray(l.transformSource.pixels),
+        bounds: { ...l.transformSource.bounds },
+      } : null,
     })),
     selection: doc.selection ? {
       ...doc.selection,
@@ -74,6 +79,7 @@ const createDefaultLayer = (
   opacity: 100,
   blendMode: "normal",
   pixels: null,
+  transformSource: null,
 });
 
 // Default document factory
@@ -205,6 +211,9 @@ export const useDocumentStore = create<DocumentStore>()(
         if (state.document) {
           const layer = state.document.layers.find((l) => l.id === layerId);
           if (layer) {
+            if ("pixels" in updates && !("transformSource" in updates)) {
+              layer.transformSource = null;
+            }
             Object.assign(layer, updates);
           }
         }
@@ -217,6 +226,7 @@ export const useDocumentStore = create<DocumentStore>()(
           const layer = state.document.layers.find((l) => l.id === layerId);
           if (layer) {
             layer.pixels = new Uint8ClampedArray(pixels);
+            layer.transformSource = null;
           }
         }
       }),

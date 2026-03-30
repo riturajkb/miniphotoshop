@@ -1,4 +1,4 @@
-import { useRef, useEffect, useCallback } from "react";
+import { useRef, useEffect, useCallback, useState } from "react";
 import { Renderer } from "../../engine";
 import { useEditorStore } from "../../store/editorStore";
 import { useToolStore } from "../../store/toolStore";
@@ -39,6 +39,92 @@ function getSelectionBounds(mask: Uint8Array, width: number, height: number) {
   };
 }
 
+type Bounds = {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+};
+
+type TransformHandle = "move" | "nw" | "ne" | "sw" | "se";
+
+function getLayerBounds(
+  pixels: Uint8ClampedArray,
+  width: number,
+  height: number,
+): Bounds | null {
+  let minX = width;
+  let minY = height;
+  let maxX = -1;
+  let maxY = -1;
+
+  for (let y = 0; y < height; y++) {
+    for (let x = 0; x < width; x++) {
+      if (pixels[(y * width + x) * 4 + 3] > 0) {
+        if (x < minX) minX = x;
+        if (y < minY) minY = y;
+        if (x > maxX) maxX = x;
+        if (y > maxY) maxY = y;
+      }
+    }
+  }
+
+  if (maxX === -1 || maxY === -1) return null;
+
+  return {
+    x: minX,
+    y: minY,
+    width: maxX - minX + 1,
+    height: maxY - minY + 1,
+  };
+}
+
+function renderTransformedPixels(
+  sourcePixels: Uint8ClampedArray,
+  sourceWidth: number,
+  sourceHeight: number,
+  docWidth: number,
+  docHeight: number,
+  targetBounds: Bounds,
+): Uint8ClampedArray {
+  const output = new Uint8ClampedArray(docWidth * docHeight * 4);
+  const targetWidth = Math.max(1, Math.round(targetBounds.width));
+  const targetHeight = Math.max(1, Math.round(targetBounds.height));
+  const targetX = Math.round(targetBounds.x);
+  const targetY = Math.round(targetBounds.y);
+
+  for (let y = 0; y < targetHeight; y++) {
+    const destY = targetY + y;
+    if (destY < 0 || destY >= docHeight) continue;
+
+    const srcY = Math.min(
+      sourceHeight - 1,
+      Math.max(0, Math.floor((y / targetHeight) * sourceHeight)),
+    );
+
+    for (let x = 0; x < targetWidth; x++) {
+      const destX = targetX + x;
+      if (destX < 0 || destX >= docWidth) continue;
+
+      const srcX = Math.min(
+        sourceWidth - 1,
+        Math.max(0, Math.floor((x / targetWidth) * sourceWidth)),
+      );
+
+      const srcIdx =
+        (srcY * sourceWidth + srcX) * 4;
+      const destIdx = (destY * docWidth + destX) * 4;
+
+      output[destIdx] = sourcePixels[srcIdx];
+      output[destIdx + 1] = sourcePixels[srcIdx + 1];
+      output[destIdx + 2] = sourcePixels[srcIdx + 2];
+      output[destIdx + 3] = sourcePixels[srcIdx + 3];
+    }
+  }
+
+  return output;
+}
+
 export function CanvasArea() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const vpRef = useRef<HTMLDivElement>(null);
@@ -46,16 +132,176 @@ export function CanvasArea() {
   const frameRef = useRef<number>(0);
   const panningRef = useRef(false);
   const lastRef = useRef({ x: 0, y: 0 });
+  const transformPreviewRef = useRef<Uint8ClampedArray | null>(null);
+  const transformBoundsRef = useRef<Bounds | null>(null);
+  const previousToolRef = useRef<Tool>(Tool.Brush);
+  const transformSessionRef = useRef<{
+    layerId: string;
+    sourcePixels: Uint8ClampedArray;
+    sourceWidth: number;
+    sourceHeight: number;
+  } | null>(null);
+  const transformDragRef = useRef<{
+    handle: TransformHandle;
+    startPoint: { x: number; y: number };
+    startBounds: Bounds;
+  } | null>(null);
+  const [transformBounds, setTransformBounds] = useState<Bounds | null>(null);
 
-  const { activeTool, setZoom, setPan, setCursor, setViewport, setRendererRef } =
+  const { activeTool, setTool, setZoom, setPan, setCursor, setViewport, setRendererRef, zoom, pan } =
     useEditorStore();
   const fillSettings = useToolStore((state) => state.fill);
-  const { setDocument, document: doc, undo, redo, commitHistory, syncPixels, activeLayerId, setSelection, clearSelection } = useDocumentStore();
+  const { setDocument, document: doc, undo, redo, commitHistory, syncPixels, updateLayer, activeLayerId, setSelection, clearSelection } = useDocumentStore();
 
   const isSelectingRef = useRef(false);
   const selectionStartRef = useRef({ x: 0, y: 0 });
   const selectionPointsRef = useRef<{x: number, y: number}[]>([]);
   const selectionModeRef = useRef<import("../../types/editor").SelectionMode>("replace");
+
+  const getCanvasPoint = useCallback((clientX: number, clientY: number) => {
+    const r = rendererRef.current;
+    const vp = vpRef.current;
+    if (!r || !vp) return null;
+    const { left, top } = vp.getBoundingClientRect();
+    return r.screenToCanvasPrecise(clientX - left, clientY - top);
+  }, []);
+
+  const previewTransform = useCallback((bounds: Bounds) => {
+    const renderer = rendererRef.current;
+    const docState = useDocumentStore.getState().document;
+    const session = transformSessionRef.current;
+    if (!renderer || !docState || !session) return;
+
+    const nextPixels = renderTransformedPixels(
+      session.sourcePixels,
+      session.sourceWidth,
+      session.sourceHeight,
+      docState.width,
+      docState.height,
+      bounds,
+    );
+
+    const layer = renderer.getLayerStack().getLayer(session.layerId);
+    if (!layer) return;
+
+    layer.pixelBuffer = nextPixels;
+    layer.width = docState.width;
+    layer.height = docState.height;
+    layer.dirty = true;
+    transformPreviewRef.current = nextPixels;
+    renderer.forceRender();
+  }, []);
+
+  const beginTransformDrag = useCallback(
+    (handle: TransformHandle, e: React.MouseEvent) => {
+      const session = transformSessionRef.current;
+      const bounds = transformBoundsRef.current;
+      if (!session || !bounds) return;
+
+      const startPoint = getCanvasPoint(e.clientX, e.clientY);
+      if (!startPoint) return;
+
+      e.preventDefault();
+      e.stopPropagation();
+
+      transformDragRef.current = {
+        handle,
+        startPoint,
+        startBounds: bounds,
+      };
+
+      const onMove = (event: MouseEvent) => {
+        const currentPoint = getCanvasPoint(event.clientX, event.clientY);
+        const dragState = transformDragRef.current;
+        if (!currentPoint || !dragState) return;
+
+        let nextBounds: Bounds;
+
+        if (dragState.handle === "move") {
+          nextBounds = {
+            ...dragState.startBounds,
+            x: dragState.startBounds.x + (currentPoint.x - dragState.startPoint.x),
+            y: dragState.startBounds.y + (currentPoint.y - dragState.startPoint.y),
+          };
+        } else {
+          const start = dragState.startBounds;
+          const right = start.x + start.width;
+          const bottom = start.y + start.height;
+
+          switch (dragState.handle) {
+            case "nw":
+              nextBounds = {
+                x: Math.min(currentPoint.x, right - 1),
+                y: Math.min(currentPoint.y, bottom - 1),
+                width: Math.max(1, right - currentPoint.x),
+                height: Math.max(1, bottom - currentPoint.y),
+              };
+              break;
+            case "ne":
+              nextBounds = {
+                x: start.x,
+                y: Math.min(currentPoint.y, bottom - 1),
+                width: Math.max(1, currentPoint.x - start.x),
+                height: Math.max(1, bottom - currentPoint.y),
+              };
+              break;
+            case "sw":
+              nextBounds = {
+                x: Math.min(currentPoint.x, right - 1),
+                y: start.y,
+                width: Math.max(1, right - currentPoint.x),
+                height: Math.max(1, currentPoint.y - start.y),
+              };
+              break;
+            case "se":
+            default:
+              nextBounds = {
+                x: start.x,
+                y: start.y,
+                width: Math.max(1, currentPoint.x - start.x),
+                height: Math.max(1, currentPoint.y - start.y),
+              };
+              break;
+          }
+        }
+
+        transformBoundsRef.current = nextBounds;
+        setTransformBounds(nextBounds);
+        previewTransform(nextBounds);
+      };
+
+      const onUp = () => {
+        window.removeEventListener("mousemove", onMove);
+        window.removeEventListener("mouseup", onUp);
+
+        const previewPixels = transformPreviewRef.current;
+        const activeSession = transformSessionRef.current;
+        const currentBounds = transformBoundsRef.current;
+        if (previewPixels && activeSession && currentBounds) {
+          updateLayer(activeSession.layerId, {
+            pixels: new Uint8ClampedArray(previewPixels),
+            transformSource: {
+              pixels: new Uint8ClampedArray(activeSession.sourcePixels),
+              width: activeSession.sourceWidth,
+              height: activeSession.sourceHeight,
+              bounds: {
+                x: currentBounds.x,
+                y: currentBounds.y,
+                width: currentBounds.width,
+                height: currentBounds.height,
+              },
+            },
+          });
+        }
+
+        transformDragRef.current = null;
+      };
+
+      window.addEventListener("mousemove", onMove);
+      window.addEventListener("mouseup", onUp);
+    },
+    [getCanvasPoint, previewTransform, updateLayer],
+  );
 
   const applyToolStroke = useCallback((x: number, y: number) => {
     const renderer = rendererRef.current;
@@ -91,7 +337,15 @@ export function CanvasArea() {
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
       const isMod = e.ctrlKey || e.metaKey;
-      if (e.key === "Escape" || (isMod && e.key === "d")) {
+      if (isMod && e.key.toLowerCase() === "t") {
+        e.preventDefault();
+        if (doc && activeLayerId && activeLayerId !== "layer-bg") {
+          setTool(Tool.Move);
+        }
+      } else if (e.key === "Enter" && activeTool === Tool.Move) {
+        e.preventDefault();
+        setTool(previousToolRef.current);
+      } else if (e.key === "Escape" || (isMod && e.key === "d")) {
         e.preventDefault();
         clearSelection();
       } else if (isMod && e.key === "z") {
@@ -104,7 +358,13 @@ export function CanvasArea() {
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [undo, redo, clearSelection]);
+  }, [activeLayerId, activeTool, clearSelection, doc, redo, setTool, undo]);
+
+  useEffect(() => {
+    if (activeTool !== Tool.Move) {
+      previousToolRef.current = activeTool;
+    }
+  }, [activeTool]);
 
   // Sync engine when document changes (e.g. from undo/redo)
   useEffect(() => {
@@ -116,6 +376,54 @@ export function CanvasArea() {
       renderer.syncSelection(doc.selection ?? null);
     }
   }, [doc, activeLayerId]);
+
+  useEffect(() => {
+    if (
+      activeTool !== Tool.Move ||
+      !doc ||
+      !activeLayerId ||
+      transformDragRef.current
+    ) {
+      if (activeTool !== Tool.Move) {
+        transformSessionRef.current = null;
+        transformPreviewRef.current = null;
+        transformBoundsRef.current = null;
+        setTransformBounds(null);
+      }
+      return;
+    }
+
+    const activeLayer = doc.layers.find((layer) => layer.id === activeLayerId);
+    if (!activeLayer?.pixels || activeLayer.id === "layer-bg") {
+      transformSessionRef.current = null;
+      transformPreviewRef.current = null;
+      transformBoundsRef.current = null;
+      setTransformBounds(null);
+      return;
+    }
+
+    const bounds = activeLayer.transformSource?.bounds ??
+      getLayerBounds(activeLayer.pixels, doc.width, doc.height);
+    if (!bounds) {
+      transformSessionRef.current = null;
+      transformPreviewRef.current = null;
+      transformBoundsRef.current = null;
+      setTransformBounds(null);
+      return;
+    }
+
+    transformSessionRef.current = {
+      layerId: activeLayer.id,
+      sourcePixels: new Uint8ClampedArray(
+        activeLayer.transformSource?.pixels ?? activeLayer.pixels,
+      ),
+      sourceWidth: activeLayer.transformSource?.width ?? doc.width,
+      sourceHeight: activeLayer.transformSource?.height ?? doc.height,
+    };
+    transformPreviewRef.current = null;
+    transformBoundsRef.current = bounds;
+    setTransformBounds(bounds);
+  }, [activeLayerId, activeTool, doc]);
 
   // mount renderer
   useEffect(() => {
@@ -141,21 +449,6 @@ export function CanvasArea() {
         a: 0,
       });
 
-      // Create the Background layer with solid white pixels (alpha=255)
-      const layerStack = renderer.getLayerStack();
-      const bgLayerData = layerStack.createLayer("Background", {
-        r: 255,
-        g: 255,
-        b: 255,
-        a: 255,
-      }, "layer-bg");
-
-      renderer.createBackgroundGraphics();
-      const bgGraphics = renderer.getBackgroundGraphics();
-      if (bgGraphics) {
-        bgLayerData.graphics = bgGraphics;
-      }
-
       const bgLayerForStore: Layer = {
         id: "layer-bg",
         name: "Background",
@@ -163,7 +456,16 @@ export function CanvasArea() {
         locked: false,
         opacity: 100,
         blendMode: "normal",
-        pixels: null,
+        pixels: (() => {
+          const pixels = new Uint8ClampedArray(DEFAULT_W * DEFAULT_H * 4);
+          for (let i = 0; i < pixels.length; i += 4) {
+            pixels[i] = 255;
+            pixels[i + 1] = 255;
+            pixels[i + 2] = 255;
+            pixels[i + 3] = 255;
+          }
+          return pixels;
+        })(),
       };
       newDoc.layers.push(bgLayerForStore);
       setDocument(newDoc);
@@ -278,6 +580,10 @@ export function CanvasArea() {
         r.updateSelectionQuickDraft(Math.round(cp.x), Math.round(cp.y), 10, 32, mode);
       }
     } else {
+      if (activeTool === Tool.Move) {
+        panningRef.current = false;
+        return;
+      }
       // Before starting to paint, sync current engine pixels to store and commit history
       const activeLayer = r.getLayerStack().getActiveLayer();
       if (activeLayer && activeLayer.pixelBuffer) {
@@ -331,7 +637,7 @@ export function CanvasArea() {
         } else if (activeTool === Tool.QuickSelection) {
           r.updateSelectionQuickDraft(Math.round(cp.x), Math.round(cp.y), 10, 32, mode);
         }
-      } else if (e.buttons === 1 && activeTool !== Tool.Fill) {
+      } else if (e.buttons === 1 && activeTool !== Tool.Fill && activeTool !== Tool.Move) {
         applyToolStroke(cp.x, cp.y);
       }
     },
@@ -381,6 +687,15 @@ export function CanvasArea() {
     }
   };
 
+  const transformScreenBounds = transformBounds
+    ? {
+        left: transformBounds.x * (zoom / 100) + pan.x,
+        top: transformBounds.y * (zoom / 100) + pan.y,
+        width: transformBounds.width * (zoom / 100),
+        height: transformBounds.height * (zoom / 100),
+      }
+    : null;
+
   return (
     <main className="canvas-area">
       <div className="opts">
@@ -422,6 +737,49 @@ export function CanvasArea() {
           onMouseLeave={onUp}
         >
           <canvas ref={canvasRef} style={{ position: "absolute", top: 0, left: 0, display: "block" }} />
+          {activeTool === Tool.Move && transformScreenBounds && (
+            <div
+              onMouseDown={(e) => beginTransformDrag("move", e)}
+              style={{
+                position: "absolute",
+                left: transformScreenBounds.left,
+                top: transformScreenBounds.top,
+                width: Math.max(transformScreenBounds.width, 1),
+                height: Math.max(transformScreenBounds.height, 1),
+                border: "1px solid #4aa3ff",
+                boxShadow: "0 0 0 1px rgba(74,163,255,0.25)",
+                cursor: "move",
+                boxSizing: "border-box",
+              }}
+            >
+              {(["nw", "ne", "sw", "se"] as const).map((handle) => {
+                const positionStyle =
+                  handle === "nw"
+                    ? { left: -5, top: -5, cursor: "nwse-resize" }
+                    : handle === "ne"
+                      ? { right: -5, top: -5, cursor: "nesw-resize" }
+                      : handle === "sw"
+                        ? { left: -5, bottom: -5, cursor: "nesw-resize" }
+                        : { right: -5, bottom: -5, cursor: "nwse-resize" };
+
+                return (
+                  <div
+                    key={handle}
+                    onMouseDown={(e) => beginTransformDrag(handle, e)}
+                    style={{
+                      position: "absolute",
+                      width: 10,
+                      height: 10,
+                      background: "#ffffff",
+                      border: "1px solid #4aa3ff",
+                      boxSizing: "border-box",
+                      ...positionStyle,
+                    }}
+                  />
+                );
+              })}
+            </div>
+          )}
           {doc && (
             <div className="clabel">
               <em>{doc.layers[0]?.name ?? "Untitled"}</em> — {doc.width} × {doc.height} px
