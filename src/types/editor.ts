@@ -69,6 +69,7 @@ export interface Layer {
     pixels: Uint8ClampedArray;
     width: number;
     height: number;
+    angle: number;
     bounds: {
       x: number;
       y: number;

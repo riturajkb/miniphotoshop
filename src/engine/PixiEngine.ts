@@ -5,14 +5,29 @@
 import "pixi.js/unsafe-eval"; // Required: CSP blocks eval() used by PixiJS shader compiler
 import { Application, Container, Graphics, Sprite, Texture } from "pixi.js";
 
+type CompositeTile = {
+  canvas: HTMLCanvasElement;
+  ctx: CanvasRenderingContext2D;
+  sprite: Sprite;
+  texture: Texture;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+};
+
 export class PixiEngine {
   public app!: Application;
   public documentContainer!: Container;
   public checkerboardContainer!: Container;
-  public compositeSprite!: Sprite;
+  public compositeContainer!: Container;
   public backgroundGraphics: Graphics | null = null;
 
   private initialized = false;
+  private compositeTiles: CompositeTile[] = [];
+  private compositeWidth = 0;
+  private compositeHeight = 0;
+  private readonly compositeTileSize = 512;
 
   async init(
     canvas: HTMLCanvasElement,
@@ -35,11 +50,10 @@ export class PixiEngine {
 
     this.checkerboardContainer = new Container();
     this.documentContainer = new Container();
-    this.compositeSprite = new Sprite(Texture.EMPTY);
-    this.compositeSprite.eventMode = "static";
+    this.compositeContainer = new Container();
 
     this.app.stage.addChild(this.checkerboardContainer);
-    this.documentContainer.addChild(this.compositeSprite);
+    this.documentContainer.addChild(this.compositeContainer);
     this.app.stage.addChild(this.documentContainer);
 
     this.initialized = true;
@@ -69,22 +83,41 @@ export class PixiEngine {
     this.checkerboardContainer.addChild(g);
   }
 
-  setCompositeTexture(canvas: HTMLCanvasElement): void {
-    if (
-      this.compositeSprite.texture &&
-      this.compositeSprite.texture !== Texture.EMPTY
-    ) {
-      if (
-        this.compositeSprite.texture.width !== canvas.width ||
-        this.compositeSprite.texture.height !== canvas.height
-      ) {
-        this.compositeSprite.texture.destroy(true);
-        this.compositeSprite.texture = Texture.from(canvas);
-      } else {
-        this.compositeSprite.texture.source.update();
-      }
-    } else {
-      this.compositeSprite.texture = Texture.from(canvas);
+  setCompositeTexture(
+    canvas: HTMLCanvasElement,
+    dirtyRect?: { minX: number; minY: number; maxX: number; maxY: number },
+  ): void {
+    this.ensureCompositeTiles(canvas.width, canvas.height);
+
+    const minX = dirtyRect ? dirtyRect.minX : 0;
+    const minY = dirtyRect ? dirtyRect.minY : 0;
+    const maxX = dirtyRect ? dirtyRect.maxX : canvas.width - 1;
+    const maxY = dirtyRect ? dirtyRect.maxY : canvas.height - 1;
+
+    for (const tile of this.compositeTiles) {
+      const tileMaxX = tile.x + tile.width - 1;
+      const tileMaxY = tile.y + tile.height - 1;
+      const intersects =
+        tile.x <= maxX &&
+        tile.y <= maxY &&
+        tileMaxX >= minX &&
+        tileMaxY >= minY;
+
+      if (!intersects) continue;
+
+      tile.ctx.clearRect(0, 0, tile.width, tile.height);
+      tile.ctx.drawImage(
+        canvas,
+        tile.x,
+        tile.y,
+        tile.width,
+        tile.height,
+        0,
+        0,
+        tile.width,
+        tile.height,
+      );
+      tile.texture.source.update();
     }
   }
 
@@ -135,11 +168,57 @@ export class PixiEngine {
 
   destroy(): void {
     if (!this.initialized) return;
+    this.destroyCompositeTiles();
     this.app.destroy(true, { children: true, texture: true });
     this.initialized = false;
   }
 
   get isInitialized(): boolean {
     return this.initialized;
+  }
+
+  private ensureCompositeTiles(width: number, height: number): void {
+    if (this.compositeWidth === width && this.compositeHeight === height && this.compositeTiles.length > 0) {
+      return;
+    }
+
+    this.destroyCompositeTiles();
+    this.compositeWidth = width;
+    this.compositeHeight = height;
+
+    for (let y = 0; y < height; y += this.compositeTileSize) {
+      for (let x = 0; x < width; x += this.compositeTileSize) {
+        const tileWidth = Math.min(this.compositeTileSize, width - x);
+        const tileHeight = Math.min(this.compositeTileSize, height - y);
+        const tileCanvas = document.createElement("canvas");
+        tileCanvas.width = tileWidth;
+        tileCanvas.height = tileHeight;
+        const tileCtx = tileCanvas.getContext("2d")!;
+        const texture = Texture.from(tileCanvas);
+        const sprite = new Sprite(texture);
+        sprite.position.set(x, y);
+        this.compositeContainer.addChild(sprite);
+        this.compositeTiles.push({
+          canvas: tileCanvas,
+          ctx: tileCtx,
+          sprite,
+          texture,
+          x,
+          y,
+          width: tileWidth,
+          height: tileHeight,
+        });
+      }
+    }
+  }
+
+  private destroyCompositeTiles(): void {
+    for (const tile of this.compositeTiles) {
+      tile.sprite.destroy({ texture: true });
+    }
+    this.compositeTiles = [];
+    this.compositeWidth = 0;
+    this.compositeHeight = 0;
+    this.compositeContainer?.removeChildren();
   }
 }

@@ -17,7 +17,9 @@ export interface LayerData {
   width: number;
   height: number;
   dirty: boolean;
+  dirtyRect?: { minX: number; minY: number; maxX: number; maxY: number };
   graphics?: Graphics; // Optional PixiJS Graphics object (e.g., for background layer)
+  sourcePixelsRef?: Uint8ClampedArray | null;
 }
 
 export class LayerStack {
@@ -292,12 +294,14 @@ export class LayerStack {
   markAllDirty(): void {
     for (const layer of this.layers) {
       layer.dirty = true;
+      layer.dirtyRect = undefined;
     }
   }
 
   clearDirty(): void {
     for (const layer of this.layers) {
       layer.dirty = false;
+      layer.dirtyRect = undefined;
     }
   }
 
@@ -308,13 +312,17 @@ export class LayerStack {
   /**
    * Reconcile the engine's LayerStack with external document state
    */
-  syncFromDocument(docLayers: import("../types/editor").Layer[]): void {
+  syncFromDocument(docLayers: import("../types/editor").Layer[]): boolean {
+    let visualChanged = false;
+
     // 1. Identify layers to remove
     const docIds = new Set(docLayers.map((l) => l.id));
+    const previousOrder = this.layers.map((layer) => layer.id);
     this.layers = this.layers.filter((engineLayer) => {
       if (!docIds.has(engineLayer.id)) {
         if (engineLayer.sprite) engineLayer.sprite.destroy({ texture: true });
         if (engineLayer.graphics) engineLayer.graphics.destroy();
+        visualChanged = true;
         return false;
       }
       return true;
@@ -322,9 +330,10 @@ export class LayerStack {
 
     // 2. Identify and create/update layers
     const newLayers: LayerData[] = [];
+    const existingLayers = new Map(this.layers.map((layer) => [layer.id, layer]));
 
     for (const docLayer of docLayers) {
-      let engineLayer = this.layers.find((l) => l.id === docLayer.id);
+      let engineLayer = existingLayers.get(docLayer.id);
 
       if (!engineLayer) {
         // Create new engine layer
@@ -340,9 +349,16 @@ export class LayerStack {
           width: this.width,
           height: this.height,
           dirty: true,
+          sourcePixelsRef: docLayer.pixels ?? null,
         };
+        visualChanged = true;
       } else {
         // Update existing layer properties
+        const visualPropsChanged =
+          engineLayer.visible !== docLayer.visible ||
+          engineLayer.opacity !== docLayer.opacity ||
+          engineLayer.blendMode !== docLayer.blendMode;
+
         engineLayer.name = docLayer.name;
         engineLayer.visible = docLayer.visible;
         engineLayer.locked = docLayer.locked;
@@ -356,21 +372,50 @@ export class LayerStack {
           engineLayer.pixelBuffer = new Uint8ClampedArray(
             this.width * this.height * 4,
           );
+          engineLayer.sourcePixelsRef = null;
+          visualChanged = true;
         }
 
-        // Sync pixels if they exist in doc and are different (or simply always sync for simplicity in undo/redo)
-        if (docLayer.pixels) {
+        const pixelsChanged = engineLayer.sourcePixelsRef !== (docLayer.pixels ?? null);
+
+        // Sync pixels only when the source reference changed.
+        if (docLayer.pixels && pixelsChanged) {
           engineLayer.pixelBuffer?.set(docLayer.pixels);
+          engineLayer.sourcePixelsRef = docLayer.pixels;
+          engineLayer.dirty = true;
+          engineLayer.dirtyRect = undefined;
+          visualChanged = true;
+        } else if (!docLayer.pixels && engineLayer.sourcePixelsRef) {
+          engineLayer.pixelBuffer?.fill(0);
+          engineLayer.sourcePixelsRef = null;
+          engineLayer.dirty = true;
+          engineLayer.dirtyRect = undefined;
+          visualChanged = true;
         }
+
         engineLayer.width = this.width;
         engineLayer.height = this.height;
-        engineLayer.dirty = true;
+
+        if (visualPropsChanged) {
+          engineLayer.dirty = true;
+          engineLayer.dirtyRect = undefined;
+          visualChanged = true;
+        }
       }
 
-      newLayers.push(engineLayer);
+      newLayers.push(engineLayer as LayerData);
     }
 
     this.layers = newLayers;
-    this.markAllDirty();
+    const orderChanged =
+      previousOrder.length !== newLayers.length ||
+      previousOrder.some((id, index) => newLayers[index]?.id !== id);
+
+    if (orderChanged) {
+      this.markAllDirty();
+      visualChanged = true;
+    }
+
+    return visualChanged;
   }
 }

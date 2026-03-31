@@ -1,4 +1,4 @@
-const __vite__mapDeps=(i,m=__vite__mapDeps,d=(m.f||(m.f=["./browserAll-Dt03pJY5.js","./webworkerAll-DmOUSEPI.js","./Filter-ClqMLBDG.js","./WebGPURenderer-Cv3wpFZf.js","./GpuStencilModesToPixi-BvJO11Ks.js","./RenderTargetSystem-WRCEUZOq.js","./WebGLRenderer-D0BH9d1j.js","./CanvasRenderer-C41xwh-h.js"])))=>i.map(i=>d[i]);
+const __vite__mapDeps=(i,m=__vite__mapDeps,d=(m.f||(m.f=["./browserAll-Bm9-CUBj.js","./webworkerAll-BSDksv32.js","./Filter-DELMkI7i.js","./WebGPURenderer-2qTgVEUR.js","./GpuStencilModesToPixi-CGmo6sZP.js","./RenderTargetSystem-cVH9hZwv.js","./WebGLRenderer-D5-ugl2K.js","./CanvasRenderer-6TS7DBB3.js"])))=>i.map(i=>d[i]);
 function getDefaultExportFromCjs(x2) {
   return x2 && x2.__esModule && Object.prototype.hasOwnProperty.call(x2, "default") ? x2["default"] : x2;
 }
@@ -277,13 +277,13 @@ const React = /* @__PURE__ */ getDefaultExportFromCjs(reactExports);
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-var f$2 = reactExports, k$1 = Symbol.for("react.element"), l$3 = Symbol.for("react.fragment"), m$8 = Object.prototype.hasOwnProperty, n$4 = f$2.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.ReactCurrentOwner, p$3 = { key: true, ref: true, __self: true, __source: true };
+var f$2 = reactExports, k$1 = Symbol.for("react.element"), l$3 = Symbol.for("react.fragment"), m$7 = Object.prototype.hasOwnProperty, n$4 = f$2.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.ReactCurrentOwner, p$3 = { key: true, ref: true, __self: true, __source: true };
 function q(c2, a2, g2) {
   var b2, d2 = {}, e2 = null, h2 = null;
   void 0 !== g2 && (e2 = "" + g2);
   void 0 !== a2.key && (e2 = "" + a2.key);
   void 0 !== a2.ref && (h2 = a2.ref);
-  for (b2 in a2) m$8.call(a2, b2) && !p$3.hasOwnProperty(b2) && (d2[b2] = a2[b2]);
+  for (b2 in a2) m$7.call(a2, b2) && !p$3.hasOwnProperty(b2) && (d2[b2] = a2[b2]);
   if (c2 && c2.defaultProps) for (b2 in a2 = c2.defaultProps, a2) void 0 === d2[b2] && (d2[b2] = a2[b2]);
   return { $$typeof: k$1, type: c2, key: e2, ref: h2, props: d2, _owner: n$4.current };
 }
@@ -6962,10 +6962,10 @@ function checkDCE() {
 }
 var reactDomExports = reactDom.exports;
 var createRoot;
-var m$7 = reactDomExports;
+var m$6 = reactDomExports;
 {
-  createRoot = m$7.createRoot;
-  m$7.hydrateRoot;
+  createRoot = m$6.createRoot;
+  m$6.hydrateRoot;
 }
 const createStoreImpl = (createState) => {
   let state;
@@ -7818,6 +7818,16 @@ const useDocumentStore = create()(
         if (state.document) {
           const layer = state.document.layers.find((l2) => l2.id === layerId);
           if (layer) {
+            const pixelsChanged = "pixels" in updates && updates.pixels !== layer.pixels;
+            const transformSourceChanged = "transformSource" in updates && updates.transformSource !== layer.transformSource;
+            const visibleChanged = "visible" in updates && updates.visible !== layer.visible;
+            const lockedChanged = "locked" in updates && updates.locked !== layer.locked;
+            const opacityChanged = "opacity" in updates && updates.opacity !== layer.opacity;
+            const blendModeChanged = "blendMode" in updates && updates.blendMode !== layer.blendMode;
+            const nameChanged = "name" in updates && updates.name !== layer.name;
+            if (!pixelsChanged && !transformSourceChanged && !visibleChanged && !lockedChanged && !opacityChanged && !blendModeChanged && !nameChanged) {
+              return;
+            }
             if ("pixels" in updates && !("transformSource" in updates)) {
               layer.transformSource = null;
             }
@@ -7830,8 +7840,13 @@ const useDocumentStore = create()(
       if (state.document) {
         const layer = state.document.layers.find((l2) => l2.id === layerId);
         if (layer) {
-          layer.pixels = new Uint8ClampedArray(pixels);
-          layer.transformSource = null;
+          if (layer.pixels === pixels && layer.transformSource === null) {
+            return;
+          }
+          layer.pixels = pixels;
+          if (layer.transformSource !== null) {
+            layer.transformSource = null;
+          }
         }
       }
     }),
@@ -7902,8 +7917,9 @@ const Tool = {
   Shape: "shape",
   Zoom: "zoom"
 };
-const initialState$1 = {
+const initialState$2 = {
   activeTool: "brush",
+  transformActive: false,
   zoom: 100,
   pan: { x: 0, y: 0 },
   viewportWidth: 800,
@@ -7914,9 +7930,12 @@ const initialState$1 = {
 };
 const useEditorStore = create()(
   immer((setFn) => ({
-    ...initialState$1,
+    ...initialState$2,
     setTool: (tool) => setFn((state) => {
       state.activeTool = tool;
+    }),
+    setTransformActive: (active) => setFn((state) => {
+      state.transformActive = active;
     }),
     setZoom: (zoom) => setFn((state) => {
       state.zoom = Math.max(10, Math.min(3200, zoom));
@@ -7969,7 +7988,7 @@ function createFilledLayer(id2, name, width, height, color) {
 }
 function MenuBar({ onOpenAppearance }) {
   const { setDocument, document: doc, addLayer, setActiveLayer, undo, redo, undoStack, redoStack } = useDocumentStore();
-  const { setZoom, setPan, setTool, rendererRef } = useEditorStore();
+  const { setZoom, setPan, setTool, setTransformActive, rendererRef } = useEditorStore();
   const [showNewModal, setShowNewModal] = reactExports.useState(false);
   const [newWidth, setNewWidth] = reactExports.useState(800);
   const [newHeight, setNewHeight] = reactExports.useState(600);
@@ -8110,8 +8129,6 @@ function MenuBar({ onOpenAppearance }) {
       const docWidth = currentDoc.width;
       const docHeight = currentDoc.height;
       const nextLayerId = `layer-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
-      const layerStack = rendererRef.getLayerStack();
-      const newLayer = layerStack.createLayer(fileName, void 0, nextLayerId);
       const offsetX = Math.floor((docWidth - img.width) / 2);
       const offsetY = Math.floor((docHeight - img.height) / 2);
       const docPixelBuffer = new Uint8ClampedArray(docWidth * docHeight * 4);
@@ -8129,18 +8146,15 @@ function MenuBar({ onOpenAppearance }) {
           docPixelBuffer[destIdx + 3] = imageData.data[srcIdx + 3];
         }
       }
-      newLayer.pixelBuffer = docPixelBuffer;
-      newLayer.width = docWidth;
-      newLayer.height = docHeight;
-      newLayer.dirty = true;
       const storeLayer = createLayerWithPixels(
-        newLayer.id,
-        newLayer.name,
+        nextLayerId,
+        fileName,
         new Uint8ClampedArray(docPixelBuffer),
         {
           pixels: new Uint8ClampedArray(imageData.data),
           width: img.width,
           height: img.height,
+          angle: 0,
           bounds: {
             x: offsetX,
             y: offsetY,
@@ -8151,8 +8165,8 @@ function MenuBar({ onOpenAppearance }) {
       );
       addLayer(storeLayer);
       setActiveLayer(storeLayer.id);
+      setTransformActive(true);
       setTool(Tool.Move);
-      rendererRef.forceRender();
       URL.revokeObjectURL(objectURL);
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
@@ -8166,7 +8180,7 @@ function MenuBar({ onOpenAppearance }) {
       }
     };
     img.src = objectURL;
-  }, [rendererRef, doc, addLayer, setActiveLayer, setTool]);
+  }, [rendererRef, doc, addLayer, setActiveLayer, setTool, setTransformActive]);
   reactExports.useEffect(() => {
     const electronAPI = window.electronAPI;
     if (!electronAPI) return;
@@ -8615,7 +8629,7 @@ const l$2 = /* @__PURE__ */ new Map([
     /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, /* @__PURE__ */ reactExports.createElement("path", { d: "M93.17,58.83a4,4,0,0,1,0-5.66l32-32a4,4,0,0,1,5.66,0l32,32a4,4,0,0,1-5.66,5.66L132,33.66V96a4,4,0,0,1-8,0V33.66L98.83,58.83A4,4,0,0,1,93.17,58.83Zm64,138.34L132,222.34V160a4,4,0,0,0-8,0v62.34L98.83,197.17a4,4,0,0,0-5.66,5.66l32,32a4,4,0,0,0,5.66,0l32-32a4,4,0,0,0-5.66-5.66Zm77.66-72-32-32a4,4,0,0,0-5.66,5.66L222.34,124H160a4,4,0,0,0,0,8h62.34l-25.17,25.17a4,4,0,0,0,5.66,5.66l32-32A4,4,0,0,0,234.83,125.17ZM33.66,132H96a4,4,0,0,0,0-8H33.66L58.83,98.83a4,4,0,0,0-5.66-5.66l-32,32a4,4,0,0,0,0,5.66l32,32a4,4,0,1,0,5.66-5.66Z" }))
   ]
 ]);
-const e$c = /* @__PURE__ */ new Map([
+const e$a = /* @__PURE__ */ new Map([
   [
     "bold",
     /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, /* @__PURE__ */ reactExports.createElement("path", { d: "M92.38,38.05A12,12,0,0,1,101,23.42a108,108,0,0,1,54,0,12,12,0,1,1-6,23.23,84.11,84.11,0,0,0-42,0A12,12,0,0,1,92.38,38.05ZM50.94,52.34a108.1,108.1,0,0,0-27,46.76,12,12,0,0,0,8.37,14.77,12.2,12.2,0,0,0,3.2.43,12,12,0,0,0,11.56-8.8,84,84,0,0,1,21-36.35A12,12,0,1,0,50.94,52.34Zm-3.88,98.14a12,12,0,0,0-23.12,6.42,108,108,0,0,0,27,46.78A12,12,0,0,0,68,186.85,84,84,0,0,1,47.06,150.48ZM149,209.35a84,84,0,0,1-42,0,12,12,0,1,0-6,23.23,108,108,0,0,0,54,0,12,12,0,1,0-6-23.23Zm74.72-67.22A12,12,0,0,0,209,150.5a84,84,0,0,1-21,36.35,12,12,0,0,0,17.12,16.82,108.19,108.19,0,0,0,27-46.77A12,12,0,0,0,223.71,142.13Zm-14.77-36.61a12,12,0,0,0,23.12-6.42,108,108,0,0,0-27-46.78A12,12,0,1,0,188,69.15,84,84,0,0,1,208.94,105.52Z" }))
@@ -8641,7 +8655,7 @@ const e$c = /* @__PURE__ */ new Map([
     /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, /* @__PURE__ */ reactExports.createElement("path", { d: "M155.87,36.06a4,4,0,0,1-3.87,3,4.29,4.29,0,0,1-1-.13,92,92,0,0,0-46,0,4,4,0,0,1-2-7.74,100.09,100.09,0,0,1,50,0A4,4,0,0,1,155.87,36.06ZM56.65,57.94a100.18,100.18,0,0,0-25,43.29,4,4,0,0,0,7.71,2.14,92.06,92.06,0,0,1,23-39.82,4,4,0,1,0-5.7-5.61ZM39.36,152.62a4,4,0,0,0-7.71,2.14,100.08,100.08,0,0,0,25,43.31,4,4,0,1,0,5.71-5.61A91.91,91.91,0,0,1,39.36,152.62ZM151,217.09a92,92,0,0,1-46,0,4,4,0,0,0-2,7.75,100,100,0,0,0,50,0,4,4,0,1,0-2-7.74Zm70.58-67.25a4,4,0,0,0-4.92,2.79,92.12,92.12,0,0,1-23,39.82,4,4,0,1,0,5.7,5.61,100.18,100.18,0,0,0,25-43.29A4,4,0,0,0,221.58,149.84Zm-4.94-46.46a4,4,0,0,0,7.71-2.14,100.08,100.08,0,0,0-25-43.31,4,4,0,1,0-5.71,5.61A91.91,91.91,0,0,1,216.64,103.38Z" }))
   ]
 ]);
-const e$b = /* @__PURE__ */ new Map([
+const e$9 = /* @__PURE__ */ new Map([
   [
     "bold",
     /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, /* @__PURE__ */ reactExports.createElement("path", { d: "M244,192a12,12,0,0,1-12,12H204v28a12,12,0,0,1-24,0V204H64a12,12,0,0,1-12-12V76H24a12,12,0,0,1,0-24H52V24a12,12,0,0,1,24,0V180H232A12,12,0,0,1,244,192ZM104,76h76v76a12,12,0,0,0,24,0V64a12,12,0,0,0-12-12H104a12,12,0,0,0,0,24Z" }))
@@ -8667,7 +8681,7 @@ const e$b = /* @__PURE__ */ new Map([
     /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, /* @__PURE__ */ reactExports.createElement("path", { d: "M236,192a4,4,0,0,1-4,4H196v36a4,4,0,0,1-8,0V196H64a4,4,0,0,1-4-4V68H24a4,4,0,0,1,0-8H60V24a4,4,0,0,1,8,0V188H232A4,4,0,0,1,236,192ZM96,68h92v92a4,4,0,0,0,8,0V64a4,4,0,0,0-4-4H96a4,4,0,0,0,0,8Z" }))
   ]
 ]);
-const e$a = /* @__PURE__ */ new Map([
+const e$8 = /* @__PURE__ */ new Map([
   [
     "bold",
     /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, /* @__PURE__ */ reactExports.createElement("path", { d: "M216,204H141l86.84-86.84a28,28,0,0,0,0-39.6L186.43,36.19a28,28,0,0,0-39.6,0L28.19,154.82a28,28,0,0,0,0,39.6l30.06,30.07A12,12,0,0,0,66.74,228H216a12,12,0,0,0,0-24ZM163.8,53.16a4,4,0,0,1,5.66,0l41.38,41.38a4,4,0,0,1,0,5.65L160,151l-47-47ZM71.71,204,45.16,177.45a4,4,0,0,1,0-5.65L96,121l47,47-36,36Z" }))
@@ -8789,7 +8803,7 @@ const a$5 = /* @__PURE__ */ new Map([
     /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, /* @__PURE__ */ reactExports.createElement("path", { d: "M203.64,63.34C183.37,50.87,156.51,44,128,44S72.63,50.87,52.36,63.34C31.49,76.19,20,93.48,20,112s11.49,35.83,32.36,48.68c19.29,11.87,44.55,18.65,71.51,19.28.08,1.27.13,2.56.13,3.9,0,15.49-7.28,28.44-20.51,36.46-15.79,9.57-37.34,10.28-53.64,1.77a4,4,0,1,0-3.7,7.09A62.32,62.32,0,0,0,74.91,236a63.56,63.56,0,0,0,32.73-8.82c15.71-9.52,24.36-24.9,24.36-43.3,0-1.32-.05-2.61-.12-3.9,27.06-.59,52.41-7.38,71.76-19.28C224.51,147.85,236,130.56,236,112S224.51,76.19,203.64,63.34ZM62.16,157.15c5.3-14.49,18.83-18.22,29.3-16.85,13.64,1.78,27.38,12.19,31.38,31.66C99.66,171.25,78.55,165.78,62.16,157.15ZM131,172a51.35,51.35,0,0,0-11.18-24.59,43.28,43.28,0,0,0-27.3-15.06c-16.82-2.19-31.24,6-37.33,20.74C38.33,142.35,28,127.9,28,112c0-33.09,44.86-60,100-60s100,26.93,100,60C228,144.52,184.74,171.06,131,172Z" }))
   ]
 ]);
-const e$9 = /* @__PURE__ */ new Map([
+const e$7 = /* @__PURE__ */ new Map([
   [
     "bold",
     /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, /* @__PURE__ */ reactExports.createElement("path", { d: "M252,152a12,12,0,0,1-12,12H228v12a12,12,0,0,1-24,0V164H192a12,12,0,0,1,0-24h12V128a12,12,0,0,1,24,0v12h12A12,12,0,0,1,252,152ZM56,76H68V88a12,12,0,0,0,24,0V76h12a12,12,0,1,0,0-24H92V40a12,12,0,0,0-24,0V52H56a12,12,0,0,0,0,24ZM184,188h-4v-4a12,12,0,0,0-24,0v4h-4a12,12,0,0,0,0,24h4v4a12,12,0,0,0,24,0v-4h4a12,12,0,0,0,0-24ZM222.14,82.83,82.82,222.14a20,20,0,0,1-28.28,0L33.85,201.46a20,20,0,0,1,0-28.29L173.17,33.86a20,20,0,0,1,28.28,0l20.69,20.68A20,20,0,0,1,222.14,82.83ZM159,112,144,97,53.65,187.31l15,15Zm43.31-43.31-15-15L161,80l15,15Z" }))
@@ -8821,7 +8835,7 @@ const e$9 = /* @__PURE__ */ new Map([
     /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, /* @__PURE__ */ reactExports.createElement("path", { d: "M244,152a4,4,0,0,1-4,4H220v20a4,4,0,0,1-8,0V156H192a4,4,0,0,1,0-8h20V128a4,4,0,0,1,8,0v20h20A4,4,0,0,1,244,152ZM56,68H76V88a4,4,0,0,0,8,0V68h20a4,4,0,0,0,0-8H84V40a4,4,0,0,0-8,0V60H56a4,4,0,0,0,0,8ZM184,196H172V184a4,4,0,0,0-8,0v12H152a4,4,0,0,0,0,8h12v12a4,4,0,0,0,8,0V204h12a4,4,0,0,0,0-8ZM216.48,77.17,77.17,216.49a12,12,0,0,1-17,0L39.51,195.8a12,12,0,0,1,0-17L178.83,39.51a12,12,0,0,1,17,0L216.48,60.2A12,12,0,0,1,216.48,77.17ZM170.34,112,144,85.66,45.17,184.49a4,4,0,0,0,0,5.65l20.68,20.69a4,4,0,0,0,5.66,0Zm40.49-46.14L190.14,45.17a4,4,0,0,0-5.66,0L149.65,80,176,106.34l34.83-34.83A4,4,0,0,0,210.83,65.86Z" }))
   ]
 ]);
-const e$8 = /* @__PURE__ */ new Map([
+const e$6 = /* @__PURE__ */ new Map([
   [
     "bold",
     /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, /* @__PURE__ */ reactExports.createElement("path", { d: "M156,112a12,12,0,0,1-12,12H124v20a12,12,0,0,1-24,0V124H80a12,12,0,0,1,0-24h20V80a12,12,0,0,1,24,0v20h20A12,12,0,0,1,156,112Zm76.49,120.49a12,12,0,0,1-17,0L168,185a92.12,92.12,0,1,1,17-17l47.54,47.53A12,12,0,0,1,232.49,232.49ZM112,180a68,68,0,1,0-68-68A68.08,68.08,0,0,0,112,180Z" }))
@@ -8879,39 +8893,7 @@ const a$4 = /* @__PURE__ */ new Map([
     /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, /* @__PURE__ */ reactExports.createElement("path", { d: "M224,28c-20.29,0-43.16,11.24-68,33.4-18.47,16.49-34.39,35.83-45,49.93A56,56,0,0,0,36,164c0,33.22-21.26,48-22.22,48.68A4,4,0,0,0,16,220H92a56,56,0,0,0,52.67-75c14.11-10.63,33.44-26.55,49.93-45C216.76,75.16,228,52.29,228,32A4,4,0,0,0,224,28ZM92,212H26.35C33.91,203.69,44,188.08,44,164a48,48,0,1,1,48,48Zm26.52-97.31c4.13-5.44,9.32-12,15.29-18.9a80.08,80.08,0,0,1,26.4,26.4c-6.94,6-13.46,11.16-18.9,15.29A56.32,56.32,0,0,0,118.52,114.69Zm47.77,2.14a88.17,88.17,0,0,0-27.12-27.12C161,65.43,191.26,38.63,219.82,36.18,217.37,64.74,190.57,95,166.29,116.83Z" }))
   ]
 ]);
-const e$7 = /* @__PURE__ */ new Map([
-  [
-    "bold",
-    /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, /* @__PURE__ */ reactExports.createElement("path", { d: "M235.79,142.88a12,12,0,0,0,4.7-19.87L125,7.52a12,12,0,0,0-17,0L70.25,45.29,48.48,23.52a12,12,0,0,0-17,17L53.28,62.26,12.2,103.35a28,28,0,0,0,0,39.6l84.86,84.86a28,28,0,0,0,39.6,0L214.48,150Zm-31.58-14.77a12,12,0,0,0-4.7,2.9l-79.82,79.83a4,4,0,0,1-5.66,0L29.17,126a4,4,0,0,1,0-5.66L70.25,79.24l24.29,24.29a32,32,0,0,0,52.09,35.11h0a32,32,0,0,0-35.12-52.08L87.23,62.26,116.52,33l93.27,93.28Zm-85.87-17.75,0,0a8,8,0,1,1-.06.06ZM256,208a24,24,0,0,1-48,0c0-19.44,12.93-37.23,14.4-39.2a12,12,0,0,1,19.2,0C243.07,170.78,256,188.57,256,208Z" }))
-  ],
-  [
-    "duotone",
-    /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, /* @__PURE__ */ reactExports.createElement(
-      "path",
-      {
-        d: "M248,208a16,16,0,0,1-32,0c0-16,16-40,16-40S248,192,248,208Zm-16-76.52-24,8-79.83,79.83a16,16,0,0,1-22.63,0L20.69,134.46a16,16,0,0,1,0-22.63L116.52,16Zm-93.86-29.62a20,20,0,1,0,0,28.28A20,20,0,0,0,138.14,101.86Z",
-        opacity: "0.2"
-      }
-    ), /* @__PURE__ */ reactExports.createElement("path", { d: "M238.66,163.56a8,8,0,0,0-13.32,0C223.57,166.23,208,190.09,208,208a24,24,0,0,0,48,0C256,190.09,240.43,166.23,238.66,163.56ZM232,216a8,8,0,0,1-8-8c0-6.8,4-16.32,8-24.08,4,7.76,8,17.34,8,24.08A8,8,0,0,1,232,216Zm2.53-76.93a8,8,0,0,0,3.13-13.24L122.17,10.34a8,8,0,0,0-11.31,0L70.25,51,45.65,26.34A8,8,0,0,0,34.34,37.66l24.6,24.6L15,106.17a24,24,0,0,0,0,33.94L99.89,225a24,24,0,0,0,33.94,0l78.49-78.49Zm-32.19-5.24-79.83,79.83a8,8,0,0,1-11.31,0L26.34,128.8a8,8,0,0,1,0-11.31L70.25,73.57l29.12,29.12a28,28,0,1,0,11.31-11.32L81.57,62.26l35-34.95L217.19,128l-11.72,3.9A8.09,8.09,0,0,0,202.34,133.83Zm-86.83-26.31,0,0a13.26,13.26,0,1,1-.05.06S115.51,107.53,115.51,107.52Z" }))
-  ],
-  [
-    "fill",
-    /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, /* @__PURE__ */ reactExports.createElement("path", { d: "M256,208a24,24,0,0,1-48,0c0-17.91,15.57-41.77,17.34-44.44a8,8,0,0,1,13.32,0C240.43,166.23,256,190.09,256,208ZM132.49,124.49a12,12,0,0,0-17-17l0,0s0,0,0,0a12,12,0,0,0,17,16.94ZM37.65,18.34A8,8,0,0,0,26.34,29.66l32.6,32.6L70.25,51ZM234.53,139.07a8,8,0,0,0,3.13-13.24L122.17,10.34a8,8,0,0,0-11.31,0L70.25,51l40.43,40.42a28,28,0,1,1-11.31,11.32L58.94,62.26,15,106.17a24,24,0,0,0,0,33.94L99.89,225a24,24,0,0,0,33.94,0l78.49-78.49Z" }))
-  ],
-  [
-    "light",
-    /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, /* @__PURE__ */ reactExports.createElement("path", { d: "M237,164.67a6,6,0,0,0-10,0c-.7,1-17,25.72-17,43.33a22,22,0,0,0,44,0C254,190.39,237.69,165.71,237,164.67ZM232,218a10,10,0,0,1-10-10c0-8.17,5.37-19.92,10-28.34,4.63,8.41,10,20.15,10,28.34A10,10,0,0,1,232,218Zm1.9-80.82a6,6,0,0,0,2.34-9.94L120.76,11.76a6,6,0,0,0-8.49,0l-42,42-26-26a6,6,0,0,0-8.49,8.48l26,26L16.44,107.59a22,22,0,0,0,0,31.11l84.86,84.86a22,22,0,0,0,31.11,0l78.83-78.83Zm-30.14-1.94-79.83,79.83a10,10,0,0,1-14.14,0L24.93,130.21a10,10,0,0,1,0-14.14L70.25,70.75l31.62,31.61a26,26,0,0,0,3.75,32,26,26,0,0,0,36.76,0h0a26,26,0,0,0-32-40.51L78.74,62.26l37.78-37.77L220.89,128.86l-14.79,4.93A6.07,6.07,0,0,0,203.76,135.24ZM114.1,106.11l0,0a14,14,0,1,1,0,19.82,13.91,13.91,0,0,1,0-19.82Z" }))
-  ],
-  [
-    "regular",
-    /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, /* @__PURE__ */ reactExports.createElement("path", { d: "M234.53,139.07a8,8,0,0,0,3.13-13.24L122.17,10.34a8,8,0,0,0-11.31,0L70.25,51,45.65,26.34A8,8,0,0,0,34.34,37.66l24.6,24.6L15,106.17a24,24,0,0,0,0,33.94L99.89,225a24,24,0,0,0,33.94,0l78.49-78.49Zm-32.19-5.24-79.83,79.83a8,8,0,0,1-11.31,0L26.34,128.8a8,8,0,0,1,0-11.31L70.25,73.57l29.12,29.12a28,28,0,1,0,11.31-11.32L81.57,62.26l35-34.95L217.19,128l-11.72,3.9A8.09,8.09,0,0,0,202.34,133.83Zm-86.83-26.31,0,0a13.26,13.26,0,1,1-.05.06S115.51,107.53,115.51,107.52Zm123.15,56a8,8,0,0,0-13.32,0C223.57,166.23,208,190.09,208,208a24,24,0,0,0,48,0C256,190.09,240.43,166.23,238.66,163.56ZM232,216a8,8,0,0,1-8-8c0-6.8,4-16.32,8-24.08,4,7.76,8,17.34,8,24.08A8,8,0,0,1,232,216Z" }))
-  ],
-  [
-    "thin",
-    /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, /* @__PURE__ */ reactExports.createElement("path", { d: "M235.33,165.78a4,4,0,0,0-6.66,0C228,166.8,212,191,212,208a20,20,0,0,0,40,0C252,191,236,166.8,235.33,165.78ZM232,220a12,12,0,0,1-12-12c0-10.25,7.49-24.64,12-32.37,4.51,7.73,12,22.1,12,32.37A12,12,0,0,1,232,220Zm3.89-87.6a4,4,0,0,0-1.06-3.74L119.34,13.17a4,4,0,0,0-5.65,0L70.25,56.6,42.82,29.17a4,4,0,0,0-5.65,5.66L64.6,62.26,17.86,109a20,20,0,0,0,0,28.29l84.85,84.85a20,20,0,0,0,28.29,0L210.16,143l23.1-7.7A4,4,0,0,0,235.89,132.4Zm-29.15,3.29a4.06,4.06,0,0,0-1.57,1l-79.83,79.82a12,12,0,0,1-17,0L23.51,131.63a12,12,0,0,1,0-17L70.25,67.92l34.2,34.2A24,24,0,0,0,141,133h0a24,24,0,0,0-30.86-36.51l-34.2-34.2,40.61-40.6L224.59,129.74Zm-94.05-31a0,0,0,0,0,0,0,16,16,0,1,1,0,22.64,16,16,0,0,1,0-22.64Z" }))
-  ]
-]);
-const e$6 = /* @__PURE__ */ new Map([
+const e$5 = /* @__PURE__ */ new Map([
   [
     "bold",
     /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, /* @__PURE__ */ reactExports.createElement("path", { d: "M230.14,70.54,185.46,25.85a20,20,0,0,0-28.29,0L33.86,149.17A19.85,19.85,0,0,0,28,163.31V208a20,20,0,0,0,20,20H92.69a19.86,19.86,0,0,0,14.14-5.86L230.14,98.82a20,20,0,0,0,0-28.28ZM91,204H52V165l84-84,39,39ZM192,103,153,64l18.34-18.34,39,39Z" }))
@@ -8943,7 +8925,7 @@ const e$6 = /* @__PURE__ */ new Map([
     /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, /* @__PURE__ */ reactExports.createElement("path", { d: "M224.49,76.2,179.8,31.51a12,12,0,0,0-17,0L133.17,61.17h0L39.52,154.83A11.9,11.9,0,0,0,36,163.31V208a12,12,0,0,0,12,12H92.69a12,12,0,0,0,8.48-3.51L224.48,93.17a12,12,0,0,0,0-17Zm-129,134.63A4,4,0,0,1,92.69,212H48a4,4,0,0,1-4-4V163.31a4,4,0,0,1,1.17-2.83L136,69.65,186.34,120ZM218.83,87.51,192,114.34,141.66,64l26.82-26.83a4,4,0,0,1,5.66,0l44.69,44.68a4,4,0,0,1,0,5.66Z" }))
   ]
 ]);
-const e$5 = /* @__PURE__ */ new Map([
+const e$4 = /* @__PURE__ */ new Map([
   [
     "bold",
     /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, /* @__PURE__ */ reactExports.createElement("path", { d: "M84,48A12,12,0,0,1,72,60H44V72a12,12,0,0,1-24,0V56A20,20,0,0,1,40,36H72A12,12,0,0,1,84,48ZM32,156a12,12,0,0,0,12-12V112a12,12,0,0,0-24,0v32A12,12,0,0,0,32,156Zm40,40H44V184a12,12,0,0,0-24,0v16a20,20,0,0,0,20,20H72a12,12,0,0,0,0-24Zm72,0H112a12,12,0,0,0,0,24h32a12,12,0,0,0,0-24Zm80-24a12,12,0,0,0-12,12v12H184a12,12,0,0,0,0,24h32a20,20,0,0,0,20-20V184A12,12,0,0,0,224,172Zm0-72a12,12,0,0,0-12,12v32a12,12,0,0,0,24,0V112A12,12,0,0,0,224,100Zm-8-64H184a12,12,0,0,0,0,24h28V72a12,12,0,0,0,24,0V56A20,20,0,0,0,216,36Zm-72,0H112a12,12,0,0,0,0,24h32a12,12,0,0,0,0-24Z" }))
@@ -8975,7 +8957,7 @@ const e$5 = /* @__PURE__ */ new Map([
     /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, /* @__PURE__ */ reactExports.createElement("path", { d: "M76,48a4,4,0,0,1-4,4H40a4,4,0,0,0-4,4V72a4,4,0,0,1-8,0V56A12,12,0,0,1,40,44H72A4,4,0,0,1,76,48ZM32,148a4,4,0,0,0,4-4V112a4,4,0,0,0-8,0v32A4,4,0,0,0,32,148Zm40,56H40a4,4,0,0,1-4-4V184a4,4,0,0,0-8,0v16a12,12,0,0,0,12,12H72a4,4,0,0,0,0-8Zm72,0H112a4,4,0,0,0,0,8h32a4,4,0,0,0,0-8Zm80-24a4,4,0,0,0-4,4v16a4,4,0,0,1-4,4H184a4,4,0,0,0,0,8h32a12,12,0,0,0,12-12V184A4,4,0,0,0,224,180Zm0-72a4,4,0,0,0-4,4v32a4,4,0,0,0,8,0V112A4,4,0,0,0,224,108Zm-8-64H184a4,4,0,0,0,0,8h32a4,4,0,0,1,4,4V72a4,4,0,0,0,8,0V56A12,12,0,0,0,216,44Zm-72,0H112a4,4,0,0,0,0,8h32a4,4,0,0,0,0-8Z" }))
   ]
 ]);
-const e$4 = /* @__PURE__ */ new Map([
+const e$3 = /* @__PURE__ */ new Map([
   [
     "bold",
     /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, /* @__PURE__ */ reactExports.createElement("path", { d: "M71.49,60.55a12,12,0,0,0-23,0l-36,120A12,12,0,0,0,24,196H96a12,12,0,0,0,11.49-15.45ZM40.13,172,60,105.76,79.87,172ZM212,74a54,54,0,1,0-54,54A54.06,54.06,0,0,0,212,74Zm-84,0a30,30,0,1,1,30,30A30,30,0,0,1,128,74Zm96,70H136a12,12,0,0,0-12,12v52a12,12,0,0,0,12,12h88a12,12,0,0,0,12-12V156A12,12,0,0,0,224,144Zm-12,52H148V168h64Z" }))
@@ -9007,7 +8989,7 @@ const e$4 = /* @__PURE__ */ new Map([
     /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, /* @__PURE__ */ reactExports.createElement("path", { d: "M67.79,62.74a4,4,0,0,0-7.58,0l-40,120A4,4,0,0,0,24,188h80a4,4,0,0,0,3.79-5.26ZM29.55,180,64,76.65,98.45,180ZM204,76a48,48,0,1,0-48,48A48.05,48.05,0,0,0,204,76Zm-88,0a40,40,0,1,1,40,40A40,40,0,0,1,116,76Zm108,72H136a4,4,0,0,0-4,4v56a4,4,0,0,0,4,4h88a4,4,0,0,0,4-4V152A4,4,0,0,0,224,148Zm-4,56H140V156h80Z" }))
   ]
 ]);
-const e$3 = /* @__PURE__ */ new Map([
+const e$2 = /* @__PURE__ */ new Map([
   [
     "bold",
     /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, /* @__PURE__ */ reactExports.createElement("path", { d: "M212,56V88a12,12,0,0,1-24,0V68H140V188h20a12,12,0,0,1,0,24H96a12,12,0,0,1,0-24h20V68H68V88a12,12,0,0,1-24,0V56A12,12,0,0,1,56,44H200A12,12,0,0,1,212,56Z" }))
@@ -9085,16 +9067,16 @@ const p$1 = reactExports.forwardRef(
 p$1.displayName = "IconBase";
 const o$8 = reactExports.forwardRef((a2, t2) => /* @__PURE__ */ reactExports.createElement(p$1, { ref: t2, ...a2, weights: l$2 }));
 o$8.displayName = "ArrowsOutCardinalIcon";
-const m$6 = o$8;
-const o$7 = reactExports.forwardRef((r2, a2) => /* @__PURE__ */ reactExports.createElement(p$1, { ref: a2, ...r2, weights: e$c }));
+const m$5 = o$8;
+const o$7 = reactExports.forwardRef((r2, a2) => /* @__PURE__ */ reactExports.createElement(p$1, { ref: a2, ...r2, weights: e$a }));
 o$7.displayName = "CircleDashedIcon";
-const m$5 = o$7;
-const r$2 = reactExports.forwardRef((e2, t2) => /* @__PURE__ */ reactExports.createElement(p$1, { ref: t2, ...e2, weights: e$b }));
+const m$4 = o$7;
+const r$2 = reactExports.forwardRef((e2, t2) => /* @__PURE__ */ reactExports.createElement(p$1, { ref: t2, ...e2, weights: e$9 }));
 r$2.displayName = "CropIcon";
 const s$3 = r$2;
-const e$2 = reactExports.forwardRef((o2, a2) => /* @__PURE__ */ reactExports.createElement(p$1, { ref: a2, ...o2, weights: e$a }));
-e$2.displayName = "EraserIcon";
-const n$3 = e$2;
+const e$1 = reactExports.forwardRef((o2, a2) => /* @__PURE__ */ reactExports.createElement(p$1, { ref: a2, ...o2, weights: e$8 }));
+e$1.displayName = "EraserIcon";
+const n$3 = e$1;
 const o$6 = reactExports.forwardRef((r2, p2) => /* @__PURE__ */ reactExports.createElement(p$1, { ref: p2, ...r2, weights: l$1 }));
 o$6.displayName = "EyedropperIcon";
 const s$2 = o$6;
@@ -9104,28 +9086,25 @@ const c$2 = o$5;
 const s$1 = reactExports.forwardRef((a2, e2) => /* @__PURE__ */ reactExports.createElement(p$1, { ref: e2, ...a2, weights: a$5 }));
 s$1.displayName = "LassoIcon";
 const n$2 = s$1;
-const o$4 = reactExports.forwardRef((c2, e2) => /* @__PURE__ */ reactExports.createElement(p$1, { ref: e2, ...c2, weights: e$9 }));
+const o$4 = reactExports.forwardRef((c2, e2) => /* @__PURE__ */ reactExports.createElement(p$1, { ref: e2, ...c2, weights: e$7 }));
 o$4.displayName = "MagicWandIcon";
-const m$4 = o$4;
-const a$3 = reactExports.forwardRef((o2, n2) => /* @__PURE__ */ reactExports.createElement(p$1, { ref: n2, ...o2, weights: e$8 }));
+const m$3 = o$4;
+const a$3 = reactExports.forwardRef((o2, n2) => /* @__PURE__ */ reactExports.createElement(p$1, { ref: n2, ...o2, weights: e$6 }));
 a$3.displayName = "MagnifyingGlassPlusIcon";
 const f$1 = a$3;
 const r$1 = reactExports.forwardRef((t2, a2) => /* @__PURE__ */ reactExports.createElement(p$1, { ref: a2, ...t2, weights: a$4 }));
 r$1.displayName = "PaintBrushIcon";
-const m$3 = r$1;
-const e$1 = reactExports.forwardRef((o2, a2) => /* @__PURE__ */ reactExports.createElement(p$1, { ref: a2, ...o2, weights: e$7 }));
-e$1.displayName = "PaintBucketIcon";
-const m$2 = e$1;
-const o$3 = reactExports.forwardRef((i2, m2) => /* @__PURE__ */ reactExports.createElement(p$1, { ref: m2, ...i2, weights: e$6 }));
+const m$2 = r$1;
+const o$3 = reactExports.forwardRef((i2, m2) => /* @__PURE__ */ reactExports.createElement(p$1, { ref: m2, ...i2, weights: e$5 }));
 o$3.displayName = "PencilSimpleIcon";
 const a$2 = o$3;
-const a$1 = reactExports.forwardRef((o2, t2) => /* @__PURE__ */ reactExports.createElement(p$1, { ref: t2, ...o2, weights: e$5 }));
+const a$1 = reactExports.forwardRef((o2, t2) => /* @__PURE__ */ reactExports.createElement(p$1, { ref: t2, ...o2, weights: e$4 }));
 a$1.displayName = "RectangleDashedIcon";
 const m$1 = a$1;
-const o$2 = reactExports.forwardRef((a2, r2) => /* @__PURE__ */ reactExports.createElement(p$1, { ref: r2, ...a2, weights: e$4 }));
+const o$2 = reactExports.forwardRef((a2, r2) => /* @__PURE__ */ reactExports.createElement(p$1, { ref: r2, ...a2, weights: e$3 }));
 o$2.displayName = "ShapesIcon";
 const c$1 = o$2;
-const o$1 = reactExports.forwardRef((t2, r2) => /* @__PURE__ */ reactExports.createElement(p$1, { ref: r2, ...t2, weights: e$3 }));
+const o$1 = reactExports.forwardRef((t2, r2) => /* @__PURE__ */ reactExports.createElement(p$1, { ref: r2, ...t2, weights: e$2 }));
 o$1.displayName = "TextTIcon";
 const n$1 = o$1;
 function createJSONStorage(getStorage, options) {
@@ -9395,20 +9374,573 @@ const useAppearanceStore = create()(
     }
   )
 );
+const MAX_RECENT_COLORS = 20;
+const DEFAULT_FOREGROUND = { r: 0, g: 0, b: 0, a: 255 };
+const DEFAULT_BACKGROUND = { r: 255, g: 255, b: 255, a: 255 };
+const initialState$1 = {
+  foregroundColor: DEFAULT_FOREGROUND,
+  backgroundColor: DEFAULT_BACKGROUND,
+  recentColors: []
+};
+const useColorStore = create()(
+  immer((setFn) => ({
+    ...initialState$1,
+    setForeground: (color) => setFn((state) => {
+      state.foregroundColor = color;
+    }),
+    setBackground: (color) => setFn((state) => {
+      state.backgroundColor = color;
+    }),
+    swapColors: () => setFn((state) => {
+      const temp = state.foregroundColor;
+      state.foregroundColor = state.backgroundColor;
+      state.backgroundColor = temp;
+    }),
+    resetColors: () => setFn((state) => {
+      state.foregroundColor = DEFAULT_FOREGROUND;
+      state.backgroundColor = DEFAULT_BACKGROUND;
+    }),
+    addRecentColor: (color) => setFn((state) => {
+      const existingIndex = state.recentColors.findIndex(
+        (c2) => c2.r === color.r && c2.g === color.g && c2.b === color.b && c2.a === color.a
+      );
+      if (existingIndex !== -1) {
+        state.recentColors.splice(existingIndex, 1);
+      }
+      state.recentColors.unshift(color);
+      if (state.recentColors.length > MAX_RECENT_COLORS) {
+        state.recentColors.pop();
+      }
+    }),
+    clearRecentColors: () => setFn((state) => {
+      state.recentColors = [];
+    })
+  }))
+);
+function hsvToRgb(h2, s2, v2) {
+  h2 = (h2 % 360 + 360) % 360;
+  const hi2 = Math.floor(h2 / 60) % 6;
+  const f2 = h2 / 60 - Math.floor(h2 / 60);
+  const p2 = v2 * (1 - s2);
+  const q2 = v2 * (1 - f2 * s2);
+  const t2 = v2 * (1 - (1 - f2) * s2);
+  const m2 = Math.round;
+  switch (hi2) {
+    case 0:
+      return [m2(v2 * 255), m2(t2 * 255), m2(p2 * 255)];
+    case 1:
+      return [m2(q2 * 255), m2(v2 * 255), m2(p2 * 255)];
+    case 2:
+      return [m2(p2 * 255), m2(v2 * 255), m2(t2 * 255)];
+    case 3:
+      return [m2(p2 * 255), m2(q2 * 255), m2(v2 * 255)];
+    case 4:
+      return [m2(t2 * 255), m2(p2 * 255), m2(v2 * 255)];
+    case 5:
+      return [m2(v2 * 255), m2(p2 * 255), m2(q2 * 255)];
+    default:
+      return [0, 0, 0];
+  }
+}
+function rgbToHsv(r2, g2, b2) {
+  r2 /= 255;
+  g2 /= 255;
+  b2 /= 255;
+  const max = Math.max(r2, g2, b2);
+  const min = Math.min(r2, g2, b2);
+  const d2 = max - min;
+  let h2 = 0;
+  const s2 = max === 0 ? 0 : d2 / max;
+  const v2 = max;
+  if (max !== min) {
+    switch (max) {
+      case r2:
+        h2 = ((g2 - b2) / d2 + (g2 < b2 ? 6 : 0)) * 60;
+        break;
+      case g2:
+        h2 = ((b2 - r2) / d2 + 2) * 60;
+        break;
+      case b2:
+        h2 = ((r2 - g2) / d2 + 4) * 60;
+        break;
+    }
+  }
+  return [h2, s2, v2];
+}
+function rgbToHex$1(r2, g2, b2) {
+  return "#" + [r2, g2, b2].map((x2) => x2.toString(16).padStart(2, "0")).join("");
+}
+function hexToRgb$1(hex) {
+  const clean = hex.replace(/^#/, "");
+  if (/^[0-9a-f]{6}$/i.test(clean)) {
+    return [
+      parseInt(clean.slice(0, 2), 16),
+      parseInt(clean.slice(2, 4), 16),
+      parseInt(clean.slice(4, 6), 16)
+    ];
+  }
+  if (/^[0-9a-f]{3}$/i.test(clean)) {
+    return [
+      parseInt(clean[0] + clean[0], 16),
+      parseInt(clean[1] + clean[1], 16),
+      parseInt(clean[2] + clean[2], 16)
+    ];
+  }
+  return null;
+}
+function ColorPicker({ isOpen, onClose, anchorRect, target = "foreground" }) {
+  const { foregroundColor, backgroundColor, setForeground, setBackground } = useColorStore();
+  const lastPushedColor = reactExports.useRef(null);
+  const canvasRef = reactExports.useRef(null);
+  const svRef = reactExports.useRef(null);
+  const hueRef = reactExports.useRef(null);
+  const svDragging = reactExports.useRef(false);
+  const hueDragging = reactExports.useRef(false);
+  const [hue2, setHue] = reactExports.useState(0);
+  const [sat, setSat] = reactExports.useState(0);
+  const [val, setVal] = reactExports.useState(1);
+  const [alpha, setAlpha] = reactExports.useState(100);
+  const [hexInput, setHexInput] = reactExports.useState("#000000");
+  const [rgbR, setRgbR] = reactExports.useState("0");
+  const [rgbG, setRgbG] = reactExports.useState("0");
+  const [rgbB, setRgbB] = reactExports.useState("0");
+  reactExports.useEffect(() => {
+    if (!isOpen) {
+      lastPushedColor.current = null;
+      return;
+    }
+    const c2 = target === "foreground" ? foregroundColor : backgroundColor;
+    if (lastPushedColor.current && lastPushedColor.current.r === c2.r && lastPushedColor.current.g === c2.g && lastPushedColor.current.b === c2.b && lastPushedColor.current.a === c2.a) {
+      return;
+    }
+    const [h2, s2, v2] = rgbToHsv(c2.r, c2.g, c2.b);
+    setHue(h2);
+    setSat(s2);
+    setVal(v2);
+    setAlpha(Math.round(c2.a / 255 * 100));
+    setHexInput(rgbToHex$1(c2.r, c2.g, c2.b));
+    setRgbR(String(c2.r));
+    setRgbG(String(c2.g));
+    setRgbB(String(c2.b));
+  }, [isOpen, target, foregroundColor, backgroundColor]);
+  const pushColor = reactExports.useCallback((h2, s2, v2, a2) => {
+    const [r2, g2, b2] = hsvToRgb(h2, s2, v2);
+    const newColor = { r: r2, g: g2, b: b2, a: Math.round(a2 * 255 / 100) };
+    lastPushedColor.current = newColor;
+    if (target === "foreground") {
+      setForeground(newColor);
+    } else {
+      setBackground(newColor);
+    }
+    setHexInput(rgbToHex$1(r2, g2, b2));
+    setRgbR(String(r2));
+    setRgbG(String(g2));
+    setRgbB(String(b2));
+  }, [target, setForeground, setBackground]);
+  reactExports.useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas || !isOpen) return;
+    const ctx = canvas.getContext("2d");
+    const w2 = canvas.width;
+    const h2 = canvas.height;
+    const [hr, hg2, hb2] = hsvToRgb(hue2, 1, 1);
+    ctx.fillStyle = `rgb(${hr},${hg2},${hb2})`;
+    ctx.fillRect(0, 0, w2, h2);
+    const whiteGrad = ctx.createLinearGradient(0, 0, w2, 0);
+    whiteGrad.addColorStop(0, "rgba(255,255,255,1)");
+    whiteGrad.addColorStop(1, "rgba(255,255,255,0)");
+    ctx.fillStyle = whiteGrad;
+    ctx.fillRect(0, 0, w2, h2);
+    const blackGrad = ctx.createLinearGradient(0, 0, 0, h2);
+    blackGrad.addColorStop(0, "rgba(0,0,0,0)");
+    blackGrad.addColorStop(1, "rgba(0,0,0,1)");
+    ctx.fillStyle = blackGrad;
+    ctx.fillRect(0, 0, w2, h2);
+  }, [hue2, isOpen]);
+  reactExports.useEffect(() => {
+    if (!isOpen) return;
+    const updateSv = (clientX, clientY) => {
+      const surface = svRef.current;
+      if (!surface) return;
+      const rect = surface.getBoundingClientRect();
+      const s2 = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
+      const v2 = Math.max(0, Math.min(1, 1 - (clientY - rect.top) / rect.height));
+      setSat(s2);
+      setVal(v2);
+      pushColor(hue2, s2, v2, alpha);
+    };
+    const updateHue = (clientY) => {
+      const slider = hueRef.current;
+      if (!slider) return;
+      const rect = slider.getBoundingClientRect();
+      const y2 = Math.max(0, Math.min(1, (clientY - rect.top) / rect.height));
+      const newHue = (1 - y2) * 360;
+      setHue(newHue);
+      pushColor(newHue, sat, val, alpha);
+    };
+    const onMove = (e2) => {
+      if (svDragging.current) {
+        updateSv(e2.clientX, e2.clientY);
+      }
+      if (hueDragging.current) {
+        updateHue(e2.clientY);
+      }
+    };
+    const onUp = () => {
+      svDragging.current = false;
+      hueDragging.current = false;
+    };
+    window.addEventListener("mousemove", onMove);
+    window.addEventListener("mouseup", onUp);
+    return () => {
+      window.removeEventListener("mousemove", onMove);
+      window.removeEventListener("mouseup", onUp);
+    };
+  }, [isOpen, hue2, sat, val, alpha, pushColor]);
+  const handleSvDown = reactExports.useCallback((e2) => {
+    svDragging.current = true;
+    const surface = svRef.current;
+    if (!surface) return;
+    const rect = surface.getBoundingClientRect();
+    const s2 = Math.max(0, Math.min(1, (e2.clientX - rect.left) / rect.width));
+    const v2 = Math.max(0, Math.min(1, 1 - (e2.clientY - rect.top) / rect.height));
+    setSat(s2);
+    setVal(v2);
+    pushColor(hue2, s2, v2, alpha);
+  }, [hue2, alpha, pushColor]);
+  const handleHueDown = reactExports.useCallback((e2) => {
+    hueDragging.current = true;
+    const slider = hueRef.current;
+    if (!slider) return;
+    const rect = slider.getBoundingClientRect();
+    const y2 = Math.max(0, Math.min(1, (e2.clientY - rect.top) / rect.height));
+    const newHue = (1 - y2) * 360;
+    setHue(newHue);
+    pushColor(newHue, sat, val, alpha);
+  }, [sat, val, alpha, pushColor]);
+  const handleHexChange = (e2) => {
+    const v2 = e2.target.value;
+    setHexInput(v2);
+    const rgb = hexToRgb$1(v2);
+    if (rgb) {
+      const [h2, s2, vv] = rgbToHsv(rgb[0], rgb[1], rgb[2]);
+      setHue(h2);
+      setSat(s2);
+      setVal(vv);
+      const newColor = { r: rgb[0], g: rgb[1], b: rgb[2], a: Math.round(alpha * 255 / 100) };
+      lastPushedColor.current = newColor;
+      if (target === "foreground") setForeground(newColor);
+      else setBackground(newColor);
+      setRgbR(String(rgb[0]));
+      setRgbG(String(rgb[1]));
+      setRgbB(String(rgb[2]));
+    }
+  };
+  const handleRgbInput = reactExports.useCallback((channel, raw) => {
+    const num = Math.max(0, Math.min(255, parseInt(raw) || 0));
+    if (channel === "r") setRgbR(raw);
+    if (channel === "g") setRgbG(raw);
+    if (channel === "b") setRgbB(raw);
+    const r2 = channel === "r" ? num : parseInt(rgbR) || 0;
+    const g2 = channel === "g" ? num : parseInt(rgbG) || 0;
+    const b2 = channel === "b" ? num : parseInt(rgbB) || 0;
+    const [h2, s2, vv] = rgbToHsv(r2, g2, b2);
+    setHue(h2);
+    setSat(s2);
+    setVal(vv);
+    const newColor = { r: r2, g: g2, b: b2, a: Math.round(alpha * 255 / 100) };
+    lastPushedColor.current = newColor;
+    if (target === "foreground") setForeground(newColor);
+    else setBackground(newColor);
+    setHexInput(rgbToHex$1(r2, g2, b2));
+  }, [rgbR, rgbG, rgbB, alpha, target, setForeground, setBackground]);
+  const handleAlphaChange = (e2) => {
+    const a2 = parseInt(e2.target.value);
+    setAlpha(a2);
+    pushColor(hue2, sat, val, a2);
+  };
+  if (!isOpen) return null;
+  const svW = 200;
+  const svH = 200;
+  const popupWidth = 256;
+  const popupHeight = 360;
+  const svThumbX = sat * svW;
+  const svThumbY = (1 - val) * svH;
+  const hueThumbY = (1 - hue2 / 360) * svH;
+  const [cr, cg2, cb2] = hsvToRgb(hue2, sat, val);
+  const previewColor = `rgba(${cr},${cg2},${cb2},${alpha / 100})`;
+  const viewportWidth = typeof window !== "undefined" ? window.innerWidth : popupWidth;
+  const viewportHeight = typeof window !== "undefined" ? window.innerHeight : popupHeight;
+  const popupLeft = anchorRect ? Math.min(
+    viewportWidth - popupWidth - 12,
+    Math.max(12, anchorRect.right + 12)
+  ) : 12;
+  const popupTop = anchorRect ? Math.min(
+    viewportHeight - popupHeight - 12,
+    Math.max(12, anchorRect.bottom - popupHeight)
+  ) : 12;
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(
+    "div",
+    {
+      "data-color-picker-root": "true",
+      style: {
+        position: "fixed",
+        zIndex: 1e3,
+        left: popupLeft,
+        top: popupTop
+      },
+      onMouseDown: (e2) => e2.stopPropagation(),
+      children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        "div",
+        {
+          style: {
+            background: "#1d1f21",
+            border: "1px solid #383f47",
+            borderRadius: 8,
+            padding: 12,
+            boxShadow: "0 8px 24px rgba(0,0,0,0.5)",
+            width: 256,
+            display: "flex",
+            flexDirection: "column",
+            gap: 10
+          },
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { style: { display: "flex", gap: 8, alignItems: "center" }, children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                "div",
+                {
+                  style: {
+                    width: 36,
+                    height: 36,
+                    borderRadius: 4,
+                    background: previewColor,
+                    border: "1px solid #555",
+                    backgroundImage: `linear-gradient(45deg, #222 25%, transparent 25%),
+                linear-gradient(-45deg, #222 25%, transparent 25%),
+                linear-gradient(45deg, transparent 75%, #222 75%),
+                linear-gradient(-45deg, transparent 75%, #222 75%)`,
+                    backgroundSize: "8px 8px",
+                    backgroundPosition: "0 0, 0 4px, 4px -4px, -4px 0",
+                    position: "relative",
+                    overflow: "hidden"
+                  },
+                  children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: { position: "absolute", inset: 0, background: previewColor } })
+                }
+              ),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { style: { fontSize: 12, color: "#a0a8b0", fontFamily: "monospace" }, children: hexInput })
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { style: { display: "flex", gap: 8 }, children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { ref: svRef, style: { position: "relative", width: svW, height: svH, cursor: "crosshair" }, children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  "canvas",
+                  {
+                    ref: canvasRef,
+                    width: svW,
+                    height: svH,
+                    style: { display: "block", width: svW, height: svH, borderRadius: 3 },
+                    onMouseDown: handleSvDown
+                  }
+                ),
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  "div",
+                  {
+                    style: {
+                      position: "absolute",
+                      left: svThumbX,
+                      top: svThumbY,
+                      width: 14,
+                      height: 14,
+                      borderRadius: "50%",
+                      border: `2px solid ${val > 0.5 && sat < 0.5 ? "#000" : "#fff"}`,
+                      boxShadow: "0 0 3px rgba(0,0,0,0.6)",
+                      transform: "translate(-50%, -50%)",
+                      pointerEvents: "none"
+                    }
+                  }
+                )
+              ] }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                "div",
+                {
+                  ref: hueRef,
+                  style: {
+                    position: "relative",
+                    width: 20,
+                    height: svH,
+                    borderRadius: 3,
+                    background: "linear-gradient(to bottom, #f00 0%, #f0f 17%, #00f 33%, #0ff 50%, #0f0 67%, #ff0 83%, #f00 100%)",
+                    cursor: "pointer",
+                    flexShrink: 0
+                  },
+                  onMouseDown: handleHueDown,
+                  children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    "div",
+                    {
+                      style: {
+                        position: "absolute",
+                        left: -3,
+                        top: hueThumbY,
+                        width: 26,
+                        height: 8,
+                        borderRadius: 2,
+                        border: "2px solid #fff",
+                        boxShadow: "0 0 3px rgba(0,0,0,0.5)",
+                        transform: "translateY(-50%)",
+                        pointerEvents: "none",
+                        background: `hsl(${hue2}, 100%, 50%)`
+                      }
+                    }
+                  )
+                }
+              )
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { style: { display: "flex", alignItems: "center", gap: 6 }, children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { style: { fontSize: 10, color: "#6f7883", width: 32 }, children: "Alpha" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { style: { flex: 1, position: "relative", height: 14 }, children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  "div",
+                  {
+                    style: {
+                      position: "absolute",
+                      inset: 0,
+                      backgroundImage: `linear-gradient(45deg, #222 25%, transparent 25%),
+                  linear-gradient(-45deg, #222 25%, transparent 25%),
+                  linear-gradient(45deg, transparent 75%, #222 75%),
+                  linear-gradient(-45deg, transparent 75%, #222 75%)`,
+                      backgroundSize: "6px 6px",
+                      backgroundPosition: "0 0, 0 3px, 3px -3px, -3px 0",
+                      backgroundColor: "#333",
+                      border: "1px solid #555",
+                      borderRadius: 3,
+                      overflow: "hidden"
+                    },
+                    children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: { height: "100%", width: `${alpha}%`, background: previewColor } })
+                  }
+                ),
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  "input",
+                  {
+                    type: "range",
+                    min: 0,
+                    max: 100,
+                    value: alpha,
+                    onChange: handleAlphaChange,
+                    style: {
+                      position: "absolute",
+                      top: 0,
+                      left: 0,
+                      width: "100%",
+                      height: "100%",
+                      margin: 0,
+                      opacity: 0,
+                      cursor: "pointer"
+                    }
+                  }
+                )
+              ] }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                "input",
+                {
+                  type: "number",
+                  min: 0,
+                  max: 100,
+                  value: alpha,
+                  onChange: (e2) => {
+                    const v2 = Math.max(0, Math.min(100, parseInt(e2.target.value) || 0));
+                    setAlpha(v2);
+                    pushColor(hue2, sat, val, v2);
+                  },
+                  style: {
+                    width: 48,
+                    padding: "2px 4px",
+                    border: "1px solid #383f47",
+                    borderRadius: 3,
+                    background: "#212428",
+                    color: "#b3bac2",
+                    fontSize: 10,
+                    textAlign: "center",
+                    fontFamily: "monospace"
+                  }
+                }
+              )
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { style: { display: "flex", alignItems: "center", gap: 6 }, children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { style: { fontSize: 10, color: "#6f7883", width: 32 }, children: "Hex" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                "input",
+                {
+                  type: "text",
+                  value: hexInput,
+                  onChange: handleHexChange,
+                  maxLength: 7,
+                  style: {
+                    flex: 1,
+                    padding: "4px 6px",
+                    border: "1px solid #383f47",
+                    borderRadius: 3,
+                    background: "#212428",
+                    color: "#b3bac2",
+                    fontSize: 11,
+                    fontFamily: "monospace"
+                  }
+                }
+              )
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { style: { display: "flex", alignItems: "center", gap: 4 }, children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { style: { fontSize: 10, color: "#6f7883", width: 32 }, children: "RGB" }),
+              ["r", "g", "b"].map((ch2) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { style: { flex: 1, display: "flex", alignItems: "center", gap: 2 }, children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { style: { fontSize: 9, color: "#555e69", textTransform: "uppercase", fontWeight: 600 }, children: ch2 }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  "input",
+                  {
+                    type: "number",
+                    min: 0,
+                    max: 255,
+                    value: ch2 === "r" ? rgbR : ch2 === "g" ? rgbG : rgbB,
+                    onChange: (e2) => handleRgbInput(ch2, e2.target.value),
+                    style: {
+                      width: "100%",
+                      padding: "3px 4px",
+                      border: "1px solid #383f47",
+                      borderRadius: 3,
+                      background: "#212428",
+                      color: "#b3bac2",
+                      fontSize: 10,
+                      textAlign: "center",
+                      fontFamily: "monospace"
+                    }
+                  }
+                )
+              ] }, ch2))
+            ] })
+          ]
+        }
+      )
+    }
+  );
+}
+function PaintBucketIcon({ size = 18, weight = "regular" }) {
+  return /* @__PURE__ */ jsxRuntimeExports.jsx("svg", { width: size, height: size, viewBox: "0 0 256 256", fill: "currentColor", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+    "path",
+    {
+      d: weight === "bold" ? "M235.79,142.88a12,12,0,0,0,4.7-19.87L125,7.52a12,12,0,0,0-17,0L70.25,45.29,48.48,23.52a12,12,0,0,0-17,17L53.28,62.26,12.2,103.35a28,28,0,0,0,0,39.6l84.86,84.86a28,28,0,0,0,39.6,0L214.48,150Zm-31.58-14.77a12,12,0,0,0-4.7,2.9l-79.82,79.83a4,4,0,0,1-5.66,0L29.17,126a4,4,0,0,1,0-5.66L70.25,79.24l24.29,24.29a32,32,0,0,0,52.09,35.11h0a32,32,0,0,0-35.12-52.08L87.23,62.26,116.52,33l93.27,93.28Zm-85.87-17.75,0,0a8,8,0,1,1-.06.06ZM256,208a24,24,0,0,1-48,0c0-19.44,12.93-37.23,14.4-39.2a12,12,0,0,1,19.2,0C243.07,170.78,256,188.57,256,208Z" : "M238.66,163.56a8,8,0,0,0-13.32,0C223.57,166.23,208,190.09,208,208a24,24,0,0,0,48,0C256,190.09,240.43,166.23,238.66,163.56ZM232,216a8,8,0,0,1-8-8c0-6.8,4-16.32,8-24.08,4,7.76,8,17.34,8,24.08A8,8,0,0,1,232,216Zm2.53-76.93a8,8,0,0,0,3.13-13.24L122.17,10.34a8,8,0,0,0-11.31,0L70.25,51,45.65,26.34a8,8,0,0,0-11.31,11.31L59,62.3,15,106.17a24,24,0,0,0,0,33.94L99.89,225a24,24,0,0,0,33.94,0L212.7,146.12Zm-32.19-5.24-79.83,79.83a8,8,0,0,1-11.31,0L25.51,150.86a8,8,0,0,1,0-11.31L70.25,94.8l34.15,34.15a28,28,0,1,0,11.31-11.31L81.57,83.5l34.95-34.95,93.27,93.27A8,8,0,0,1,202.86,140.89ZM114.1,106.11a12,12,0,1,1,0,17,12,12,0,0,1,0-17Z"
+    }
+  ) });
+}
 const toolButtons = [
-  { id: Tool.Move, label: "Move", keycap: "V", icon: m$6 },
+  { id: Tool.Move, label: "Move", keycap: "V", icon: m$5 },
   { id: Tool.SelectionRect, label: "Rect Selection", keycap: "M", icon: m$1 },
-  { id: Tool.SelectionEllipse, label: "Ellipse Selection", keycap: "E", icon: m$5 },
+  { id: Tool.SelectionEllipse, label: "Ellipse Selection", keycap: "E", icon: m$4 },
   { id: Tool.Lasso, label: "Lasso", keycap: "L", icon: n$2 },
-  { id: Tool.QuickSelection, label: "Quick Selection", keycap: "W", icon: m$4 },
+  { id: Tool.QuickSelection, label: "Quick Selection", keycap: "W", icon: m$3 },
   "separator",
   { id: Tool.Crop, label: "Crop", keycap: "C", icon: s$3 },
   { id: Tool.Eyedropper, label: "Eyedropper", keycap: "I", icon: s$2 },
   "separator",
-  { id: Tool.Brush, label: "Brush", keycap: "B", icon: m$3 },
+  { id: Tool.Brush, label: "Brush", keycap: "B", icon: m$2 },
   { id: Tool.Pencil, label: "Pencil", keycap: "P", icon: a$2 },
   { id: Tool.Eraser, label: "Eraser", keycap: "E", icon: n$3 },
-  { id: Tool.Fill, label: "Paint Bucket", keycap: "G", icon: m$2 },
+  { id: Tool.Fill, label: "Paint Bucket", keycap: "G", icon: PaintBucketIcon },
   "separator",
   { id: Tool.Gradient, label: "Gradient", icon: c$2 },
   { id: Tool.Text, label: "Text", keycap: "T", icon: n$1 },
@@ -9442,6 +9974,35 @@ function ToolButton({
 function ToolsPanel() {
   const { activeTool, setTool } = useEditorStore();
   const { iconStyle, iconScale } = useAppearanceStore();
+  const { foregroundColor, backgroundColor, swapColors } = useColorStore();
+  const [pickerOpen, setPickerOpen] = reactExports.useState(false);
+  const [pickerTarget, setPickerTarget] = reactExports.useState("foreground");
+  const pickerRef = reactExports.useRef(null);
+  const [pickerAnchorRect, setPickerAnchorRect] = reactExports.useState(null);
+  const fgColor = `rgba(${foregroundColor.r},${foregroundColor.g},${foregroundColor.b},${foregroundColor.a / 255})`;
+  const bgColor = `rgba(${backgroundColor.r},${backgroundColor.g},${backgroundColor.b},${backgroundColor.a / 255})`;
+  reactExports.useEffect(() => {
+    if (!pickerOpen) return;
+    const updateAnchor = () => {
+      setPickerAnchorRect(pickerRef.current?.getBoundingClientRect() ?? null);
+    };
+    updateAnchor();
+    const handler = (e2) => {
+      const target = e2.target;
+      const clickedInsidePicker = !!target?.closest("[data-color-picker-root='true']");
+      if (pickerRef.current && !pickerRef.current.contains(target) && !clickedInsidePicker) {
+        setPickerOpen(false);
+      }
+    };
+    window.addEventListener("resize", updateAnchor);
+    window.addEventListener("scroll", updateAnchor, true);
+    window.addEventListener("mousedown", handler);
+    return () => {
+      window.removeEventListener("resize", updateAnchor);
+      window.removeEventListener("scroll", updateAnchor, true);
+      window.removeEventListener("mousedown", handler);
+    };
+  }, [pickerOpen]);
   return /* @__PURE__ */ jsxRuntimeExports.jsxs("aside", { className: "toolpanel", children: [
     toolButtons.map(
       (entry, index) => entry === "separator" ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "tsep" }, `separator-${index}`) : /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -9456,10 +10017,33 @@ function ToolsPanel() {
         entry.id
       )
     ),
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "tool-colors", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "cs-wrap", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "cs bg" }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "cs fg", style: { background: "#0c0c0c", borderColor: "#3a3a3a" } }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "cs-swap", children: "⇄" })
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "tool-colors", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "cs-wrap", ref: pickerRef, style: { position: "relative" }, children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "div",
+        {
+          className: "cs bg",
+          style: { background: bgColor, cursor: "pointer" },
+          onClick: () => {
+            setPickerAnchorRect(pickerRef.current?.getBoundingClientRect() ?? null);
+            setPickerTarget("background");
+            setPickerOpen(true);
+          }
+        }
+      ),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "div",
+        {
+          className: "cs fg",
+          style: { background: fgColor, borderColor: "#3a3a3a", cursor: "pointer" },
+          onClick: () => {
+            setPickerAnchorRect(pickerRef.current?.getBoundingClientRect() ?? null);
+            setPickerTarget("foreground");
+            setPickerOpen(true);
+          }
+        }
+      ),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "cs-swap", onClick: swapColors, style: { cursor: "pointer" }, children: "⇄" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(ColorPicker, { isOpen: pickerOpen, onClose: () => setPickerOpen(false), anchorRect: pickerAnchorRect, target: pickerTarget })
     ] }) })
   ] });
 }
@@ -20520,7 +21104,7 @@ const browserExt = {
   },
   test: () => true,
   load: async () => {
-    await __vitePreload(() => import("./browserAll-Dt03pJY5.js"), true ? __vite__mapDeps([0,1,2]) : void 0, import.meta.url);
+    await __vitePreload(() => import("./browserAll-Bm9-CUBj.js"), true ? __vite__mapDeps([0,1,2]) : void 0, import.meta.url);
   }
 };
 const webworkerExt = {
@@ -20531,7 +21115,7 @@ const webworkerExt = {
   },
   test: () => typeof self !== "undefined" && self.WorkerGlobalScope !== void 0,
   load: async () => {
-    await __vitePreload(() => import("./webworkerAll-DmOUSEPI.js"), true ? __vite__mapDeps([1,2]) : void 0, import.meta.url);
+    await __vitePreload(() => import("./webworkerAll-BSDksv32.js"), true ? __vite__mapDeps([1,2]) : void 0, import.meta.url);
   }
 };
 function updateQuadBounds(bounds, anchor, texture) {
@@ -24699,7 +25283,7 @@ async function autoDetectRenderer(options) {
     const rendererType = preferredOrder[i2];
     if (rendererType === "webgpu" && await isWebGPUSupported()) {
       const { WebGPURenderer } = await __vitePreload(async () => {
-        const { WebGPURenderer: WebGPURenderer2 } = await import("./WebGPURenderer-Cv3wpFZf.js");
+        const { WebGPURenderer: WebGPURenderer2 } = await import("./WebGPURenderer-2qTgVEUR.js");
         return { WebGPURenderer: WebGPURenderer2 };
       }, true ? __vite__mapDeps([3,4,5,2]) : void 0, import.meta.url);
       RendererClass = WebGPURenderer;
@@ -24709,7 +25293,7 @@ async function autoDetectRenderer(options) {
       options.failIfMajorPerformanceCaveat ?? AbstractRenderer.defaultOptions.failIfMajorPerformanceCaveat
     )) {
       const { WebGLRenderer } = await __vitePreload(async () => {
-        const { WebGLRenderer: WebGLRenderer2 } = await import("./WebGLRenderer-D0BH9d1j.js");
+        const { WebGLRenderer: WebGLRenderer2 } = await import("./WebGLRenderer-D5-ugl2K.js");
         return { WebGLRenderer: WebGLRenderer2 };
       }, true ? __vite__mapDeps([6,4,5,2]) : void 0, import.meta.url);
       RendererClass = WebGLRenderer;
@@ -24717,7 +25301,7 @@ async function autoDetectRenderer(options) {
       break;
     } else if (rendererType === "canvas") {
       const { CanvasRenderer } = await __vitePreload(async () => {
-        const { CanvasRenderer: CanvasRenderer2 } = await import("./CanvasRenderer-C41xwh-h.js");
+        const { CanvasRenderer: CanvasRenderer2 } = await import("./CanvasRenderer-6TS7DBB3.js");
         return { CanvasRenderer: CanvasRenderer2 };
       }, true ? __vite__mapDeps([7,5,2]) : void 0, import.meta.url);
       RendererClass = CanvasRenderer;
@@ -32847,9 +33431,13 @@ class PixiEngine {
   app;
   documentContainer;
   checkerboardContainer;
-  compositeSprite;
+  compositeContainer;
   backgroundGraphics = null;
   initialized = false;
+  compositeTiles = [];
+  compositeWidth = 0;
+  compositeHeight = 0;
+  compositeTileSize = 512;
   async init(canvas, width, height) {
     if (this.initialized) return;
     this.app = new Application();
@@ -32864,10 +33452,9 @@ class PixiEngine {
     });
     this.checkerboardContainer = new Container();
     this.documentContainer = new Container();
-    this.compositeSprite = new Sprite(Texture.EMPTY);
-    this.compositeSprite.eventMode = "static";
+    this.compositeContainer = new Container();
     this.app.stage.addChild(this.checkerboardContainer);
-    this.documentContainer.addChild(this.compositeSprite);
+    this.documentContainer.addChild(this.compositeContainer);
     this.app.stage.addChild(this.documentContainer);
     this.initialized = true;
     console.log(
@@ -32891,16 +33478,30 @@ class PixiEngine {
     }
     this.checkerboardContainer.addChild(g2);
   }
-  setCompositeTexture(canvas) {
-    if (this.compositeSprite.texture && this.compositeSprite.texture !== Texture.EMPTY) {
-      if (this.compositeSprite.texture.width !== canvas.width || this.compositeSprite.texture.height !== canvas.height) {
-        this.compositeSprite.texture.destroy(true);
-        this.compositeSprite.texture = Texture.from(canvas);
-      } else {
-        this.compositeSprite.texture.source.update();
-      }
-    } else {
-      this.compositeSprite.texture = Texture.from(canvas);
+  setCompositeTexture(canvas, dirtyRect) {
+    this.ensureCompositeTiles(canvas.width, canvas.height);
+    const minX = dirtyRect ? dirtyRect.minX : 0;
+    const minY = dirtyRect ? dirtyRect.minY : 0;
+    const maxX = dirtyRect ? dirtyRect.maxX : canvas.width - 1;
+    const maxY = dirtyRect ? dirtyRect.maxY : canvas.height - 1;
+    for (const tile of this.compositeTiles) {
+      const tileMaxX = tile.x + tile.width - 1;
+      const tileMaxY = tile.y + tile.height - 1;
+      const intersects2 = tile.x <= maxX && tile.y <= maxY && tileMaxX >= minX && tileMaxY >= minY;
+      if (!intersects2) continue;
+      tile.ctx.clearRect(0, 0, tile.width, tile.height);
+      tile.ctx.drawImage(
+        canvas,
+        tile.x,
+        tile.y,
+        tile.width,
+        tile.height,
+        0,
+        0,
+        tile.width,
+        tile.height
+      );
+      tile.texture.source.update();
     }
   }
   /**
@@ -32941,11 +33542,53 @@ class PixiEngine {
   }
   destroy() {
     if (!this.initialized) return;
+    this.destroyCompositeTiles();
     this.app.destroy(true, { children: true, texture: true });
     this.initialized = false;
   }
   get isInitialized() {
     return this.initialized;
+  }
+  ensureCompositeTiles(width, height) {
+    if (this.compositeWidth === width && this.compositeHeight === height && this.compositeTiles.length > 0) {
+      return;
+    }
+    this.destroyCompositeTiles();
+    this.compositeWidth = width;
+    this.compositeHeight = height;
+    for (let y2 = 0; y2 < height; y2 += this.compositeTileSize) {
+      for (let x2 = 0; x2 < width; x2 += this.compositeTileSize) {
+        const tileWidth = Math.min(this.compositeTileSize, width - x2);
+        const tileHeight = Math.min(this.compositeTileSize, height - y2);
+        const tileCanvas = document.createElement("canvas");
+        tileCanvas.width = tileWidth;
+        tileCanvas.height = tileHeight;
+        const tileCtx = tileCanvas.getContext("2d");
+        const texture = Texture.from(tileCanvas);
+        const sprite = new Sprite(texture);
+        sprite.position.set(x2, y2);
+        this.compositeContainer.addChild(sprite);
+        this.compositeTiles.push({
+          canvas: tileCanvas,
+          ctx: tileCtx,
+          sprite,
+          texture,
+          x: x2,
+          y: y2,
+          width: tileWidth,
+          height: tileHeight
+        });
+      }
+    }
+  }
+  destroyCompositeTiles() {
+    for (const tile of this.compositeTiles) {
+      tile.sprite.destroy({ texture: true });
+    }
+    this.compositeTiles = [];
+    this.compositeWidth = 0;
+    this.compositeHeight = 0;
+    this.compositeContainer?.removeChildren();
   }
 }
 class LayerStack {
@@ -33158,11 +33801,13 @@ class LayerStack {
   markAllDirty() {
     for (const layer of this.layers) {
       layer.dirty = true;
+      layer.dirtyRect = void 0;
     }
   }
   clearDirty() {
     for (const layer of this.layers) {
       layer.dirty = false;
+      layer.dirtyRect = void 0;
     }
   }
   hasDirtyLayers() {
@@ -33172,18 +33817,22 @@ class LayerStack {
    * Reconcile the engine's LayerStack with external document state
    */
   syncFromDocument(docLayers) {
+    let visualChanged = false;
     const docIds = new Set(docLayers.map((l2) => l2.id));
+    const previousOrder = this.layers.map((layer) => layer.id);
     this.layers = this.layers.filter((engineLayer) => {
       if (!docIds.has(engineLayer.id)) {
         if (engineLayer.sprite) engineLayer.sprite.destroy({ texture: true });
         if (engineLayer.graphics) engineLayer.graphics.destroy();
+        visualChanged = true;
         return false;
       }
       return true;
     });
     const newLayers = [];
+    const existingLayers = new Map(this.layers.map((layer) => [layer.id, layer]));
     for (const docLayer of docLayers) {
-      let engineLayer = this.layers.find((l2) => l2.id === docLayer.id);
+      let engineLayer = existingLayers.get(docLayer.id);
       if (!engineLayer) {
         engineLayer = {
           id: docLayer.id,
@@ -33196,9 +33845,12 @@ class LayerStack {
           pixelBuffer: docLayer.pixels ? new Uint8ClampedArray(docLayer.pixels) : new Uint8ClampedArray(this.width * this.height * 4),
           width: this.width,
           height: this.height,
-          dirty: true
+          dirty: true,
+          sourcePixelsRef: docLayer.pixels ?? null
         };
+        visualChanged = true;
       } else {
+        const visualPropsChanged = engineLayer.visible !== docLayer.visible || engineLayer.opacity !== docLayer.opacity || engineLayer.blendMode !== docLayer.blendMode;
         engineLayer.name = docLayer.name;
         engineLayer.visible = docLayer.visible;
         engineLayer.locked = docLayer.locked;
@@ -33208,85 +33860,154 @@ class LayerStack {
           engineLayer.pixelBuffer = new Uint8ClampedArray(
             this.width * this.height * 4
           );
+          engineLayer.sourcePixelsRef = null;
+          visualChanged = true;
         }
-        if (docLayer.pixels) {
+        const pixelsChanged = engineLayer.sourcePixelsRef !== (docLayer.pixels ?? null);
+        if (docLayer.pixels && pixelsChanged) {
           engineLayer.pixelBuffer?.set(docLayer.pixels);
+          engineLayer.sourcePixelsRef = docLayer.pixels;
+          engineLayer.dirty = true;
+          engineLayer.dirtyRect = void 0;
+          visualChanged = true;
+        } else if (!docLayer.pixels && engineLayer.sourcePixelsRef) {
+          engineLayer.pixelBuffer?.fill(0);
+          engineLayer.sourcePixelsRef = null;
+          engineLayer.dirty = true;
+          engineLayer.dirtyRect = void 0;
+          visualChanged = true;
         }
         engineLayer.width = this.width;
         engineLayer.height = this.height;
-        engineLayer.dirty = true;
+        if (visualPropsChanged) {
+          engineLayer.dirty = true;
+          engineLayer.dirtyRect = void 0;
+          visualChanged = true;
+        }
       }
       newLayers.push(engineLayer);
     }
     this.layers = newLayers;
-    this.markAllDirty();
+    const orderChanged = previousOrder.length !== newLayers.length || previousOrder.some((id2, index) => newLayers[index]?.id !== id2);
+    if (orderChanged) {
+      this.markAllDirty();
+      visualChanged = true;
+    }
+    return visualChanged;
   }
 }
 class Compositor {
   width;
   height;
   compositeBuffer;
+  compositeImageData;
   constructor(width, height) {
     this.width = width;
     this.height = height;
     this.compositeBuffer = new Uint8ClampedArray(width * height * 4);
+    this.compositeImageData = new ImageData(this.compositeBuffer, width, height);
   }
   resize(width, height) {
     this.width = width;
     this.height = height;
     this.compositeBuffer = new Uint8ClampedArray(width * height * 4);
+    this.compositeImageData = new ImageData(this.compositeBuffer, width, height);
   }
-  composite(layers) {
-    this.compositeBuffer.fill(0);
+  getCompositeBuffer() {
+    return this.compositeBuffer;
+  }
+  composite(layers, dirtyRect) {
     const visibleLayers = layers.filter((l2) => l2.visible && l2.pixelBuffer);
     if (visibleLayers.length === 0) {
-      const result2 = new Uint8ClampedArray(this.compositeBuffer);
-      return new ImageData(result2, this.width, this.height);
+      this.compositeBuffer.fill(0);
+      return this.compositeImageData;
     }
-    for (let i2 = 0; i2 < this.compositeBuffer.length; i2 += 4) {
-      this.compositeBuffer[i2] = 0;
-      this.compositeBuffer[i2 + 1] = 0;
-      this.compositeBuffer[i2 + 2] = 0;
-      this.compositeBuffer[i2 + 3] = 0;
+    let startX = 0;
+    let startY = 0;
+    let endX = this.width - 1;
+    let endY = this.height - 1;
+    if (dirtyRect) {
+      startX = Math.max(0, Math.floor(dirtyRect.minX));
+      startY = Math.max(0, Math.floor(dirtyRect.minY));
+      endX = Math.min(this.width - 1, Math.ceil(dirtyRect.maxX));
+      endY = Math.min(this.height - 1, Math.ceil(dirtyRect.maxY));
+    }
+    for (let y2 = startY; y2 <= endY; y2++) {
+      const rowStart = (y2 * this.width + startX) * 4;
+      const rowEnd = (y2 * this.width + endX + 1) * 4;
+      this.compositeBuffer.fill(0, rowStart, rowEnd);
+    }
+    if (visibleLayers.length === 1 && visibleLayers[0].blendMode === "normal" && visibleLayers[0].opacity === 100) {
+      this.copyLayerRect(visibleLayers[0], startX, startY, endX, endY);
+      return this.compositeImageData;
     }
     for (const layer of visibleLayers) {
       if (!layer.pixelBuffer) continue;
       const layerOpacity = layer.opacity / 100;
+      const isFastNormal = layer.blendMode === "normal" && layer.opacity === 100;
       const blendFn = this.getBlendFunction(layer.blendMode);
-      for (let i2 = 0; i2 < this.compositeBuffer.length; i2 += 4) {
-        const srcR = layer.pixelBuffer[i2];
-        const srcG = layer.pixelBuffer[i2 + 1];
-        const srcB = layer.pixelBuffer[i2 + 2];
-        const srcA = layer.pixelBuffer[i2 + 3] / 255 * layerOpacity;
-        const dstR = this.compositeBuffer[i2];
-        const dstG = this.compositeBuffer[i2 + 1];
-        const dstB = this.compositeBuffer[i2 + 2];
-        const dstA = this.compositeBuffer[i2 + 3] / 255;
-        const [blendedR, blendedG, blendedB] = blendFn(
-          srcR,
-          srcG,
-          srcB,
-          dstR,
-          dstG,
-          dstB
-        );
-        const outA = srcA + dstA * (1 - srcA);
-        if (outA > 0) {
-          this.compositeBuffer[i2] = Math.round(
-            (blendedR * srcA + dstR * dstA * (1 - srcA)) / outA
+      for (let y2 = startY; y2 <= endY; y2++) {
+        for (let x2 = startX; x2 <= endX; x2++) {
+          const i2 = (y2 * this.width + x2) * 4;
+          const srcR = layer.pixelBuffer[i2];
+          const srcG = layer.pixelBuffer[i2 + 1];
+          const srcB = layer.pixelBuffer[i2 + 2];
+          const srcAByte = layer.pixelBuffer[i2 + 3];
+          if (srcAByte === 0) continue;
+          if (isFastNormal && srcAByte === 255) {
+            this.compositeBuffer[i2] = srcR;
+            this.compositeBuffer[i2 + 1] = srcG;
+            this.compositeBuffer[i2 + 2] = srcB;
+            this.compositeBuffer[i2 + 3] = 255;
+            continue;
+          }
+          const srcA = srcAByte / 255 * layerOpacity;
+          const dstR = this.compositeBuffer[i2];
+          const dstG = this.compositeBuffer[i2 + 1];
+          const dstB = this.compositeBuffer[i2 + 2];
+          const dstAByte = this.compositeBuffer[i2 + 3];
+          const dstA = dstAByte / 255;
+          const [blendedR, blendedG, blendedB] = blendFn(
+            srcR,
+            srcG,
+            srcB,
+            dstR,
+            dstG,
+            dstB
           );
-          this.compositeBuffer[i2 + 1] = Math.round(
-            (blendedG * srcA + dstG * dstA * (1 - srcA)) / outA
-          );
-          this.compositeBuffer[i2 + 2] = Math.round(
-            (blendedB * srcA + dstB * dstA * (1 - srcA)) / outA
-          );
-          this.compositeBuffer[i2 + 3] = Math.round(outA * 255);
+          const outA = srcA + dstA * (1 - srcA);
+          if (outA > 0) {
+            if (dstAByte === 0 && isFastNormal) {
+              this.compositeBuffer[i2] = srcR;
+              this.compositeBuffer[i2 + 1] = srcG;
+              this.compositeBuffer[i2 + 2] = srcB;
+              this.compositeBuffer[i2 + 3] = srcAByte;
+              continue;
+            }
+            this.compositeBuffer[i2] = Math.round(
+              (blendedR * srcA + dstR * dstA * (1 - srcA)) / outA
+            );
+            this.compositeBuffer[i2 + 1] = Math.round(
+              (blendedG * srcA + dstG * dstA * (1 - srcA)) / outA
+            );
+            this.compositeBuffer[i2 + 2] = Math.round(
+              (blendedB * srcA + dstB * dstA * (1 - srcA)) / outA
+            );
+            this.compositeBuffer[i2 + 3] = Math.round(outA * 255);
+          }
         }
       }
     }
-    const result = new Uint8ClampedArray(this.compositeBuffer);
-    return new ImageData(result, this.width, this.height);
+    return this.compositeImageData;
+  }
+  copyLayerRect(layer, startX, startY, endX, endY) {
+    if (!layer.pixelBuffer) return;
+    const rowWidth = (endX - startX + 1) * 4;
+    for (let y2 = startY; y2 <= endY; y2++) {
+      const rowStart = (y2 * this.width + startX) * 4;
+      const rowEnd = rowStart + rowWidth;
+      this.compositeBuffer.set(layer.pixelBuffer.subarray(rowStart, rowEnd), rowStart);
+    }
   }
   getBlendFunction(mode) {
     switch (mode) {
@@ -33389,85 +34110,84 @@ class Compositor {
 class SelectionManager {
   width;
   height;
-  maskCanvas;
-  maskCtx;
+  mask;
+  hasActive = false;
+  bounds = null;
   constructor(width, height) {
     this.width = width;
     this.height = height;
-    this.maskCanvas = document.createElement("canvas");
-    this.maskCanvas.width = width;
-    this.maskCanvas.height = height;
-    this.maskCtx = this.maskCanvas.getContext("2d", { willReadFrequently: true });
+    this.mask = new Uint8Array(width * height);
   }
   resize(w2, h2) {
     this.width = w2;
     this.height = h2;
-    this.maskCanvas.width = w2;
-    this.maskCanvas.height = h2;
-    this.maskCtx = this.maskCanvas.getContext("2d", { willReadFrequently: true });
+    this.mask = new Uint8Array(w2 * h2);
+    this.hasActive = false;
+    this.bounds = null;
   }
-  // Set the current canvas state from an existing mask (e.g. from Redo/Undo)
   loadMask(mask) {
-    this.maskCtx.clearRect(0, 0, this.width, this.height);
     if (mask && mask.length === this.width * this.height) {
-      const imgData = this.maskCtx.createImageData(this.width, this.height);
-      for (let i2 = 0; i2 < mask.length; ++i2) {
-        const m2 = mask[i2];
-        const idx = i2 * 4;
-        imgData.data[idx] = m2;
-        imgData.data[idx + 1] = m2;
-        imgData.data[idx + 2] = m2;
-        imgData.data[idx + 3] = m2;
-      }
-      this.maskCtx.putImageData(imgData, 0, 0);
+      this.mask = new Uint8Array(mask);
+      this.recomputeBoundsAndActive();
+      return;
     }
+    this.mask = new Uint8Array(this.width * this.height);
+    this.hasActive = false;
+    this.bounds = null;
   }
   getMask() {
-    const imgData = this.maskCtx.getImageData(0, 0, this.width, this.height);
-    const mask = new Uint8Array(this.width * this.height);
-    for (let i2 = 0; i2 < mask.length; ++i2) {
-      mask[i2] = imgData.data[i2 * 4 + 3];
-    }
-    return mask;
+    return this.mask;
   }
-  // Primitives
+  getMaskAndActive() {
+    return { mask: this.mask, hasActiveSelection: this.hasActive };
+  }
+  getBounds() {
+    return this.bounds ? { ...this.bounds } : null;
+  }
   drawRect(x2, y2, w2, h2, mode) {
-    this.setCompositeMode(mode);
-    this.maskCtx.fillStyle = "#000000";
-    this.maskCtx.fillRect(x2, y2, w2, h2);
+    const startX = Math.max(0, Math.floor(x2));
+    const startY = Math.max(0, Math.floor(y2));
+    const endX = Math.min(this.width, Math.ceil(x2 + w2));
+    const endY = Math.min(this.height, Math.ceil(y2 + h2));
+    this.applyShape(startX, startY, endX, endY, mode, () => true);
   }
   drawEllipse(x2, y2, rx, ry, mode) {
-    this.setCompositeMode(mode);
-    this.maskCtx.fillStyle = "#000000";
-    this.maskCtx.beginPath();
-    this.maskCtx.ellipse(x2, y2, rx, ry, 0, 0, 2 * Math.PI);
-    this.maskCtx.fill();
+    if (rx <= 0 || ry <= 0) return;
+    const startX = Math.max(0, Math.floor(x2 - rx));
+    const startY = Math.max(0, Math.floor(y2 - ry));
+    const endX = Math.min(this.width, Math.ceil(x2 + rx));
+    const endY = Math.min(this.height, Math.ceil(y2 + ry));
+    this.applyShape(startX, startY, endX, endY, mode, (px, py) => {
+      const dx = (px + 0.5 - x2) / rx;
+      const dy = (py + 0.5 - y2) / ry;
+      return dx * dx + dy * dy <= 1;
+    });
   }
   drawPolygon(points, mode) {
     if (points.length < 3) return;
-    this.setCompositeMode(mode);
-    this.maskCtx.fillStyle = "#000000";
-    this.maskCtx.beginPath();
-    this.maskCtx.moveTo(points[0].x, points[0].y);
-    for (let i2 = 1; i2 < points.length; ++i2) {
-      this.maskCtx.lineTo(points[i2].x, points[i2].y);
+    let minX = this.width;
+    let minY = this.height;
+    let maxX = -1;
+    let maxY = -1;
+    for (const point of points) {
+      minX = Math.min(minX, point.x);
+      minY = Math.min(minY, point.y);
+      maxX = Math.max(maxX, point.x);
+      maxY = Math.max(maxY, point.y);
     }
-    this.maskCtx.closePath();
-    this.maskCtx.fill();
+    const startX = Math.max(0, Math.floor(minX));
+    const startY = Math.max(0, Math.floor(minY));
+    const endX = Math.min(this.width, Math.ceil(maxX));
+    const endY = Math.min(this.height, Math.ceil(maxY));
+    this.applyShape(
+      startX,
+      startY,
+      endX,
+      endY,
+      mode,
+      (px, py) => this.pointInPolygon(px + 0.5, py + 0.5, points)
+    );
   }
-  setCompositeMode(mode) {
-    if (mode === "replace") {
-      this.maskCtx.clearRect(0, 0, this.width, this.height);
-      this.maskCtx.globalCompositeOperation = "source-over";
-    } else if (mode === "add") {
-      this.maskCtx.globalCompositeOperation = "source-over";
-    } else if (mode === "subtract") {
-      this.maskCtx.globalCompositeOperation = "destination-out";
-    } else if (mode === "intersect") {
-      this.maskCtx.globalCompositeOperation = "source-in";
-    }
-  }
-  // Quick Selection (Flood Fill) as a brush stroke
   quickSelect(startX, startY, radius, tolerance, sourcePixels, mode) {
     const w2 = this.width;
     const h2 = this.height;
@@ -33476,15 +34196,14 @@ class SelectionManager {
     const queue = [];
     for (let dy = -radius; dy <= radius; dy++) {
       for (let dx = -radius; dx <= radius; dx++) {
-        if (dx * dx + dy * dy <= radius * radius) {
-          const px = startX + dx;
-          const py = startY + dy;
-          if (px >= 0 && px < w2 && py >= 0 && py < h2) {
-            const seedIdx = py * w2 + px;
-            queue.push(seedIdx);
-            visited[seedIdx] = 1;
-          }
-        }
+        if (dx * dx + dy * dy > radius * radius) continue;
+        const px = startX + dx;
+        const py = startY + dy;
+        if (px < 0 || px >= w2 || py < 0 || py >= h2) continue;
+        const index = py * w2 + px;
+        if (visited[index]) continue;
+        visited[index] = 1;
+        queue.push(index);
       }
     }
     if (queue.length === 0) return;
@@ -33496,64 +34215,142 @@ class SelectionManager {
     const fillMask = new Uint8Array(w2 * h2);
     let head = 0;
     while (head < queue.length) {
-      const idx = queue[head++];
-      const x2 = idx % w2;
-      const y2 = Math.floor(idx / w2);
-      fillMask[idx] = 255;
+      const index = queue[head++];
+      const px = index % w2;
+      const py = Math.floor(index / w2);
+      fillMask[index] = 255;
       const neighbors = [
-        [x2 - 1, y2],
-        [x2 + 1, y2],
-        [x2, y2 - 1],
-        [x2, y2 + 1]
+        [px - 1, py],
+        [px + 1, py],
+        [px, py - 1],
+        [px, py + 1]
       ];
       for (const [nx, ny] of neighbors) {
-        if (nx >= 0 && nx < w2 && ny >= 0 && ny < h2) {
-          const nIdx = ny * w2 + nx;
-          if (!visited[nIdx]) {
-            visited[nIdx] = 1;
-            const pxIdx = nIdx * 4;
-            const r2 = sourcePixels[pxIdx];
-            const g2 = sourcePixels[pxIdx + 1];
-            const b2 = sourcePixels[pxIdx + 2];
-            const a2 = sourcePixels[pxIdx + 3];
-            const dist = Math.sqrt((r2 - sr) ** 2 + (g2 - sg2) ** 2 + (b2 - sb2) ** 2 + (a2 - sa2) ** 2);
-            if (dist <= tolerance) {
-              queue.push(nIdx);
-            }
-          }
+        if (nx < 0 || nx >= w2 || ny < 0 || ny >= h2) continue;
+        const next = ny * w2 + nx;
+        if (visited[next]) continue;
+        visited[next] = 1;
+        const pxIdx = next * 4;
+        const dr = sourcePixels[pxIdx] - sr;
+        const dg2 = sourcePixels[pxIdx + 1] - sg2;
+        const db2 = sourcePixels[pxIdx + 2] - sb2;
+        const da2 = sourcePixels[pxIdx + 3] - sa2;
+        const distance2 = Math.sqrt(dr * dr + dg2 * dg2 + db2 * db2 + da2 * da2);
+        if (distance2 <= tolerance) {
+          queue.push(next);
         }
       }
     }
     this.applyMask(fillMask, mode);
   }
-  applyMask(newMask, mode) {
-    const imgData = this.maskCtx.getImageData(0, 0, this.width, this.height);
+  clear() {
+    this.mask.fill(0);
+    this.hasActive = false;
+    this.bounds = null;
+  }
+  applyShape(startX, startY, endX, endY, mode, contains) {
+    if (startX >= endX || startY >= endY) {
+      if (mode === "replace" || mode === "intersect") {
+        this.clear();
+      }
+      return;
+    }
     if (mode === "replace") {
-      for (let i2 = 0; i2 < newMask.length; ++i2) {
-        const m2 = newMask[i2];
-        const idx = i2 * 4;
-        imgData.data[idx] = m2;
-        imgData.data[idx + 1] = m2;
-        imgData.data[idx + 2] = m2;
-        imgData.data[idx + 3] = m2;
+      this.mask.fill(0);
+      for (let y2 = startY; y2 < endY; y2++) {
+        for (let x2 = startX; x2 < endX; x2++) {
+          if (contains(x2, y2)) {
+            this.mask[y2 * this.width + x2] = 255;
+          }
+        }
       }
-    } else if (mode === "add") {
-      for (let i2 = 0; i2 < newMask.length; ++i2) {
-        if (newMask[i2] > 0) imgData.data[i2 * 4 + 3] = 255;
+      this.recomputeBoundsAndActive();
+      return;
+    }
+    if (mode === "intersect") {
+      const nextMask = new Uint8Array(this.width * this.height);
+      for (let y2 = startY; y2 < endY; y2++) {
+        for (let x2 = startX; x2 < endX; x2++) {
+          const index = y2 * this.width + x2;
+          if (this.mask[index] > 0 && contains(x2, y2)) {
+            nextMask[index] = 255;
+          }
+        }
       }
-    } else if (mode === "subtract") {
-      for (let i2 = 0; i2 < newMask.length; ++i2) {
-        if (newMask[i2] > 0) imgData.data[i2 * 4 + 3] = 0;
-      }
-    } else if (mode === "intersect") {
-      for (let i2 = 0; i2 < newMask.length; ++i2) {
-        if (newMask[i2] === 0) imgData.data[i2 * 4 + 3] = 0;
+      this.mask = nextMask;
+      this.recomputeBoundsAndActive();
+      return;
+    }
+    for (let y2 = startY; y2 < endY; y2++) {
+      for (let x2 = startX; x2 < endX; x2++) {
+        if (!contains(x2, y2)) continue;
+        const index = y2 * this.width + x2;
+        this.mask[index] = mode === "subtract" ? 0 : 255;
       }
     }
-    this.maskCtx.putImageData(imgData, 0, 0);
+    this.recomputeBoundsAndActive();
   }
-  clear() {
-    this.maskCtx.clearRect(0, 0, this.width, this.height);
+  applyMask(newMask, mode) {
+    if (mode === "replace") {
+      this.mask = new Uint8Array(newMask);
+      this.recomputeBoundsAndActive();
+      return;
+    }
+    if (mode === "intersect") {
+      for (let i2 = 0; i2 < this.mask.length; i2++) {
+        if (newMask[i2] === 0) {
+          this.mask[i2] = 0;
+        }
+      }
+      this.recomputeBoundsAndActive();
+      return;
+    }
+    for (let i2 = 0; i2 < this.mask.length; i2++) {
+      if (newMask[i2] === 0) continue;
+      this.mask[i2] = mode === "subtract" ? 0 : 255;
+    }
+    this.recomputeBoundsAndActive();
+  }
+  recomputeBoundsAndActive() {
+    let minX = this.width;
+    let minY = this.height;
+    let maxX = -1;
+    let maxY = -1;
+    for (let y2 = 0; y2 < this.height; y2++) {
+      for (let x2 = 0; x2 < this.width; x2++) {
+        if (this.mask[y2 * this.width + x2] === 0) continue;
+        minX = Math.min(minX, x2);
+        minY = Math.min(minY, y2);
+        maxX = Math.max(maxX, x2);
+        maxY = Math.max(maxY, y2);
+      }
+    }
+    if (maxX === -1 || maxY === -1) {
+      this.hasActive = false;
+      this.bounds = null;
+      return;
+    }
+    this.hasActive = true;
+    this.bounds = {
+      x: minX,
+      y: minY,
+      width: maxX - minX + 1,
+      height: maxY - minY + 1
+    };
+  }
+  pointInPolygon(x2, y2, points) {
+    let inside = false;
+    for (let i2 = 0, j2 = points.length - 1; i2 < points.length; j2 = i2++) {
+      const xi2 = points[i2].x;
+      const yi2 = points[i2].y;
+      const xj2 = points[j2].x;
+      const yj2 = points[j2].y;
+      const intersects2 = yi2 > y2 !== yj2 > y2 && x2 < (xj2 - xi2) * (y2 - yi2) / (yj2 - yi2 || Number.EPSILON) + xi2;
+      if (intersects2) {
+        inside = !inside;
+      }
+    }
+    return inside;
   }
 }
 class SelectionOverlay {
@@ -33561,9 +34358,8 @@ class SelectionOverlay {
   sprite;
   antsCanvas;
   antsCtx;
-  currentMask = null;
-  width = 0;
-  height = 0;
+  boundaryPoints = [];
+  bounds = null;
   time = 0;
   animating = false;
   constructor() {
@@ -33571,7 +34367,7 @@ class SelectionOverlay {
     this.antsCanvas = document.createElement("canvas");
     this.antsCanvas.width = 1;
     this.antsCanvas.height = 1;
-    this.antsCtx = this.antsCanvas.getContext("2d", { willReadFrequently: true });
+    this.antsCtx = this.antsCanvas.getContext("2d");
     this.sprite = new Sprite(Texture.from(this.antsCanvas));
     this.sprite.visible = false;
     this.container.addChild(this.sprite);
@@ -33583,63 +34379,73 @@ class SelectionOverlay {
     this.animating = false;
   }
   updateAnimationAndGetDirty(dt) {
-    if (!this.animating || !this.sprite.visible || !this.currentMask) return false;
+    if (!this.animating || !this.sprite.visible || this.boundaryPoints.length === 0) {
+      return false;
+    }
     this.time += dt;
     this.renderBoundary();
     return true;
   }
+  isAnimating() {
+    return this.animating && this.sprite.visible && this.boundaryPoints.length > 0;
+  }
   updateMask(mask, width, height) {
-    this.width = width;
-    this.height = height;
     if (!mask || mask.length !== width * height) {
-      this.currentMask = null;
+      this.boundaryPoints = [];
+      this.bounds = null;
       this.sprite.visible = false;
       return;
     }
-    if (this.antsCanvas.width !== width || this.antsCanvas.height !== height) {
-      this.antsCanvas.width = width;
-      this.antsCanvas.height = height;
-      this.antsCtx = this.antsCanvas.getContext("2d", { willReadFrequently: true });
+    let minX = width;
+    let minY = height;
+    let maxX = -1;
+    let maxY = -1;
+    const boundaryPoints = [];
+    for (let y2 = 0; y2 < height; y2++) {
+      for (let x2 = 0; x2 < width; x2++) {
+        const index = y2 * width + x2;
+        if (mask[index] === 0) continue;
+        const top = y2 === 0 ? 0 : mask[index - width];
+        const bottom = y2 === height - 1 ? 0 : mask[index + width];
+        const left = x2 === 0 ? 0 : mask[index - 1];
+        const right = x2 === width - 1 ? 0 : mask[index + 1];
+        const isBoundary = top === 0 || bottom === 0 || left === 0 || right === 0;
+        if (!isBoundary) continue;
+        boundaryPoints.push({ x: x2, y: y2 });
+        minX = Math.min(minX, x2);
+        minY = Math.min(minY, y2);
+        maxX = Math.max(maxX, x2);
+        maxY = Math.max(maxY, y2);
+      }
+    }
+    if (boundaryPoints.length === 0) {
+      this.boundaryPoints = [];
+      this.bounds = null;
+      this.sprite.visible = false;
+      return;
+    }
+    const bounds = {
+      x: minX,
+      y: minY,
+      width: maxX - minX + 1,
+      height: maxY - minY + 1
+    };
+    if (this.antsCanvas.width !== bounds.width || this.antsCanvas.height !== bounds.height) {
+      this.antsCanvas.width = bounds.width;
+      this.antsCanvas.height = bounds.height;
+      this.antsCtx = this.antsCanvas.getContext("2d");
       this.sprite.texture.destroy(true);
       this.sprite.texture = Texture.from(this.antsCanvas);
     }
-    this.currentMask = new Uint8Array(mask);
+    this.boundaryPoints = boundaryPoints;
+    this.bounds = bounds;
+    this.sprite.position.set(bounds.x, bounds.y);
     this.sprite.visible = true;
     this.renderBoundary();
   }
-  renderBoundary() {
-    if (!this.currentMask || this.width <= 0 || this.height <= 0) {
-      this.sprite.visible = false;
-      return;
-    }
-    const phase = Math.floor(this.time * 60);
-    const imageData = this.antsCtx.createImageData(this.width, this.height);
-    const data = imageData.data;
-    const mask = this.currentMask;
-    for (let y2 = 0; y2 < this.height; y2++) {
-      for (let x2 = 0; x2 < this.width; x2++) {
-        const index = y2 * this.width + x2;
-        if (mask[index] === 0) continue;
-        const top = y2 === 0 ? 0 : mask[index - this.width];
-        const bottom = y2 === this.height - 1 ? 0 : mask[index + this.width];
-        const left = x2 === 0 ? 0 : mask[index - 1];
-        const right = x2 === this.width - 1 ? 0 : mask[index + 1];
-        const isBoundary = top === 0 || bottom === 0 || left === 0 || right === 0;
-        if (!isBoundary) continue;
-        const pixel = index * 4;
-        const dark = (x2 + y2 - phase & 15) >= 8;
-        const shade = dark ? 0 : 255;
-        data[pixel] = shade;
-        data[pixel + 1] = shade;
-        data[pixel + 2] = shade;
-        data[pixel + 3] = 255;
-      }
-    }
-    this.antsCtx.putImageData(imageData, 0, 0);
-    this.sprite.texture.source.update();
-  }
   clear() {
-    this.currentMask = null;
+    this.boundaryPoints = [];
+    this.bounds = null;
     this.sprite.visible = false;
     this.antsCtx.clearRect(0, 0, this.antsCanvas.width, this.antsCanvas.height);
     this.sprite.texture.source.update();
@@ -33649,6 +34455,22 @@ class SelectionOverlay {
       this.sprite.texture.destroy(true);
     }
     this.container.destroy();
+  }
+  renderBoundary() {
+    if (!this.bounds || this.boundaryPoints.length === 0) {
+      this.sprite.visible = false;
+      return;
+    }
+    const phase = Math.floor(this.time * 60);
+    this.antsCtx.clearRect(0, 0, this.antsCanvas.width, this.antsCanvas.height);
+    for (const point of this.boundaryPoints) {
+      const localX = point.x - this.bounds.x;
+      const localY = point.y - this.bounds.y;
+      const dark = (point.x + point.y - phase & 15) >= 8;
+      this.antsCtx.fillStyle = dark ? "#000000" : "#ffffff";
+      this.antsCtx.fillRect(localX, localY, 1, 1);
+    }
+    this.sprite.texture.source.update();
   }
 }
 class Renderer {
@@ -33668,6 +34490,7 @@ class Renderer {
   selectionOverlay;
   tempSelectionMask = null;
   lastTime = performance.now();
+  renderRequestId = null;
   constructor(width, height) {
     this.engine = new PixiEngine();
     this.layerStack = new LayerStack(width, height);
@@ -33689,12 +34512,63 @@ class Renderer {
     this.engine.documentContainer.addChild(this.selectionOverlay.container);
     this.updateTransform();
   }
+  setLayerDirty(layer, x2, y2, w2, h2) {
+    layer.dirty = true;
+    if (x2 !== void 0 && y2 !== void 0 && w2 !== void 0 && h2 !== void 0) {
+      const newRect = { minX: x2, minY: y2, maxX: x2 + w2 - 1, maxY: y2 + h2 - 1 };
+      if (!layer.dirtyRect) {
+        layer.dirtyRect = newRect;
+      } else {
+        layer.dirtyRect.minX = Math.min(layer.dirtyRect.minX, newRect.minX);
+        layer.dirtyRect.minY = Math.min(layer.dirtyRect.minY, newRect.minY);
+        layer.dirtyRect.maxX = Math.max(layer.dirtyRect.maxX, newRect.maxX);
+        layer.dirtyRect.maxY = Math.max(layer.dirtyRect.maxY, newRect.maxY);
+      }
+    } else {
+      layer.dirtyRect = void 0;
+    }
+  }
   /** Composite dirty layers and upload texture. Call from tick(). */
   composeDirty() {
     if (!this.layerStack.hasDirtyLayers()) return;
-    const imageData = this.compositor.composite(this.layerStack.getLayers());
-    this.offCtx.putImageData(imageData, 0, 0);
-    this.engine.setCompositeTexture(this.offscreen);
+    let globalDirtyRect;
+    let canDoPartial = true;
+    for (const layer of this.layerStack.getLayers()) {
+      if (layer.dirty) {
+        if (!layer.dirtyRect) {
+          canDoPartial = false;
+          break;
+        }
+        if (!globalDirtyRect) {
+          globalDirtyRect = { ...layer.dirtyRect };
+        } else {
+          globalDirtyRect.minX = Math.min(globalDirtyRect.minX, layer.dirtyRect.minX);
+          globalDirtyRect.minY = Math.min(globalDirtyRect.minY, layer.dirtyRect.minY);
+          globalDirtyRect.maxX = Math.max(globalDirtyRect.maxX, layer.dirtyRect.maxX);
+          globalDirtyRect.maxY = Math.max(globalDirtyRect.maxY, layer.dirtyRect.maxY);
+        }
+      }
+    }
+    const imageData = this.compositor.composite(
+      this.layerStack.getLayers(),
+      canDoPartial ? globalDirtyRect : void 0
+    );
+    if (canDoPartial && globalDirtyRect) {
+      const dw = globalDirtyRect.maxX - globalDirtyRect.minX + 1;
+      const dh2 = globalDirtyRect.maxY - globalDirtyRect.minY + 1;
+      this.offCtx.putImageData(
+        imageData,
+        0,
+        0,
+        globalDirtyRect.minX,
+        globalDirtyRect.minY,
+        dw,
+        dh2
+      );
+    } else {
+      this.offCtx.putImageData(imageData, 0, 0);
+    }
+    this.engine.setCompositeTexture(this.offscreen, globalDirtyRect);
     this.layerStack.clearDirty();
   }
   /** Call every animation frame — composites dirty layers then repaints PixiJS */
@@ -33707,13 +34581,24 @@ class Renderer {
     this.selectionOverlay.updateAnimationAndGetDirty(dt);
     this.engine.render();
   }
+  needsAnimationFrame() {
+    return this.selectionOverlay.isAnimating();
+  }
   forceRender() {
     this.layerStack.markAllDirty();
     this.render();
   }
+  scheduleRender() {
+    if (this.renderRequestId !== null) return;
+    this.renderRequestId = requestAnimationFrame(() => {
+      this.renderRequestId = null;
+      this.render();
+    });
+  }
   setZoom(z2) {
     this.zoom = Math.max(0.05, Math.min(64, z2));
     this.updateTransform();
+    this.engine.render();
   }
   getZoom() {
     return this.zoom;
@@ -33722,6 +34607,7 @@ class Renderer {
     this.panX = x2;
     this.panY = y2;
     this.updateTransform();
+    this.engine.render();
   }
   getPan() {
     return { x: this.panX, y: this.panY };
@@ -33752,6 +34638,7 @@ class Renderer {
     this.vpW = w2;
     this.vpH = h2;
     this.engine.resize(w2, h2);
+    this.engine.render();
   }
   centerDocument(vpW, vpH) {
     this.panX = (vpW - this.docWidth * this.zoom) / 2;
@@ -33769,15 +34656,7 @@ class Renderer {
     return this.layerStack;
   }
   getSelectionState() {
-    const mask = this.selectionManager.getMask();
-    let hasActiveSelection = false;
-    for (let i2 = 0; i2 < mask.length; i2++) {
-      if (mask[i2] > 0) {
-        hasActiveSelection = true;
-        break;
-      }
-    }
-    return { mask, hasActiveSelection };
+    return this.selectionManager.getMaskAndActive();
   }
   canAffectPixel(x2, y2, selectionMask, hasActiveSelection) {
     if (x2 < 0 || x2 >= this.docWidth || y2 < 0 || y2 >= this.docHeight) {
@@ -33816,8 +34695,14 @@ class Renderer {
         }
       }
     }
-    layer.dirty = true;
-    this.render();
+    this.setLayerDirty(
+      layer,
+      Math.max(0, x2 - radius),
+      Math.max(0, y2 - radius),
+      Math.min(w2 - Math.max(0, x2 - radius), radius * 2 + 1),
+      Math.min(h2 - Math.max(0, y2 - radius), radius * 2 + 1)
+    );
+    this.scheduleRender();
   }
   fill(x2, y2, color, tolerance, contiguous) {
     const layer = this.layerStack.getActiveLayer();
@@ -33863,8 +34748,8 @@ class Renderer {
           }
         }
       }
-      layer.dirty = true;
-      this.render();
+      this.setLayerDirty(layer);
+      this.scheduleRender();
       return;
     }
     const visited = new Uint8Array(width * height);
@@ -33897,8 +34782,8 @@ class Renderer {
         queue.push(next);
       }
     }
-    layer.dirty = true;
-    this.render();
+    this.setLayerDirty(layer);
+    this.scheduleRender();
   }
   /**
    * Invert current layer pixels
@@ -33918,8 +34803,8 @@ class Renderer {
       layer.pixelBuffer[i2 + 1] = 255 - layer.pixelBuffer[i2 + 1];
       layer.pixelBuffer[i2 + 2] = 255 - layer.pixelBuffer[i2 + 2];
     }
-    layer.dirty = true;
-    this.render();
+    this.setLayerDirty(layer);
+    this.scheduleRender();
   }
   /**
    * Create a white background Graphics object as the bottommost layer
@@ -33953,19 +34838,30 @@ class Renderer {
     this.layerStack.reset(w2, h2);
     this.selectionManager.resize(w2, h2);
     this.engine.removeBackgroundGraphics();
+    this.offscreen = document.createElement("canvas");
     this.offscreen.width = w2;
     this.offscreen.height = h2;
+    this.offCtx = this.offscreen.getContext("2d", { willReadFrequently: true });
     this.engine.createCheckerboard(w2, h2);
     if (this.vpW > 0 && this.vpH > 0) {
       this.fitToViewport(this.vpW, this.vpH);
     }
   }
   syncDocument(doc, activeLayerId) {
-    this.layerStack.syncFromDocument(doc.layers);
+    if (doc.width !== this.docWidth || doc.height !== this.docHeight) {
+      this.resizeDocument(doc.width, doc.height);
+    }
+    const visualChanged = this.layerStack.syncFromDocument(doc.layers);
     this.layerStack.setActiveLayer(activeLayerId);
-    this.forceRender();
+    if (visualChanged) {
+      this.render();
+    }
   }
   destroy() {
+    if (this.renderRequestId !== null) {
+      cancelAnimationFrame(this.renderRequestId);
+      this.renderRequestId = null;
+    }
     this.engine.destroy();
   }
   /**
@@ -34022,7 +34918,7 @@ class Renderer {
   }
   updateSelectionQuickDraft(startX, startY, radius, tolerance, mode) {
     this.composeDirty();
-    const pixels = this.offCtx.getImageData(0, 0, this.docWidth, this.docHeight).data;
+    const pixels = this.compositor.getCompositeBuffer();
     this.selectionManager.quickSelect(startX, startY, radius, tolerance, pixels, mode);
     this.updateOverlayFromManager();
   }
@@ -34032,7 +34928,7 @@ class Renderer {
   updateOverlayFromManager() {
     const mask = this.selectionManager.getMask();
     this.selectionOverlay.updateMask(mask, this.docWidth, this.docHeight);
-    this.render();
+    this.scheduleRender();
   }
   // ============================================
   // STORE SYNC API
@@ -34047,7 +34943,7 @@ class Renderer {
       this.selectionOverlay.clear();
       this.selectionOverlay.stopAnimation();
     }
-    this.render();
+    this.scheduleRender();
   }
 }
 const defaultBrushSettings = {
@@ -34227,25 +35123,57 @@ function getLayerBounds(pixels, width, height) {
     height: maxY - minY + 1
   };
 }
-function renderTransformedPixels(sourcePixels, sourceWidth, sourceHeight, docWidth, docHeight, targetBounds) {
+function renderTransformedPixels(sourcePixels, sourceWidth, sourceHeight, docWidth, docHeight, targetBounds, angle) {
   const output = new Uint8ClampedArray(docWidth * docHeight * 4);
   const targetWidth = Math.max(1, Math.round(targetBounds.width));
   const targetHeight = Math.max(1, Math.round(targetBounds.height));
-  const targetX = Math.round(targetBounds.x);
-  const targetY = Math.round(targetBounds.y);
-  for (let y2 = 0; y2 < targetHeight; y2++) {
-    const destY = targetY + y2;
-    if (destY < 0 || destY >= docHeight) continue;
-    const srcY = Math.min(
-      sourceHeight - 1,
-      Math.max(0, Math.floor(y2 / targetHeight * sourceHeight))
-    );
-    for (let x2 = 0; x2 < targetWidth; x2++) {
-      const destX = targetX + x2;
-      if (destX < 0 || destX >= docWidth) continue;
+  const centerX = targetBounds.x + targetBounds.width / 2;
+  const centerY = targetBounds.y + targetBounds.height / 2;
+  const cos = Math.cos(angle);
+  const sin = Math.sin(angle);
+  const halfWidth = targetWidth / 2;
+  const halfHeight = targetHeight / 2;
+  const corners = [
+    { x: -halfWidth, y: -halfHeight },
+    { x: halfWidth, y: -halfHeight },
+    { x: -halfWidth, y: halfHeight },
+    { x: halfWidth, y: halfHeight }
+  ].map(({ x: x2, y: y2 }) => ({
+    x: centerX + x2 * cos - y2 * sin,
+    y: centerY + x2 * sin + y2 * cos
+  }));
+  const minX = Math.max(
+    0,
+    Math.floor(Math.min(...corners.map((corner) => corner.x)))
+  );
+  const maxX = Math.min(
+    docWidth - 1,
+    Math.ceil(Math.max(...corners.map((corner) => corner.x)))
+  );
+  const minY = Math.max(
+    0,
+    Math.floor(Math.min(...corners.map((corner) => corner.y)))
+  );
+  const maxY = Math.min(
+    docHeight - 1,
+    Math.ceil(Math.max(...corners.map((corner) => corner.y)))
+  );
+  for (let destY = minY; destY <= maxY; destY++) {
+    for (let destX = minX; destX <= maxX; destX++) {
+      const relX = destX + 0.5 - centerX;
+      const relY = destY + 0.5 - centerY;
+      const localX = relX * cos + relY * sin + halfWidth;
+      const localY = -relX * sin + relY * cos + halfHeight;
+      if (localX < 0 || localX >= targetWidth || localY < 0 || localY >= targetHeight) {
+        continue;
+      }
       const srcX = Math.min(
         sourceWidth - 1,
-        Math.max(0, Math.floor(x2 / targetWidth * sourceWidth))
+        Math.max(0, Math.floor(localX / targetWidth * sourceWidth))
+      );
+      const srcY = Math.min(
+        sourceHeight - 1,
+        Math.max(0, Math.floor(localY / targetHeight * sourceHeight))
       );
       const srcIdx = (srcY * sourceWidth + srcX) * 4;
       const destIdx = (destY * docWidth + destX) * 4;
@@ -34257,21 +35185,87 @@ function renderTransformedPixels(sourcePixels, sourceWidth, sourceHeight, docWid
   }
   return output;
 }
+function rotateVector(x2, y2, angle) {
+  const cos = Math.cos(angle);
+  const sin = Math.sin(angle);
+  return {
+    x: x2 * cos - y2 * sin,
+    y: x2 * sin + y2 * cos
+  };
+}
+function translatePixels(sourcePixels, width, height, offsetX, offsetY) {
+  const output = new Uint8ClampedArray(width * height * 4);
+  for (let y2 = 0; y2 < height; y2++) {
+    const destY = y2 + offsetY;
+    if (destY < 0 || destY >= height) continue;
+    for (let x2 = 0; x2 < width; x2++) {
+      const destX = x2 + offsetX;
+      if (destX < 0 || destX >= width) continue;
+      const srcIdx = (y2 * width + x2) * 4;
+      const destIdx = (destY * width + destX) * 4;
+      output[destIdx] = sourcePixels[srcIdx];
+      output[destIdx + 1] = sourcePixels[srcIdx + 1];
+      output[destIdx + 2] = sourcePixels[srcIdx + 2];
+      output[destIdx + 3] = sourcePixels[srcIdx + 3];
+    }
+  }
+  return output;
+}
 function CanvasArea() {
   const canvasRef = reactExports.useRef(null);
   const vpRef = reactExports.useRef(null);
+  const movePreviewCanvasRef = reactExports.useRef(null);
+  const transformPreviewCanvasRef = reactExports.useRef(null);
   const rendererRef = reactExports.useRef(null);
   const frameRef = reactExports.useRef(0);
+  const movePreviewFrameRef = reactExports.useRef(0);
+  const transformPreviewFrameRef = reactExports.useRef(0);
   const panningRef = reactExports.useRef(false);
   const lastRef = reactExports.useRef({ x: 0, y: 0 });
-  const transformPreviewRef = reactExports.useRef(null);
   const transformBoundsRef = reactExports.useRef(null);
+  const transformAngleRef = reactExports.useRef(0);
   const previousToolRef = reactExports.useRef(Tool.Brush);
+  const pendingTransformPreviewRef = reactExports.useRef(null);
+  const pendingMovePreviewRef = reactExports.useRef(null);
   const transformSessionRef = reactExports.useRef(null);
   const transformDragRef = reactExports.useRef(null);
+  const moveDragRef = reactExports.useRef(null);
   const [transformBounds, setTransformBounds] = reactExports.useState(null);
-  const { activeTool, setTool, setZoom, setPan, setCursor, setViewport, setRendererRef, zoom, pan } = useEditorStore();
+  const [transformAngle, setTransformAngle] = reactExports.useState(0);
+  const [isTransformDragging, setIsTransformDragging] = reactExports.useState(false);
+  const [isMoveDragging, setIsMoveDragging] = reactExports.useState(false);
+  const [movePreviewOffset, setMovePreviewOffset] = reactExports.useState({ x: 0, y: 0 });
+  const { activeTool, transformActive, setTool, setTransformActive, setZoom, setPan, setCursor, setViewport, setRendererRef, zoom, pan } = useEditorStore();
+  const endTransformSession = reactExports.useCallback(() => {
+    const activeSession = transformSessionRef.current;
+    const renderer = rendererRef.current;
+    if (activeSession && renderer) {
+      const layer = renderer.getLayerStack().getLayer(activeSession.layerId);
+      if (layer && !layer.visible) {
+        layer.visible = true;
+        layer.dirty = true;
+        renderer.scheduleRender();
+      }
+    }
+    setTransformActive(false);
+    transformSessionRef.current = null;
+    transformBoundsRef.current = null;
+    transformAngleRef.current = 0;
+    transformDragRef.current = null;
+    pendingTransformPreviewRef.current = null;
+    if (transformPreviewFrameRef.current !== 0) {
+      cancelAnimationFrame(transformPreviewFrameRef.current);
+      transformPreviewFrameRef.current = 0;
+    }
+    setTransformBounds(null);
+    setTransformAngle(0);
+    setIsTransformDragging(false);
+  }, [setTransformActive]);
   const fillSettings = useToolStore((state) => state.fill);
+  const selectionSettings = useToolStore((state) => state.selection);
+  const setFillTolerance = useToolStore((state) => state.setFillTolerance);
+  const setFillContiguous = useToolStore((state) => state.setFillContiguous);
+  const foregroundColor = useColorStore((state) => state.foregroundColor);
   const { setDocument, document: doc, undo, redo, commitHistory, syncPixels, updateLayer, activeLayerId, setSelection, clearSelection } = useDocumentStore();
   const isSelectingRef = reactExports.useRef(false);
   const selectionStartRef = reactExports.useRef({ x: 0, y: 0 });
@@ -34284,28 +35278,75 @@ function CanvasArea() {
     const { left, top } = vp.getBoundingClientRect();
     return r2.screenToCanvasPrecise(clientX - left, clientY - top);
   }, []);
-  const previewTransform = reactExports.useCallback((bounds) => {
+  const ensureRenderLoop = reactExports.useCallback(() => {
+    const renderer = rendererRef.current;
+    if (!renderer || frameRef.current !== 0 || !renderer.needsAnimationFrame()) {
+      return;
+    }
+    const tick = () => {
+      const activeRenderer = rendererRef.current;
+      if (!activeRenderer) {
+        frameRef.current = 0;
+        return;
+      }
+      activeRenderer.render();
+      if (activeRenderer.needsAnimationFrame()) {
+        frameRef.current = requestAnimationFrame(tick);
+      } else {
+        frameRef.current = 0;
+      }
+    };
+    frameRef.current = requestAnimationFrame(tick);
+  }, []);
+  const buildTransformPixels = reactExports.useCallback((bounds, angle) => {
     const renderer = rendererRef.current;
     const docState = useDocumentStore.getState().document;
     const session = transformSessionRef.current;
-    if (!renderer || !docState || !session) return;
-    const nextPixels = renderTransformedPixels(
+    if (!renderer || !docState || !session) return null;
+    return renderTransformedPixels(
       session.sourcePixels,
       session.sourceWidth,
       session.sourceHeight,
       docState.width,
       docState.height,
-      bounds
+      bounds,
+      angle
     );
-    const layer = renderer.getLayerStack().getLayer(session.layerId);
-    if (!layer) return;
-    layer.pixelBuffer = nextPixels;
-    layer.width = docState.width;
-    layer.height = docState.height;
-    layer.dirty = true;
-    transformPreviewRef.current = nextPixels;
-    renderer.forceRender();
   }, []);
+  const scheduleMovePreview = reactExports.useCallback((offsetX, offsetY) => {
+    pendingMovePreviewRef.current = { offsetX, offsetY };
+    if (movePreviewFrameRef.current !== 0) return;
+    movePreviewFrameRef.current = requestAnimationFrame(() => {
+      movePreviewFrameRef.current = 0;
+      const pending = pendingMovePreviewRef.current;
+      if (!pending) return;
+      pendingMovePreviewRef.current = null;
+      setMovePreviewOffset({ x: pending.offsetX, y: pending.offsetY });
+    });
+  }, []);
+  const scheduleTransformPreview = reactExports.useCallback((bounds, angle) => {
+    pendingTransformPreviewRef.current = { bounds, angle };
+    if (transformPreviewFrameRef.current !== 0) return;
+    transformPreviewFrameRef.current = requestAnimationFrame(() => {
+      transformPreviewFrameRef.current = 0;
+      const pending = pendingTransformPreviewRef.current;
+      if (!pending) return;
+      pendingTransformPreviewRef.current = null;
+      transformBoundsRef.current = pending.bounds;
+      transformAngleRef.current = pending.angle;
+      setTransformBounds(pending.bounds);
+      setTransformAngle(pending.angle);
+    });
+  }, []);
+  const syncLayerPixelsIfNeeded = reactExports.useCallback((layerId, pixels) => {
+    const currentDoc = useDocumentStore.getState().document;
+    const currentLayer = currentDoc?.layers.find((layer) => layer.id === layerId);
+    if (!currentLayer) return;
+    if (currentLayer.pixels === pixels && currentLayer.transformSource === null) {
+      return;
+    }
+    syncPixels(layerId, pixels);
+  }, [syncPixels]);
   const beginTransformDrag = reactExports.useCallback(
     (handle, e2) => {
       const session = transformSessionRef.current;
@@ -34318,76 +35359,99 @@ function CanvasArea() {
       transformDragRef.current = {
         handle,
         startPoint,
-        startBounds: bounds
+        startBounds: bounds,
+        startAngle: transformAngleRef.current
       };
+      setIsTransformDragging(true);
+      const layer = rendererRef.current?.getLayerStack().getLayer(session.layerId);
+      if (layer && layer.visible) {
+        layer.visible = false;
+        layer.dirty = true;
+        rendererRef.current?.scheduleRender();
+      }
       const onMove2 = (event) => {
         const currentPoint = getCanvasPoint(event.clientX, event.clientY);
         const dragState = transformDragRef.current;
         if (!currentPoint || !dragState) return;
-        let nextBounds;
+        let nextBounds = dragState.startBounds;
+        let nextAngle = dragState.startAngle;
         if (dragState.handle === "move") {
           nextBounds = {
             ...dragState.startBounds,
             x: dragState.startBounds.x + (currentPoint.x - dragState.startPoint.x),
             y: dragState.startBounds.y + (currentPoint.y - dragState.startPoint.y)
           };
+        } else if (dragState.handle === "rotate") {
+          const centerX = dragState.startBounds.x + dragState.startBounds.width / 2;
+          const centerY = dragState.startBounds.y + dragState.startBounds.height / 2;
+          const startRotation = Math.atan2(
+            dragState.startPoint.y - centerY,
+            dragState.startPoint.x - centerX
+          );
+          const currentRotation = Math.atan2(
+            currentPoint.y - centerY,
+            currentPoint.x - centerX
+          );
+          nextAngle = dragState.startAngle + (currentRotation - startRotation);
         } else {
           const start = dragState.startBounds;
-          const right = start.x + start.width;
-          const bottom = start.y + start.height;
-          switch (dragState.handle) {
-            case "nw":
-              nextBounds = {
-                x: Math.min(currentPoint.x, right - 1),
-                y: Math.min(currentPoint.y, bottom - 1),
-                width: Math.max(1, right - currentPoint.x),
-                height: Math.max(1, bottom - currentPoint.y)
-              };
-              break;
-            case "ne":
-              nextBounds = {
-                x: start.x,
-                y: Math.min(currentPoint.y, bottom - 1),
-                width: Math.max(1, currentPoint.x - start.x),
-                height: Math.max(1, bottom - currentPoint.y)
-              };
-              break;
-            case "sw":
-              nextBounds = {
-                x: Math.min(currentPoint.x, right - 1),
-                y: start.y,
-                width: Math.max(1, right - currentPoint.x),
-                height: Math.max(1, currentPoint.y - start.y)
-              };
-              break;
-            case "se":
-            default:
-              nextBounds = {
-                x: start.x,
-                y: start.y,
-                width: Math.max(1, currentPoint.x - start.x),
-                height: Math.max(1, currentPoint.y - start.y)
-              };
-              break;
-          }
+          const startCenterX = start.x + start.width / 2;
+          const startCenterY = start.y + start.height / 2;
+          const handleSigns = dragState.handle === "nw" ? { x: -1, y: -1 } : dragState.handle === "ne" ? { x: 1, y: -1 } : dragState.handle === "sw" ? { x: -1, y: 1 } : { x: 1, y: 1 };
+          const anchorOffset = rotateVector(
+            -handleSigns.x * start.width / 2,
+            -handleSigns.y * start.height / 2,
+            dragState.startAngle
+          );
+          const anchorPoint = {
+            x: startCenterX + anchorOffset.x,
+            y: startCenterY + anchorOffset.y
+          };
+          const localDiff = rotateVector(
+            currentPoint.x - anchorPoint.x,
+            currentPoint.y - anchorPoint.y,
+            -dragState.startAngle
+          );
+          const nextWidth = Math.max(1, Math.abs(localDiff.x));
+          const nextHeight = Math.max(1, Math.abs(localDiff.y));
+          const movingOffset = rotateVector(
+            handleSigns.x * nextWidth,
+            handleSigns.y * nextHeight,
+            dragState.startAngle
+          );
+          const nextCenter = {
+            x: anchorPoint.x + movingOffset.x / 2,
+            y: anchorPoint.y + movingOffset.y / 2
+          };
+          nextBounds = {
+            x: nextCenter.x - nextWidth / 2,
+            y: nextCenter.y - nextHeight / 2,
+            width: nextWidth,
+            height: nextHeight
+          };
         }
-        transformBoundsRef.current = nextBounds;
-        setTransformBounds(nextBounds);
-        previewTransform(nextBounds);
+        scheduleTransformPreview(nextBounds, nextAngle);
       };
       const onUp2 = () => {
         window.removeEventListener("mousemove", onMove2);
         window.removeEventListener("mouseup", onUp2);
-        const previewPixels = transformPreviewRef.current;
+        if (transformPreviewFrameRef.current !== 0) {
+          cancelAnimationFrame(transformPreviewFrameRef.current);
+          transformPreviewFrameRef.current = 0;
+        }
         const activeSession = transformSessionRef.current;
-        const currentBounds = transformBoundsRef.current;
+        const pendingPreview = pendingTransformPreviewRef.current;
+        const currentBounds = pendingPreview?.bounds ?? transformBoundsRef.current;
+        const currentAngle = pendingPreview?.angle ?? transformAngleRef.current;
+        const previewPixels = currentBounds ? buildTransformPixels(currentBounds, currentAngle) : null;
         if (previewPixels && activeSession && currentBounds) {
           updateLayer(activeSession.layerId, {
-            pixels: new Uint8ClampedArray(previewPixels),
+            pixels: previewPixels,
             transformSource: {
-              pixels: new Uint8ClampedArray(activeSession.sourcePixels),
+              pixels: activeSession.sourcePixels,
               width: activeSession.sourceWidth,
               height: activeSession.sourceHeight,
+              angle: currentAngle,
               bounds: {
                 x: currentBounds.x,
                 y: currentBounds.y,
@@ -34397,12 +35461,20 @@ function CanvasArea() {
             }
           });
         }
+        const layer2 = rendererRef.current?.getLayerStack().getLayer(activeSession?.layerId ?? "");
+        if (layer2 && !layer2.visible) {
+          layer2.visible = true;
+          layer2.dirty = true;
+          rendererRef.current?.scheduleRender();
+        }
         transformDragRef.current = null;
+        pendingTransformPreviewRef.current = null;
+        setIsTransformDragging(false);
       };
       window.addEventListener("mousemove", onMove2);
       window.addEventListener("mouseup", onUp2);
     },
-    [getCanvasPoint, previewTransform, updateLayer]
+    [buildTransformPixels, getCanvasPoint, scheduleTransformPreview, updateLayer]
   );
   const applyToolStroke = reactExports.useCallback((x2, y2) => {
     const renderer = rendererRef.current;
@@ -34411,10 +35483,10 @@ function CanvasArea() {
     const py = Math.round(y2);
     switch (activeTool) {
       case Tool.Brush:
-        renderer.drawBrush(px, py, { r: 50, g: 150, b: 250, a: 255 }, 20);
+        renderer.drawBrush(px, py, foregroundColor, 20);
         break;
       case Tool.Pencil:
-        renderer.drawBrush(px, py, { r: 50, g: 150, b: 250, a: 255 }, 6);
+        renderer.drawBrush(px, py, foregroundColor, 6);
         break;
       case Tool.Eraser:
         renderer.drawBrush(px, py, { r: 0, g: 0, b: 0, a: 0 }, 20);
@@ -34423,27 +35495,34 @@ function CanvasArea() {
         renderer.fill(
           px,
           py,
-          { r: 50, g: 150, b: 250, a: 255 },
+          foregroundColor,
           fillSettings.tolerance,
           fillSettings.contiguous
         );
         break;
     }
-  }, [activeTool, fillSettings.contiguous, fillSettings.tolerance]);
+  }, [activeTool, fillSettings.contiguous, fillSettings.tolerance, foregroundColor]);
   reactExports.useEffect(() => {
     const onKeyDown = (e2) => {
       const isMod = e2.ctrlKey || e2.metaKey;
       if (isMod && e2.key.toLowerCase() === "t") {
         e2.preventDefault();
         if (doc && activeLayerId && activeLayerId !== "layer-bg") {
+          setTransformActive(true);
           setTool(Tool.Move);
         }
-      } else if (e2.key === "Enter" && activeTool === Tool.Move) {
+      } else if (e2.key === "Enter" && transformActive) {
         e2.preventDefault();
+        endTransformSession();
         setTool(previousToolRef.current);
       } else if (e2.key === "Escape" || isMod && e2.key === "d") {
         e2.preventDefault();
-        clearSelection();
+        if (transformActive) {
+          endTransformSession();
+          setTool(previousToolRef.current);
+        } else {
+          clearSelection();
+        }
       } else if (isMod && e2.key === "z") {
         e2.preventDefault();
         undo();
@@ -34454,7 +35533,7 @@ function CanvasArea() {
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [activeLayerId, activeTool, clearSelection, doc, redo, setTool, undo]);
+  }, [activeLayerId, clearSelection, doc, endTransformSession, redo, setTool, setTransformActive, transformActive, undo]);
   reactExports.useEffect(() => {
     if (activeTool !== Tool.Move) {
       previousToolRef.current = activeTool;
@@ -34465,32 +35544,24 @@ function CanvasArea() {
     if (renderer && doc) {
       renderer.syncDocument(doc, activeLayerId);
       renderer.syncSelection(doc.selection ?? null);
+      ensureRenderLoop();
     }
-  }, [doc, activeLayerId]);
+  }, [doc, activeLayerId, ensureRenderLoop]);
   reactExports.useEffect(() => {
-    if (activeTool !== Tool.Move || !doc || !activeLayerId || transformDragRef.current) {
-      if (activeTool !== Tool.Move) {
-        transformSessionRef.current = null;
-        transformPreviewRef.current = null;
-        transformBoundsRef.current = null;
-        setTransformBounds(null);
+    if (!transformActive || activeTool !== Tool.Move || !doc || !activeLayerId || transformDragRef.current) {
+      if (!transformActive || activeTool !== Tool.Move) {
+        endTransformSession();
       }
       return;
     }
     const activeLayer = doc.layers.find((layer) => layer.id === activeLayerId);
     if (!activeLayer?.pixels || activeLayer.id === "layer-bg") {
-      transformSessionRef.current = null;
-      transformPreviewRef.current = null;
-      transformBoundsRef.current = null;
-      setTransformBounds(null);
+      endTransformSession();
       return;
     }
     const bounds = activeLayer.transformSource?.bounds ?? getLayerBounds(activeLayer.pixels, doc.width, doc.height);
     if (!bounds) {
-      transformSessionRef.current = null;
-      transformPreviewRef.current = null;
-      transformBoundsRef.current = null;
-      setTransformBounds(null);
+      endTransformSession();
       return;
     }
     transformSessionRef.current = {
@@ -34501,10 +35572,43 @@ function CanvasArea() {
       sourceWidth: activeLayer.transformSource?.width ?? doc.width,
       sourceHeight: activeLayer.transformSource?.height ?? doc.height
     };
-    transformPreviewRef.current = null;
+    transformAngleRef.current = activeLayer.transformSource?.angle ?? 0;
     transformBoundsRef.current = bounds;
+    setTransformAngle(transformAngleRef.current);
     setTransformBounds(bounds);
-  }, [activeLayerId, activeTool, doc]);
+  }, [activeLayerId, activeTool, doc, endTransformSession, transformActive]);
+  reactExports.useEffect(() => {
+    const previewCanvas = transformPreviewCanvasRef.current;
+    const session = transformSessionRef.current;
+    if (!previewCanvas || !session) return;
+    previewCanvas.width = session.sourceWidth;
+    previewCanvas.height = session.sourceHeight;
+    const ctx = previewCanvas.getContext("2d");
+    if (!ctx) return;
+    const imageData = new ImageData(
+      new Uint8ClampedArray(session.sourcePixels),
+      session.sourceWidth,
+      session.sourceHeight
+    );
+    ctx.clearRect(0, 0, session.sourceWidth, session.sourceHeight);
+    ctx.putImageData(imageData, 0, 0);
+  }, [activeLayerId, doc, isTransformDragging, transformActive]);
+  reactExports.useEffect(() => {
+    const previewCanvas = movePreviewCanvasRef.current;
+    const drag = moveDragRef.current;
+    if (!previewCanvas || !drag || !isMoveDragging || !doc) return;
+    previewCanvas.width = doc.width;
+    previewCanvas.height = doc.height;
+    const ctx = previewCanvas.getContext("2d");
+    if (!ctx) return;
+    const imageData = new ImageData(
+      new Uint8ClampedArray(drag.sourcePixels),
+      doc.width,
+      doc.height
+    );
+    ctx.clearRect(0, 0, doc.width, doc.height);
+    ctx.putImageData(imageData, 0, 0);
+  }, [doc, isMoveDragging]);
   reactExports.useEffect(() => {
     const canvas = canvasRef.current;
     const vp = vpRef.current;
@@ -34542,19 +35646,13 @@ function CanvasArea() {
       };
       newDoc.layers.push(bgLayerForStore);
       setDocument(newDoc);
+      renderer.syncDocument(newDoc, "layer-bg");
       renderer.fitToViewport(w2, h2);
       renderer.forceRender();
       rendererRef.current = renderer;
       setRendererRef(renderer);
       setZoom(renderer.getZoom() * 100);
       setPan(renderer.getPan());
-      const loop = () => {
-        if (!isDestroyed) {
-          renderer.render();
-          frameRef.current = requestAnimationFrame(loop);
-        }
-      };
-      frameRef.current = requestAnimationFrame(loop);
     }).catch((err) => console.error(err));
     const rob = new ResizeObserver((entries) => {
       for (const entry of entries) {
@@ -34571,6 +35669,8 @@ function CanvasArea() {
       isDestroyed = true;
       rob.disconnect();
       cancelAnimationFrame(frameRef.current);
+      cancelAnimationFrame(movePreviewFrameRef.current);
+      cancelAnimationFrame(transformPreviewFrameRef.current);
       renderer.destroy();
     };
   }, []);
@@ -34616,8 +35716,8 @@ function CanvasArea() {
     }
     const { left, top } = vp.getBoundingClientRect();
     const cp = r2.screenToCanvasPrecise(e2.clientX - left, e2.clientY - top);
-    const isSelectionTool = activeTool === Tool.SelectionRect || activeTool === Tool.SelectionEllipse || activeTool === Tool.Lasso || activeTool === Tool.QuickSelection;
-    if (isSelectionTool) {
+    const isSelectionTool2 = activeTool === Tool.SelectionRect || activeTool === Tool.SelectionEllipse || activeTool === Tool.Lasso || activeTool === Tool.QuickSelection;
+    if (isSelectionTool2) {
       isSelectingRef.current = true;
       selectionStartRef.current = cp;
       selectionPointsRef.current = [cp];
@@ -34632,19 +35732,51 @@ function CanvasArea() {
       }
     } else {
       if (activeTool === Tool.Move) {
+        if (transformActive) {
+          panningRef.current = false;
+          return;
+        }
+        const activeLayer2 = r2.getLayerStack().getActiveLayer();
+        if (!activeLayer2 || activeLayer2.id === "layer-bg" || activeLayer2.locked || !activeLayer2.pixelBuffer) {
+          panningRef.current = false;
+          return;
+        }
+        commitHistory();
+        moveDragRef.current = {
+          layerId: activeLayer2.id,
+          startPoint: cp,
+          sourcePixels: new Uint8ClampedArray(activeLayer2.pixelBuffer),
+          originalTransformSource: useDocumentStore.getState().document?.layers.find((layer) => layer.id === activeLayer2.id)?.transformSource ?? null,
+          currentOffset: { x: 0, y: 0 }
+        };
+        activeLayer2.visible = false;
+        activeLayer2.dirty = true;
+        r2.scheduleRender();
+        setMovePreviewOffset({ x: 0, y: 0 });
+        setIsMoveDragging(true);
+        panningRef.current = false;
+        return;
+      }
+      if (activeTool === Tool.Fill) {
+        commitHistory();
+        applyToolStroke(cp.x, cp.y);
+        const activeLayer2 = r2.getLayerStack().getActiveLayer();
+        if (activeLayer2 && activeLayer2.pixelBuffer) {
+          syncLayerPixelsIfNeeded(activeLayer2.id, activeLayer2.pixelBuffer);
+        }
         panningRef.current = false;
         return;
       }
       const activeLayer = r2.getLayerStack().getActiveLayer();
       if (activeLayer && activeLayer.pixelBuffer) {
-        syncPixels(activeLayer.id, activeLayer.pixelBuffer);
+        syncLayerPixelsIfNeeded(activeLayer.id, activeLayer.pixelBuffer);
       }
       commitHistory();
       applyToolStroke(cp.x, cp.y);
       panningRef.current = false;
       lastRef.current = { x: e2.clientX, y: e2.clientY };
     }
-  }, [activeTool, applyToolStroke, commitHistory, syncPixels, doc?.selection?.mask]);
+  }, [activeTool, applyToolStroke, commitHistory, doc?.selection?.mask, syncLayerPixelsIfNeeded, transformActive]);
   const onMove = reactExports.useCallback(
     (e2) => {
       const r2 = rendererRef.current;
@@ -34680,11 +35812,16 @@ function CanvasArea() {
         } else if (activeTool === Tool.QuickSelection) {
           r2.updateSelectionQuickDraft(Math.round(cp.x), Math.round(cp.y), 10, 32, mode);
         }
+      } else if (e2.buttons === 1 && activeTool === Tool.Move && !transformActive && moveDragRef.current) {
+        const offsetX = Math.round(cp.x - moveDragRef.current.startPoint.x);
+        const offsetY = Math.round(cp.y - moveDragRef.current.startPoint.y);
+        moveDragRef.current.currentOffset = { x: offsetX, y: offsetY };
+        scheduleMovePreview(offsetX, offsetY);
       } else if (e2.buttons === 1 && activeTool !== Tool.Fill && activeTool !== Tool.Move) {
         applyToolStroke(cp.x, cp.y);
       }
     },
-    [activeTool, applyToolStroke, setCursor, setPan]
+    [activeTool, applyToolStroke, scheduleMovePreview, setCursor, setPan, transformActive]
   );
   const onUp = reactExports.useCallback(() => {
     panningRef.current = false;
@@ -34698,24 +35835,73 @@ function CanvasArea() {
         return;
       }
       setSelection({ mask: finalMask, bounds, isActive: true });
-    } else if (r2) {
+    } else if (r2 && moveDragRef.current) {
+      if (movePreviewFrameRef.current !== 0) {
+        cancelAnimationFrame(movePreviewFrameRef.current);
+        movePreviewFrameRef.current = 0;
+      }
+      const drag = moveDragRef.current;
+      const pendingMove = pendingMovePreviewRef.current;
+      if (pendingMove) {
+        drag.currentOffset = {
+          x: pendingMove.offsetX,
+          y: pendingMove.offsetY
+        };
+        setMovePreviewOffset({ x: pendingMove.offsetX, y: pendingMove.offsetY });
+        pendingMovePreviewRef.current = null;
+      }
+      const activeLayer = r2.getLayerStack().getLayer(drag.layerId);
+      if (activeLayer?.pixelBuffer) {
+        const translatedPixels = translatePixels(
+          drag.sourcePixels,
+          r2.getDocWidth(),
+          r2.getDocHeight(),
+          drag.currentOffset.x,
+          drag.currentOffset.y
+        );
+        const currentDoc = useDocumentStore.getState().document;
+        const currentLayer = currentDoc?.layers.find((layer) => layer.id === drag.layerId);
+        const baseTransformSource = currentLayer?.transformSource ?? drag.originalTransformSource;
+        updateLayer(drag.layerId, {
+          pixels: translatedPixels,
+          transformSource: baseTransformSource ? {
+            pixels: baseTransformSource.pixels,
+            width: baseTransformSource.width,
+            height: baseTransformSource.height,
+            angle: baseTransformSource.angle,
+            bounds: {
+              x: baseTransformSource.bounds.x + drag.currentOffset.x,
+              y: baseTransformSource.bounds.y + drag.currentOffset.y,
+              width: baseTransformSource.bounds.width,
+              height: baseTransformSource.bounds.height
+            }
+          } : null
+        });
+        activeLayer.visible = true;
+        activeLayer.dirty = true;
+        r2.scheduleRender();
+      }
+      moveDragRef.current = null;
+      setMovePreviewOffset({ x: 0, y: 0 });
+      setIsMoveDragging(false);
+    } else if (r2 && activeTool !== Tool.Move) {
       const activeLayer = r2.getLayerStack().getActiveLayer();
       if (activeLayer && activeLayer.pixelBuffer) {
-        syncPixels(activeLayer.id, activeLayer.pixelBuffer);
+        syncLayerPixelsIfNeeded(activeLayer.id, activeLayer.pixelBuffer);
       }
     }
-  }, [clearSelection, setSelection, syncPixels]);
+  }, [clearSelection, setSelection, syncLayerPixelsIfNeeded, updateLayer]);
   const handleInvert = () => {
     const r2 = rendererRef.current;
     if (!r2) return;
     const activeLayer = r2.getLayerStack().getActiveLayer();
     if (activeLayer && activeLayer.pixelBuffer) {
-      syncPixels(activeLayer.id, activeLayer.pixelBuffer);
+      syncLayerPixelsIfNeeded(activeLayer.id, activeLayer.pixelBuffer);
     }
     commitHistory();
     r2.invertLayer();
     if (activeLayer && activeLayer.pixelBuffer) {
-      syncPixels(activeLayer.id, activeLayer.pixelBuffer);
+      syncLayerPixelsIfNeeded(activeLayer.id, activeLayer.pixelBuffer);
     }
   };
   const transformScreenBounds = transformBounds ? {
@@ -34724,32 +35910,65 @@ function CanvasArea() {
     width: transformBounds.width * (zoom / 100),
     height: transformBounds.height * (zoom / 100)
   } : null;
+  const transformRotation = `rotate(${transformAngle}rad)`;
+  const isSelectionTool = activeTool === Tool.SelectionRect || activeTool === Tool.SelectionEllipse || activeTool === Tool.Lasso || activeTool === Tool.QuickSelection;
   return /* @__PURE__ */ jsxRuntimeExports.jsxs("main", { className: "canvas-area", children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "opts", children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "opts", children: activeTool === Tool.Fill ? /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "og", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "ol", children: "Tolerance" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "input",
+          {
+            type: "range",
+            className: "osl",
+            min: "0",
+            max: "255",
+            value: fillSettings.tolerance,
+            onChange: (e2) => setFillTolerance(parseInt(e2.target.value, 10) || 0)
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "ov", children: fillSettings.tolerance })
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "osep" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "og", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "ol", children: "Contiguous" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "button",
+          {
+            className: `ob ${fillSettings.contiguous ? "active" : ""}`,
+            onClick: () => setFillContiguous(!fillSettings.contiguous),
+            children: fillSettings.contiguous ? "ON" : "OFF"
+          }
+        )
+      ] })
+    ] }) : isSelectionTool ? /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "og", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "ol", children: "Mode" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("button", { className: "ob active", children: "Rectangle" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("button", { className: "ob", children: "Fixed Ratio" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("button", { className: "ob", children: "Fixed Size" })
+        /* @__PURE__ */ jsxRuntimeExports.jsx("button", { className: "ob active", children: activeTool === Tool.SelectionEllipse ? "Ellipse" : activeTool === Tool.Lasso ? "Lasso" : activeTool === Tool.QuickSelection ? "Quick" : "Rectangle" })
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "osep" }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "og", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "ol", children: "Feather" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("input", { type: "range", className: "osl", min: "0", max: "100", defaultValue: "0" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "ov", children: "0px" })
+        /* @__PURE__ */ jsxRuntimeExports.jsx("input", { type: "range", className: "osl", min: "0", max: "100", value: selectionSettings.feather, readOnly: true }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "ov", children: [
+          selectionSettings.feather,
+          "px"
+        ] })
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "osep" }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "og", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "ol", children: "AA" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("button", { className: "ob active", children: "ON" })
+        /* @__PURE__ */ jsxRuntimeExports.jsx("button", { className: `ob ${selectionSettings.antiAlias ? "active" : ""}`, children: selectionSettings.antiAlias ? "ON" : "OFF" })
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "osep" }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "og", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("button", { className: "ob d", children: "✕ Deselect" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("button", { className: "ob", onClick: handleInvert, style: { marginLeft: 3 }, children: "Invert" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("button", { className: "ob", style: { marginLeft: 3 }, children: "Grow" })
+        /* @__PURE__ */ jsxRuntimeExports.jsx("button", { className: "ob d", onClick: clearSelection, children: "✕ Deselect" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("button", { className: "ob", onClick: handleInvert, style: { marginLeft: 3 }, children: "Invert" })
       ] })
-    ] }),
+    ] }) : /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "og", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "ol", children: "Tool" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "ov", style: { minWidth: 120 }, children: activeTool === Tool.Move ? transformActive ? "Transform" : "Move" : activeTool === Tool.Brush ? "Brush" : activeTool === Tool.Pencil ? "Pencil" : activeTool === Tool.Eraser ? "Eraser" : activeTool })
+    ] }) }),
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "cwr", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "rc" }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "ruler rh", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "rt" }) }),
@@ -34765,7 +35984,39 @@ function CanvasArea() {
           onMouseLeave: onUp,
           children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx("canvas", { ref: canvasRef, style: { position: "absolute", top: 0, left: 0, display: "block" } }),
-            activeTool === Tool.Move && transformScreenBounds && /* @__PURE__ */ jsxRuntimeExports.jsx(
+            isMoveDragging && doc && /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "canvas",
+              {
+                ref: movePreviewCanvasRef,
+                style: {
+                  position: "absolute",
+                  left: movePreviewOffset.x * (zoom / 100) + pan.x,
+                  top: movePreviewOffset.y * (zoom / 100) + pan.y,
+                  width: Math.max(doc.width * (zoom / 100), 1),
+                  height: Math.max(doc.height * (zoom / 100), 1),
+                  pointerEvents: "none",
+                  imageRendering: "auto"
+                }
+              }
+            ),
+            transformActive && activeTool === Tool.Move && transformScreenBounds && isTransformDragging && /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "canvas",
+              {
+                ref: transformPreviewCanvasRef,
+                style: {
+                  position: "absolute",
+                  left: transformScreenBounds.left,
+                  top: transformScreenBounds.top,
+                  width: Math.max(transformScreenBounds.width, 1),
+                  height: Math.max(transformScreenBounds.height, 1),
+                  transform: transformRotation,
+                  transformOrigin: "center center",
+                  pointerEvents: "none",
+                  imageRendering: "auto"
+                }
+              }
+            ),
+            transformActive && activeTool === Tool.Move && transformScreenBounds && /* @__PURE__ */ jsxRuntimeExports.jsxs(
               "div",
               {
                 onMouseDown: (e2) => beginTransformDrag("move", e2),
@@ -34778,27 +36029,64 @@ function CanvasArea() {
                   border: "1px solid #4aa3ff",
                   boxShadow: "0 0 0 1px rgba(74,163,255,0.25)",
                   cursor: "move",
-                  boxSizing: "border-box"
+                  boxSizing: "border-box",
+                  transform: transformRotation,
+                  transformOrigin: "center center"
                 },
-                children: ["nw", "ne", "sw", "se"].map((handle) => {
-                  const positionStyle = handle === "nw" ? { left: -5, top: -5, cursor: "nwse-resize" } : handle === "ne" ? { right: -5, top: -5, cursor: "nesw-resize" } : handle === "sw" ? { left: -5, bottom: -5, cursor: "nesw-resize" } : { right: -5, bottom: -5, cursor: "nwse-resize" };
-                  return /* @__PURE__ */ jsxRuntimeExports.jsx(
+                children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(
                     "div",
                     {
-                      onMouseDown: (e2) => beginTransformDrag(handle, e2),
+                      onMouseDown: (e2) => beginTransformDrag("rotate", e2),
                       style: {
                         position: "absolute",
-                        width: 10,
-                        height: 10,
+                        left: "50%",
+                        top: -24,
+                        width: 12,
+                        height: 12,
+                        marginLeft: -6,
+                        borderRadius: "50%",
                         background: "#ffffff",
                         border: "1px solid #4aa3ff",
                         boxSizing: "border-box",
-                        ...positionStyle
+                        cursor: "grab"
                       }
-                    },
-                    handle
-                  );
-                })
+                    }
+                  ),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    "div",
+                    {
+                      style: {
+                        position: "absolute",
+                        left: "50%",
+                        top: -12,
+                        width: 1,
+                        height: 12,
+                        marginLeft: -0.5,
+                        background: "#4aa3ff"
+                      }
+                    }
+                  ),
+                  ["nw", "ne", "sw", "se"].map((handle) => {
+                    const positionStyle = handle === "nw" ? { left: -5, top: -5, cursor: "nwse-resize" } : handle === "ne" ? { right: -5, top: -5, cursor: "nesw-resize" } : handle === "sw" ? { left: -5, bottom: -5, cursor: "nesw-resize" } : { right: -5, bottom: -5, cursor: "nwse-resize" };
+                    return /* @__PURE__ */ jsxRuntimeExports.jsx(
+                      "div",
+                      {
+                        onMouseDown: (e2) => beginTransformDrag(handle, e2),
+                        style: {
+                          position: "absolute",
+                          width: 10,
+                          height: 10,
+                          background: "#ffffff",
+                          border: "1px solid #4aa3ff",
+                          boxSizing: "border-box",
+                          ...positionStyle
+                        }
+                      },
+                      handle
+                    );
+                  })
+                ]
               }
             ),
             doc && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "clabel", children: [

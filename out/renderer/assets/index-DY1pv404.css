@@ -295,6 +295,10 @@
     position: absolute;
   }
 
+  .fixed {
+    position: fixed;
+  }
+
   .relative {
     position: relative;
   }
@@ -359,6 +363,10 @@
 
   .transform {
     transform: var(--tw-rotate-x, ) var(--tw-rotate-y, ) var(--tw-rotate-z, ) var(--tw-skew-x, ) var(--tw-skew-y, );
+  }
+
+  .resize {
+    resize: both;
   }
 
   .rounded {
@@ -792,9 +800,10 @@ body:before {
   grid-area: 3 / 1;
   align-items: center;
   gap: 1px;
+  min-height: 0;
   padding: 6px 0;
   display: flex;
-  overflow: hidden;
+  overflow: hidden auto;
 }
 .tsep {
   background: var(--cinder);
@@ -1072,9 +1081,15 @@ body:before {
 }
 .vp {
   cursor: crosshair;
+  contain: strict;
+  will-change: transform;
+  isolation: isolate;
   background: #090909;
   position: relative;
   overflow: hidden;
+}
+.vp canvas {
+  transform: translateZ(0);
 }
 .csurf {
   border: 1px solid #222;

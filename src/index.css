@@ -460,7 +460,9 @@ body::before {
   align-items: center;
   padding: 6px 0;
   gap: 1px;
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
+  min-height: 0;
 }
 .tsep {
   width: 18px;
@@ -715,6 +717,13 @@ body::before {
   overflow: hidden;
   position: relative;
   cursor: crosshair;
+  contain: strict;
+  will-change: transform;
+  isolation: isolate;
+}
+
+.vp canvas {
+  transform: translateZ(0);
 }
 
 /* canvas surface */

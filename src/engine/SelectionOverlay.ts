@@ -1,13 +1,21 @@
 import { Container, Sprite, Texture } from "pixi.js";
 
+type BoundaryPoint = { x: number; y: number };
+
+type Bounds = {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+};
+
 export class SelectionOverlay {
   public container: Container;
   private sprite: Sprite;
   private antsCanvas: HTMLCanvasElement;
   private antsCtx: CanvasRenderingContext2D;
-  private currentMask: Uint8Array | null = null;
-  private width = 0;
-  private height = 0;
+  private boundaryPoints: BoundaryPoint[] = [];
+  private bounds: Bounds | null = null;
   private time = 0;
   private animating = false;
 
@@ -16,7 +24,7 @@ export class SelectionOverlay {
     this.antsCanvas = document.createElement("canvas");
     this.antsCanvas.width = 1;
     this.antsCanvas.height = 1;
-    this.antsCtx = this.antsCanvas.getContext("2d", { willReadFrequently: true })!;
+    this.antsCtx = this.antsCanvas.getContext("2d")!;
 
     this.sprite = new Sprite(Texture.from(this.antsCanvas));
     this.sprite.visible = false;
@@ -32,76 +40,89 @@ export class SelectionOverlay {
   }
 
   updateAnimationAndGetDirty(dt: number): boolean {
-    if (!this.animating || !this.sprite.visible || !this.currentMask) return false;
+    if (!this.animating || !this.sprite.visible || this.boundaryPoints.length === 0) {
+      return false;
+    }
 
     this.time += dt;
     this.renderBoundary();
     return true;
   }
 
-  updateMask(mask: Uint8Array | null, width: number, height: number) {
-    this.width = width;
-    this.height = height;
-
-    if (!mask || mask.length !== width * height) {
-      this.currentMask = null;
-      this.sprite.visible = false;
-      return;
-    }
-
-    if (this.antsCanvas.width !== width || this.antsCanvas.height !== height) {
-      this.antsCanvas.width = width;
-      this.antsCanvas.height = height;
-      this.antsCtx = this.antsCanvas.getContext("2d", { willReadFrequently: true })!;
-      this.sprite.texture.destroy(true);
-      this.sprite.texture = Texture.from(this.antsCanvas);
-    }
-
-    this.currentMask = new Uint8Array(mask);
-    this.sprite.visible = true;
-    this.renderBoundary();
+  isAnimating(): boolean {
+    return this.animating && this.sprite.visible && this.boundaryPoints.length > 0;
   }
 
-  private renderBoundary() {
-    if (!this.currentMask || this.width <= 0 || this.height <= 0) {
+  updateMask(mask: Uint8Array | null, width: number, height: number) {
+    if (!mask || mask.length !== width * height) {
+      this.boundaryPoints = [];
+      this.bounds = null;
       this.sprite.visible = false;
       return;
     }
 
-    const phase = Math.floor(this.time * 60);
-    const imageData = this.antsCtx.createImageData(this.width, this.height);
-    const data = imageData.data;
-    const mask = this.currentMask;
+    let minX = width;
+    let minY = height;
+    let maxX = -1;
+    let maxY = -1;
+    const boundaryPoints: BoundaryPoint[] = [];
 
-    for (let y = 0; y < this.height; y++) {
-      for (let x = 0; x < this.width; x++) {
-        const index = y * this.width + x;
+    for (let y = 0; y < height; y++) {
+      for (let x = 0; x < width; x++) {
+        const index = y * width + x;
         if (mask[index] === 0) continue;
 
-        const top = y === 0 ? 0 : mask[index - this.width];
-        const bottom = y === this.height - 1 ? 0 : mask[index + this.width];
+        const top = y === 0 ? 0 : mask[index - width];
+        const bottom = y === height - 1 ? 0 : mask[index + width];
         const left = x === 0 ? 0 : mask[index - 1];
-        const right = x === this.width - 1 ? 0 : mask[index + 1];
+        const right = x === width - 1 ? 0 : mask[index + 1];
         const isBoundary = top === 0 || bottom === 0 || left === 0 || right === 0;
 
         if (!isBoundary) continue;
 
-        const pixel = index * 4;
-        const dark = ((x + y - phase) & 15) >= 8;
-        const shade = dark ? 0 : 255;
-        data[pixel] = shade;
-        data[pixel + 1] = shade;
-        data[pixel + 2] = shade;
-        data[pixel + 3] = 255;
+        boundaryPoints.push({ x, y });
+        minX = Math.min(minX, x);
+        minY = Math.min(minY, y);
+        maxX = Math.max(maxX, x);
+        maxY = Math.max(maxY, y);
       }
     }
 
-    this.antsCtx.putImageData(imageData, 0, 0);
-    this.sprite.texture.source.update();
+    if (boundaryPoints.length === 0) {
+      this.boundaryPoints = [];
+      this.bounds = null;
+      this.sprite.visible = false;
+      return;
+    }
+
+    const bounds = {
+      x: minX,
+      y: minY,
+      width: maxX - minX + 1,
+      height: maxY - minY + 1,
+    };
+
+    if (
+      this.antsCanvas.width !== bounds.width ||
+      this.antsCanvas.height !== bounds.height
+    ) {
+      this.antsCanvas.width = bounds.width;
+      this.antsCanvas.height = bounds.height;
+      this.antsCtx = this.antsCanvas.getContext("2d")!;
+      this.sprite.texture.destroy(true);
+      this.sprite.texture = Texture.from(this.antsCanvas);
+    }
+
+    this.boundaryPoints = boundaryPoints;
+    this.bounds = bounds;
+    this.sprite.position.set(bounds.x, bounds.y);
+    this.sprite.visible = true;
+    this.renderBoundary();
   }
 
   clear() {
-    this.currentMask = null;
+    this.boundaryPoints = [];
+    this.bounds = null;
     this.sprite.visible = false;
     this.antsCtx.clearRect(0, 0, this.antsCanvas.width, this.antsCanvas.height);
     this.sprite.texture.source.update();
@@ -112,5 +133,25 @@ export class SelectionOverlay {
       this.sprite.texture.destroy(true);
     }
     this.container.destroy();
+  }
+
+  private renderBoundary() {
+    if (!this.bounds || this.boundaryPoints.length === 0) {
+      this.sprite.visible = false;
+      return;
+    }
+
+    const phase = Math.floor(this.time * 60);
+    this.antsCtx.clearRect(0, 0, this.antsCanvas.width, this.antsCanvas.height);
+
+    for (const point of this.boundaryPoints) {
+      const localX = point.x - this.bounds.x;
+      const localY = point.y - this.bounds.y;
+      const dark = ((point.x + point.y - phase) & 15) >= 8;
+      this.antsCtx.fillStyle = dark ? "#000000" : "#ffffff";
+      this.antsCtx.fillRect(localX, localY, 1, 1);
+    }
+
+    this.sprite.texture.source.update();
   }
 }

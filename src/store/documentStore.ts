@@ -211,6 +211,33 @@ export const useDocumentStore = create<DocumentStore>()(
         if (state.document) {
           const layer = state.document.layers.find((l) => l.id === layerId);
           if (layer) {
+            const pixelsChanged =
+              "pixels" in updates && updates.pixels !== layer.pixels;
+            const transformSourceChanged =
+              "transformSource" in updates &&
+              updates.transformSource !== layer.transformSource;
+            const visibleChanged =
+              "visible" in updates && updates.visible !== layer.visible;
+            const lockedChanged =
+              "locked" in updates && updates.locked !== layer.locked;
+            const opacityChanged =
+              "opacity" in updates && updates.opacity !== layer.opacity;
+            const blendModeChanged =
+              "blendMode" in updates && updates.blendMode !== layer.blendMode;
+            const nameChanged = "name" in updates && updates.name !== layer.name;
+
+            if (
+              !pixelsChanged &&
+              !transformSourceChanged &&
+              !visibleChanged &&
+              !lockedChanged &&
+              !opacityChanged &&
+              !blendModeChanged &&
+              !nameChanged
+            ) {
+              return;
+            }
+
             if ("pixels" in updates && !("transformSource" in updates)) {
               layer.transformSource = null;
             }
@@ -225,8 +252,13 @@ export const useDocumentStore = create<DocumentStore>()(
         if (state.document) {
           const layer = state.document.layers.find((l) => l.id === layerId);
           if (layer) {
-            layer.pixels = new Uint8ClampedArray(pixels);
-            layer.transformSource = null;
+            if (layer.pixels === pixels && layer.transformSource === null) {
+              return;
+            }
+            layer.pixels = pixels;
+            if (layer.transformSource !== null) {
+              layer.transformSource = null;
+            }
           }
         }
       }),

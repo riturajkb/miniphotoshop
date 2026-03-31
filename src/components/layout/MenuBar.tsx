@@ -63,7 +63,7 @@ function createFilledLayer(
 
 export function MenuBar({ onOpenAppearance }: MenuBarProps) {
   const { setDocument, document: doc, addLayer, setActiveLayer, undo, redo, undoStack, redoStack } = useDocumentStore();
-  const { setZoom, setPan, setTool, rendererRef } = useEditorStore();
+  const { setZoom, setPan, setTool, setTransformActive, rendererRef } = useEditorStore();
 
   const [showNewModal, setShowNewModal] = useState(false);
   const [newWidth, setNewWidth] = useState(800);
@@ -233,9 +233,6 @@ export function MenuBar({ onOpenAppearance }: MenuBarProps) {
       const docWidth = currentDoc.width;
       const docHeight = currentDoc.height;
       const nextLayerId = `layer-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
-      const layerStack = rendererRef.getLayerStack();
-      const newLayer = layerStack.createLayer(fileName, undefined, nextLayerId);
-
       const offsetX = Math.floor((docWidth - img.width) / 2);
       const offsetY = Math.floor((docHeight - img.height) / 2);
       const docPixelBuffer = new Uint8ClampedArray(docWidth * docHeight * 4);
@@ -257,19 +254,15 @@ export function MenuBar({ onOpenAppearance }: MenuBarProps) {
         }
       }
 
-      newLayer.pixelBuffer = docPixelBuffer;
-      newLayer.width = docWidth;
-      newLayer.height = docHeight;
-      newLayer.dirty = true;
-
       const storeLayer = createLayerWithPixels(
-        newLayer.id,
-        newLayer.name,
+        nextLayerId,
+        fileName,
         new Uint8ClampedArray(docPixelBuffer),
         {
           pixels: new Uint8ClampedArray(imageData.data),
           width: img.width,
           height: img.height,
+          angle: 0,
           bounds: {
             x: offsetX,
             y: offsetY,
@@ -280,8 +273,8 @@ export function MenuBar({ onOpenAppearance }: MenuBarProps) {
       );
       addLayer(storeLayer);
       setActiveLayer(storeLayer.id);
+      setTransformActive(true);
       setTool(Tool.Move);
-      rendererRef.forceRender();
 
       URL.revokeObjectURL(objectURL);
 
@@ -299,7 +292,7 @@ export function MenuBar({ onOpenAppearance }: MenuBarProps) {
     };
 
     img.src = objectURL;
-  }, [rendererRef, doc, addLayer, setActiveLayer, setTool]);
+  }, [rendererRef, doc, addLayer, setActiveLayer, setTool, setTransformActive]);
 
   useEffect(() => {
     const electronAPI = (window as Window & { electronAPI?: ElectronAPI }).electronAPI;

@@ -4,6 +4,7 @@ import type { Point, Tool as ToolType } from "../types/editor";
 
 interface EditorState {
   activeTool: ToolType;
+  transformActive: boolean;
   zoom: number;
   pan: Point;
   viewportWidth: number;
@@ -15,6 +16,7 @@ interface EditorState {
 
 interface EditorActions {
   setTool: (tool: ToolType) => void;
+  setTransformActive: (active: boolean) => void;
   setZoom: (zoom: number) => void;
   setPan: (pan: Point) => void;
   setViewport: (width: number, height: number) => void;
@@ -26,6 +28,7 @@ type EditorStore = EditorState & EditorActions;
 
 const initialState: EditorState = {
   activeTool: "brush",
+  transformActive: false,
   zoom: 100,
   pan: { x: 0, y: 0 },
   viewportWidth: 800,
@@ -39,6 +42,7 @@ export const useEditorStore = create<EditorStore>()(
   immer((setFn) => ({
     ...initialState,
     setTool: (tool: ToolType) => setFn((state: EditorState) => { state.activeTool = tool; }),
+    setTransformActive: (active: boolean) => setFn((state: EditorState) => { state.transformActive = active; }),
     setZoom: (zoom: number) => setFn((state: EditorState) => { state.zoom = Math.max(10, Math.min(3200, zoom)); }),
     setPan: (pan: Point) => setFn((state: EditorState) => { state.pan = pan; }),
     setViewport: (width: number, height: number) => setFn((state: EditorState) => { state.viewportWidth = width; state.viewportHeight = height; }),

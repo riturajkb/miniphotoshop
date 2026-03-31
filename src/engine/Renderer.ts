@@ -25,6 +25,7 @@ export class Renderer {
   private selectionOverlay: SelectionOverlay;
   private tempSelectionMask: Uint8Array | null = null;
   private lastTime = performance.now();
+  private renderRequestId: number | null = null;
 
   constructor(width: number, height: number) {
     this.engine = new PixiEngine();
@@ -55,15 +56,69 @@ export class Renderer {
     this.updateTransform();
   }
 
+  private setLayerDirty(layer: import("./LayerStack").LayerData, x?: number, y?: number, w?: number, h?: number): void {
+    layer.dirty = true;
+    if (x !== undefined && y !== undefined && w !== undefined && h !== undefined) {
+      const newRect = { minX: x, minY: y, maxX: x + w - 1, maxY: y + h - 1 };
+      if (!layer.dirtyRect) {
+         layer.dirtyRect = newRect;
+      } else {
+         layer.dirtyRect.minX = Math.min(layer.dirtyRect.minX, newRect.minX);
+         layer.dirtyRect.minY = Math.min(layer.dirtyRect.minY, newRect.minY);
+         layer.dirtyRect.maxX = Math.max(layer.dirtyRect.maxX, newRect.maxX);
+         layer.dirtyRect.maxY = Math.max(layer.dirtyRect.maxY, newRect.maxY);
+      }
+    } else {
+      layer.dirtyRect = undefined;
+    }
+  }
+
   /** Composite dirty layers and upload texture. Call from tick(). */
   private composeDirty(): void {
     if (!this.layerStack.hasDirtyLayers()) return;
 
-    const imageData = this.compositor.composite(this.layerStack.getLayers());
+    let globalDirtyRect: { minX: number; minY: number; maxX: number; maxY: number } | undefined;
+    let canDoPartial = true;
 
-    this.offCtx.putImageData(imageData, 0, 0);
+    for (const layer of this.layerStack.getLayers()) {
+      if (layer.dirty) {
+        if (!layer.dirtyRect) {
+          canDoPartial = false;
+          break;
+        }
+        if (!globalDirtyRect) {
+          globalDirtyRect = { ...layer.dirtyRect };
+        } else {
+          globalDirtyRect.minX = Math.min(globalDirtyRect.minX, layer.dirtyRect.minX);
+          globalDirtyRect.minY = Math.min(globalDirtyRect.minY, layer.dirtyRect.minY);
+          globalDirtyRect.maxX = Math.max(globalDirtyRect.maxX, layer.dirtyRect.maxX);
+          globalDirtyRect.maxY = Math.max(globalDirtyRect.maxY, layer.dirtyRect.maxY);
+        }
+      }
+    }
 
-    this.engine.setCompositeTexture(this.offscreen);
+    const imageData = this.compositor.composite(
+        this.layerStack.getLayers(),
+        canDoPartial ? globalDirtyRect : undefined
+    );
+
+    if (canDoPartial && globalDirtyRect) {
+      const dw = globalDirtyRect.maxX - globalDirtyRect.minX + 1;
+      const dh = globalDirtyRect.maxY - globalDirtyRect.minY + 1;
+      this.offCtx.putImageData(
+          imageData,
+          0,
+          0,
+          globalDirtyRect.minX,
+          globalDirtyRect.minY,
+          dw,
+          dh
+      );
+    } else {
+      this.offCtx.putImageData(imageData, 0, 0);
+    }
+
+    this.engine.setCompositeTexture(this.offscreen, globalDirtyRect);
     this.layerStack.clearDirty();
   }
 
@@ -81,14 +136,28 @@ export class Renderer {
     this.engine.render();
   }
 
+  needsAnimationFrame(): boolean {
+    return this.selectionOverlay.isAnimating();
+  }
+
   forceRender(): void {
     this.layerStack.markAllDirty();
     this.render();
   }
 
+  scheduleRender(): void {
+    if (this.renderRequestId !== null) return;
+
+    this.renderRequestId = requestAnimationFrame(() => {
+      this.renderRequestId = null;
+      this.render();
+    });
+  }
+
   setZoom(z: number): void {
     this.zoom = Math.max(0.05, Math.min(64, z));
     this.updateTransform();
+    this.engine.render();
   }
 
   getZoom(): number {
@@ -99,6 +168,7 @@ export class Renderer {
     this.panX = x;
     this.panY = y;
     this.updateTransform();
+    this.engine.render();
   }
 
   getPan(): { x: number; y: number } {
@@ -135,6 +205,7 @@ export class Renderer {
     this.vpW = w;
     this.vpH = h;
     this.engine.resize(w, h);
+    this.engine.render();
   }
 
   centerDocument(vpW: number, vpH: number): void {
@@ -159,17 +230,7 @@ export class Renderer {
     mask: Uint8Array;
     hasActiveSelection: boolean;
   } {
-    const mask = this.selectionManager.getMask();
-    let hasActiveSelection = false;
-
-    for (let i = 0; i < mask.length; i++) {
-      if (mask[i] > 0) {
-        hasActiveSelection = true;
-        break;
-      }
-    }
-
-    return { mask, hasActiveSelection };
+    return this.selectionManager.getMaskAndActive();
   }
 
   private canAffectPixel(
@@ -221,8 +282,14 @@ export class Renderer {
         }
       }
     }
-    layer.dirty = true;
-    this.render();
+    this.setLayerDirty(
+      layer,
+      Math.max(0, x - radius),
+      Math.max(0, y - radius),
+      Math.min(w - Math.max(0, x - radius), radius * 2 + 1),
+      Math.min(h - Math.max(0, y - radius), radius * 2 + 1)
+    );
+    this.scheduleRender();
   }
 
   fill(
@@ -288,8 +355,8 @@ export class Renderer {
           }
         }
       }
-      layer.dirty = true;
-      this.render();
+      this.setLayerDirty(layer);
+      this.scheduleRender();
       return;
     }
 
@@ -330,8 +397,8 @@ export class Renderer {
       }
     }
 
-    layer.dirty = true;
-    this.render();
+    this.setLayerDirty(layer);
+    this.scheduleRender();
   }
 
   /**
@@ -355,8 +422,8 @@ export class Renderer {
       layer.pixelBuffer[i + 1] = 255 - layer.pixelBuffer[i + 1];
       layer.pixelBuffer[i + 2] = 255 - layer.pixelBuffer[i + 2];
     }
-    layer.dirty = true;
-    this.render();
+    this.setLayerDirty(layer);
+    this.scheduleRender();
   }
 
   /**
@@ -397,8 +464,11 @@ export class Renderer {
     this.selectionManager.resize(w, h);
     this.engine.removeBackgroundGraphics();
 
+    // Recreate canvas to explicitly bypass PixiJS CanvasResource caching
+    this.offscreen = document.createElement("canvas");
     this.offscreen.width = w;
     this.offscreen.height = h;
+    this.offCtx = this.offscreen.getContext("2d", { willReadFrequently: true })!;
 
     this.engine.createCheckerboard(w, h);
 
@@ -409,12 +479,23 @@ export class Renderer {
   }
 
   syncDocument(doc: import("../types/editor").Document, activeLayerId: string | null): void {
-    this.layerStack.syncFromDocument(doc.layers);
+    if (doc.width !== this.docWidth || doc.height !== this.docHeight) {
+      this.resizeDocument(doc.width, doc.height);
+    }
+
+    const visualChanged = this.layerStack.syncFromDocument(doc.layers);
     this.layerStack.setActiveLayer(activeLayerId);
-    this.forceRender();
+
+    if (visualChanged) {
+      this.render();
+    }
   }
 
   destroy(): void {
+    if (this.renderRequestId !== null) {
+      cancelAnimationFrame(this.renderRequestId);
+      this.renderRequestId = null;
+    }
     this.engine.destroy();
   }
 
@@ -493,7 +574,7 @@ export class Renderer {
   updateSelectionQuickDraft(startX: number, startY: number, radius: number, tolerance: number, mode: import("../types/editor").SelectionMode) {
     // Force latest composite for accurate color sampling
     this.composeDirty();
-    const pixels = this.offCtx.getImageData(0, 0, this.docWidth, this.docHeight).data;
+    const pixels = this.compositor.getCompositeBuffer();
     
     this.selectionManager.quickSelect(startX, startY, radius, tolerance, pixels, mode);
     this.updateOverlayFromManager();
@@ -506,7 +587,7 @@ export class Renderer {
   private updateOverlayFromManager() {
     const mask = this.selectionManager.getMask();
     this.selectionOverlay.updateMask(mask, this.docWidth, this.docHeight);
-    this.render();
+    this.scheduleRender();
   }
 
   // ============================================
@@ -522,6 +603,6 @@ export class Renderer {
        this.selectionOverlay.clear();
        this.selectionOverlay.stopAnimation();
     }
-    this.render();
+    this.scheduleRender();
   }
 }

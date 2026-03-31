@@ -2,6 +2,7 @@ import { useRef, useEffect, useCallback, useState } from "react";
 import { Renderer } from "../../engine";
 import { useEditorStore } from "../../store/editorStore";
 import { useToolStore } from "../../store/toolStore";
+import { useColorStore } from "../../store/colorStore";
 import {
   useDocumentStore,
   createDefaultDocument,
@@ -46,7 +47,7 @@ type Bounds = {
   height: number;
 };
 
-type TransformHandle = "move" | "nw" | "ne" | "sw" | "se";
+type TransformHandle = "move" | "nw" | "ne" | "sw" | "se" | "rotate";
 
 function getLayerBounds(
   pixels: Uint8ClampedArray,
@@ -86,35 +87,106 @@ function renderTransformedPixels(
   docWidth: number,
   docHeight: number,
   targetBounds: Bounds,
+  angle: number,
 ): Uint8ClampedArray {
   const output = new Uint8ClampedArray(docWidth * docHeight * 4);
   const targetWidth = Math.max(1, Math.round(targetBounds.width));
   const targetHeight = Math.max(1, Math.round(targetBounds.height));
-  const targetX = Math.round(targetBounds.x);
-  const targetY = Math.round(targetBounds.y);
+  const centerX = targetBounds.x + targetBounds.width / 2;
+  const centerY = targetBounds.y + targetBounds.height / 2;
+  const cos = Math.cos(angle);
+  const sin = Math.sin(angle);
 
-  for (let y = 0; y < targetHeight; y++) {
-    const destY = targetY + y;
-    if (destY < 0 || destY >= docHeight) continue;
+  const halfWidth = targetWidth / 2;
+  const halfHeight = targetHeight / 2;
+  const corners = [
+    { x: -halfWidth, y: -halfHeight },
+    { x: halfWidth, y: -halfHeight },
+    { x: -halfWidth, y: halfHeight },
+    { x: halfWidth, y: halfHeight },
+  ].map(({ x, y }) => ({
+    x: centerX + x * cos - y * sin,
+    y: centerY + x * sin + y * cos,
+  }));
 
-    const srcY = Math.min(
-      sourceHeight - 1,
-      Math.max(0, Math.floor((y / targetHeight) * sourceHeight)),
-    );
+  const minX = Math.max(
+    0,
+    Math.floor(Math.min(...corners.map((corner) => corner.x))),
+  );
+  const maxX = Math.min(
+    docWidth - 1,
+    Math.ceil(Math.max(...corners.map((corner) => corner.x))),
+  );
+  const minY = Math.max(
+    0,
+    Math.floor(Math.min(...corners.map((corner) => corner.y))),
+  );
+  const maxY = Math.min(
+    docHeight - 1,
+    Math.ceil(Math.max(...corners.map((corner) => corner.y))),
+  );
 
-    for (let x = 0; x < targetWidth; x++) {
-      const destX = targetX + x;
-      if (destX < 0 || destX >= docWidth) continue;
+  for (let destY = minY; destY <= maxY; destY++) {
+    for (let destX = minX; destX <= maxX; destX++) {
+      const relX = destX + 0.5 - centerX;
+      const relY = destY + 0.5 - centerY;
+      const localX = relX * cos + relY * sin + halfWidth;
+      const localY = -relX * sin + relY * cos + halfHeight;
+
+      if (localX < 0 || localX >= targetWidth || localY < 0 || localY >= targetHeight) {
+        continue;
+      }
 
       const srcX = Math.min(
         sourceWidth - 1,
-        Math.max(0, Math.floor((x / targetWidth) * sourceWidth)),
+        Math.max(0, Math.floor((localX / targetWidth) * sourceWidth)),
+      );
+      const srcY = Math.min(
+        sourceHeight - 1,
+        Math.max(0, Math.floor((localY / targetHeight) * sourceHeight)),
       );
 
-      const srcIdx =
-        (srcY * sourceWidth + srcX) * 4;
+      const srcIdx = (srcY * sourceWidth + srcX) * 4;
       const destIdx = (destY * docWidth + destX) * 4;
 
+      output[destIdx] = sourcePixels[srcIdx];
+      output[destIdx + 1] = sourcePixels[srcIdx + 1];
+      output[destIdx + 2] = sourcePixels[srcIdx + 2];
+      output[destIdx + 3] = sourcePixels[srcIdx + 3];
+    }
+  }
+
+  return output;
+}
+
+function rotateVector(x: number, y: number, angle: number) {
+  const cos = Math.cos(angle);
+  const sin = Math.sin(angle);
+  return {
+    x: x * cos - y * sin,
+    y: x * sin + y * cos,
+  };
+}
+
+function translatePixels(
+  sourcePixels: Uint8ClampedArray,
+  width: number,
+  height: number,
+  offsetX: number,
+  offsetY: number,
+): Uint8ClampedArray {
+  const output = new Uint8ClampedArray(width * height * 4);
+
+  for (let y = 0; y < height; y++) {
+    const destY = y + offsetY;
+    if (destY < 0 || destY >= height) continue;
+
+    for (let x = 0; x < width; x++) {
+      const destX = x + offsetX;
+      if (destX < 0 || destX >= width) continue;
+
+      const srcIdx = (y * width + x) * 4;
+      const destIdx = (destY * width + destX) * 4;
       output[destIdx] = sourcePixels[srcIdx];
       output[destIdx + 1] = sourcePixels[srcIdx + 1];
       output[destIdx + 2] = sourcePixels[srcIdx + 2];
@@ -128,13 +200,25 @@ function renderTransformedPixels(
 export function CanvasArea() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const vpRef = useRef<HTMLDivElement>(null);
+  const movePreviewCanvasRef = useRef<HTMLCanvasElement>(null);
+  const transformPreviewCanvasRef = useRef<HTMLCanvasElement>(null);
   const rendererRef = useRef<Renderer | null>(null);
   const frameRef = useRef<number>(0);
+  const movePreviewFrameRef = useRef<number>(0);
+  const transformPreviewFrameRef = useRef<number>(0);
   const panningRef = useRef(false);
   const lastRef = useRef({ x: 0, y: 0 });
-  const transformPreviewRef = useRef<Uint8ClampedArray | null>(null);
   const transformBoundsRef = useRef<Bounds | null>(null);
+  const transformAngleRef = useRef(0);
   const previousToolRef = useRef<Tool>(Tool.Brush);
+  const pendingTransformPreviewRef = useRef<{
+    bounds: Bounds;
+    angle: number;
+  } | null>(null);
+  const pendingMovePreviewRef = useRef<{
+    offsetX: number;
+    offsetY: number;
+  } | null>(null);
   const transformSessionRef = useRef<{
     layerId: string;
     sourcePixels: Uint8ClampedArray;
@@ -145,12 +229,55 @@ export function CanvasArea() {
     handle: TransformHandle;
     startPoint: { x: number; y: number };
     startBounds: Bounds;
+    startAngle: number;
+  } | null>(null);
+  const moveDragRef = useRef<{
+    layerId: string;
+    startPoint: { x: number; y: number };
+    sourcePixels: Uint8ClampedArray;
+    originalTransformSource: Layer["transformSource"];
+    currentOffset: { x: number; y: number };
   } | null>(null);
   const [transformBounds, setTransformBounds] = useState<Bounds | null>(null);
+  const [transformAngle, setTransformAngle] = useState(0);
+  const [isTransformDragging, setIsTransformDragging] = useState(false);
+  const [isMoveDragging, setIsMoveDragging] = useState(false);
+  const [movePreviewOffset, setMovePreviewOffset] = useState({ x: 0, y: 0 });
 
-  const { activeTool, setTool, setZoom, setPan, setCursor, setViewport, setRendererRef, zoom, pan } =
+  const { activeTool, transformActive, setTool, setTransformActive, setZoom, setPan, setCursor, setViewport, setRendererRef, zoom, pan } =
     useEditorStore();
+
+  const endTransformSession = useCallback(() => {
+    const activeSession = transformSessionRef.current;
+    const renderer = rendererRef.current;
+    if (activeSession && renderer) {
+      const layer = renderer.getLayerStack().getLayer(activeSession.layerId);
+      if (layer && !layer.visible) {
+        layer.visible = true;
+        layer.dirty = true;
+        renderer.scheduleRender();
+      }
+    }
+
+    setTransformActive(false);
+    transformSessionRef.current = null;
+    transformBoundsRef.current = null;
+    transformAngleRef.current = 0;
+    transformDragRef.current = null;
+    pendingTransformPreviewRef.current = null;
+    if (transformPreviewFrameRef.current !== 0) {
+      cancelAnimationFrame(transformPreviewFrameRef.current);
+      transformPreviewFrameRef.current = 0;
+    }
+    setTransformBounds(null);
+    setTransformAngle(0);
+    setIsTransformDragging(false);
+  }, [setTransformActive]);
   const fillSettings = useToolStore((state) => state.fill);
+  const selectionSettings = useToolStore((state) => state.selection);
+  const setFillTolerance = useToolStore((state) => state.setFillTolerance);
+  const setFillContiguous = useToolStore((state) => state.setFillContiguous);
+  const foregroundColor = useColorStore((state) => state.foregroundColor);
   const { setDocument, document: doc, undo, redo, commitHistory, syncPixels, updateLayer, activeLayerId, setSelection, clearSelection } = useDocumentStore();
 
   const isSelectingRef = useRef(false);
@@ -166,31 +293,87 @@ export function CanvasArea() {
     return r.screenToCanvasPrecise(clientX - left, clientY - top);
   }, []);
 
-  const previewTransform = useCallback((bounds: Bounds) => {
+  const ensureRenderLoop = useCallback(() => {
+    const renderer = rendererRef.current;
+    if (!renderer || frameRef.current !== 0 || !renderer.needsAnimationFrame()) {
+      return;
+    }
+
+    const tick = () => {
+      const activeRenderer = rendererRef.current;
+      if (!activeRenderer) {
+        frameRef.current = 0;
+        return;
+      }
+
+      activeRenderer.render();
+
+      if (activeRenderer.needsAnimationFrame()) {
+        frameRef.current = requestAnimationFrame(tick);
+      } else {
+        frameRef.current = 0;
+      }
+    };
+
+    frameRef.current = requestAnimationFrame(tick);
+  }, []);
+
+  const buildTransformPixels = useCallback((bounds: Bounds, angle: number) => {
     const renderer = rendererRef.current;
     const docState = useDocumentStore.getState().document;
     const session = transformSessionRef.current;
-    if (!renderer || !docState || !session) return;
+    if (!renderer || !docState || !session) return null;
 
-    const nextPixels = renderTransformedPixels(
+    return renderTransformedPixels(
       session.sourcePixels,
       session.sourceWidth,
       session.sourceHeight,
       docState.width,
       docState.height,
       bounds,
+      angle,
     );
-
-    const layer = renderer.getLayerStack().getLayer(session.layerId);
-    if (!layer) return;
-
-    layer.pixelBuffer = nextPixels;
-    layer.width = docState.width;
-    layer.height = docState.height;
-    layer.dirty = true;
-    transformPreviewRef.current = nextPixels;
-    renderer.forceRender();
   }, []);
+
+  const scheduleMovePreview = useCallback((offsetX: number, offsetY: number) => {
+    pendingMovePreviewRef.current = { offsetX, offsetY };
+    if (movePreviewFrameRef.current !== 0) return;
+
+    movePreviewFrameRef.current = requestAnimationFrame(() => {
+      movePreviewFrameRef.current = 0;
+      const pending = pendingMovePreviewRef.current;
+      if (!pending) return;
+      pendingMovePreviewRef.current = null;
+      setMovePreviewOffset({ x: pending.offsetX, y: pending.offsetY });
+    });
+  }, []);
+
+  const scheduleTransformPreview = useCallback((bounds: Bounds, angle: number) => {
+    pendingTransformPreviewRef.current = { bounds, angle };
+    if (transformPreviewFrameRef.current !== 0) return;
+
+    transformPreviewFrameRef.current = requestAnimationFrame(() => {
+      transformPreviewFrameRef.current = 0;
+      const pending = pendingTransformPreviewRef.current;
+      if (!pending) return;
+
+      pendingTransformPreviewRef.current = null;
+      transformBoundsRef.current = pending.bounds;
+      transformAngleRef.current = pending.angle;
+      setTransformBounds(pending.bounds);
+      setTransformAngle(pending.angle);
+    });
+  }, []);
+
+  const syncLayerPixelsIfNeeded = useCallback((layerId: string, pixels: Uint8ClampedArray) => {
+    const currentDoc = useDocumentStore.getState().document;
+    const currentLayer = currentDoc?.layers.find((layer) => layer.id === layerId);
+    if (!currentLayer) return;
+    if (currentLayer.pixels === pixels && currentLayer.transformSource === null) {
+      return;
+    }
+    syncPixels(layerId, pixels);
+  }, [syncPixels]);
 
   const beginTransformDrag = useCallback(
     (handle: TransformHandle, e: React.MouseEvent) => {
@@ -208,14 +391,24 @@ export function CanvasArea() {
         handle,
         startPoint,
         startBounds: bounds,
+        startAngle: transformAngleRef.current,
       };
+      setIsTransformDragging(true);
+
+      const layer = rendererRef.current?.getLayerStack().getLayer(session.layerId);
+      if (layer && layer.visible) {
+        layer.visible = false;
+        layer.dirty = true;
+        rendererRef.current?.scheduleRender();
+      }
 
       const onMove = (event: MouseEvent) => {
         const currentPoint = getCanvasPoint(event.clientX, event.clientY);
         const dragState = transformDragRef.current;
         if (!currentPoint || !dragState) return;
 
-        let nextBounds: Bounds;
+        let nextBounds: Bounds = dragState.startBounds;
+        let nextAngle = dragState.startAngle;
 
         if (dragState.handle === "move") {
           nextBounds = {
@@ -223,67 +416,93 @@ export function CanvasArea() {
             x: dragState.startBounds.x + (currentPoint.x - dragState.startPoint.x),
             y: dragState.startBounds.y + (currentPoint.y - dragState.startPoint.y),
           };
+        } else if (dragState.handle === "rotate") {
+          const centerX = dragState.startBounds.x + dragState.startBounds.width / 2;
+          const centerY = dragState.startBounds.y + dragState.startBounds.height / 2;
+          const startRotation = Math.atan2(
+            dragState.startPoint.y - centerY,
+            dragState.startPoint.x - centerX,
+          );
+          const currentRotation = Math.atan2(
+            currentPoint.y - centerY,
+            currentPoint.x - centerX,
+          );
+          nextAngle = dragState.startAngle + (currentRotation - startRotation);
         } else {
           const start = dragState.startBounds;
-          const right = start.x + start.width;
-          const bottom = start.y + start.height;
+          const startCenterX = start.x + start.width / 2;
+          const startCenterY = start.y + start.height / 2;
+          const handleSigns =
+            dragState.handle === "nw"
+              ? { x: -1, y: -1 }
+              : dragState.handle === "ne"
+                ? { x: 1, y: -1 }
+                : dragState.handle === "sw"
+                  ? { x: -1, y: 1 }
+                  : { x: 1, y: 1 };
 
-          switch (dragState.handle) {
-            case "nw":
-              nextBounds = {
-                x: Math.min(currentPoint.x, right - 1),
-                y: Math.min(currentPoint.y, bottom - 1),
-                width: Math.max(1, right - currentPoint.x),
-                height: Math.max(1, bottom - currentPoint.y),
-              };
-              break;
-            case "ne":
-              nextBounds = {
-                x: start.x,
-                y: Math.min(currentPoint.y, bottom - 1),
-                width: Math.max(1, currentPoint.x - start.x),
-                height: Math.max(1, bottom - currentPoint.y),
-              };
-              break;
-            case "sw":
-              nextBounds = {
-                x: Math.min(currentPoint.x, right - 1),
-                y: start.y,
-                width: Math.max(1, right - currentPoint.x),
-                height: Math.max(1, currentPoint.y - start.y),
-              };
-              break;
-            case "se":
-            default:
-              nextBounds = {
-                x: start.x,
-                y: start.y,
-                width: Math.max(1, currentPoint.x - start.x),
-                height: Math.max(1, currentPoint.y - start.y),
-              };
-              break;
-          }
+          const anchorOffset = rotateVector(
+            -handleSigns.x * start.width / 2,
+            -handleSigns.y * start.height / 2,
+            dragState.startAngle,
+          );
+          const anchorPoint = {
+            x: startCenterX + anchorOffset.x,
+            y: startCenterY + anchorOffset.y,
+          };
+
+          const localDiff = rotateVector(
+            currentPoint.x - anchorPoint.x,
+            currentPoint.y - anchorPoint.y,
+            -dragState.startAngle,
+          );
+
+          const nextWidth = Math.max(1, Math.abs(localDiff.x));
+          const nextHeight = Math.max(1, Math.abs(localDiff.y));
+          const movingOffset = rotateVector(
+            handleSigns.x * nextWidth,
+            handleSigns.y * nextHeight,
+            dragState.startAngle,
+          );
+          const nextCenter = {
+            x: anchorPoint.x + movingOffset.x / 2,
+            y: anchorPoint.y + movingOffset.y / 2,
+          };
+
+          nextBounds = {
+            x: nextCenter.x - nextWidth / 2,
+            y: nextCenter.y - nextHeight / 2,
+            width: nextWidth,
+            height: nextHeight,
+          };
         }
 
-        transformBoundsRef.current = nextBounds;
-        setTransformBounds(nextBounds);
-        previewTransform(nextBounds);
+        scheduleTransformPreview(nextBounds, nextAngle);
       };
 
       const onUp = () => {
         window.removeEventListener("mousemove", onMove);
         window.removeEventListener("mouseup", onUp);
 
-        const previewPixels = transformPreviewRef.current;
+        if (transformPreviewFrameRef.current !== 0) {
+          cancelAnimationFrame(transformPreviewFrameRef.current);
+          transformPreviewFrameRef.current = 0;
+        }
+
         const activeSession = transformSessionRef.current;
-        const currentBounds = transformBoundsRef.current;
+        const pendingPreview = pendingTransformPreviewRef.current;
+        const currentBounds = pendingPreview?.bounds ?? transformBoundsRef.current;
+        const currentAngle = pendingPreview?.angle ?? transformAngleRef.current;
+        const previewPixels =
+          currentBounds ? buildTransformPixels(currentBounds, currentAngle) : null;
         if (previewPixels && activeSession && currentBounds) {
           updateLayer(activeSession.layerId, {
-            pixels: new Uint8ClampedArray(previewPixels),
+            pixels: previewPixels,
             transformSource: {
-              pixels: new Uint8ClampedArray(activeSession.sourcePixels),
+              pixels: activeSession.sourcePixels,
               width: activeSession.sourceWidth,
               height: activeSession.sourceHeight,
+              angle: currentAngle,
               bounds: {
                 x: currentBounds.x,
                 y: currentBounds.y,
@@ -294,13 +513,22 @@ export function CanvasArea() {
           });
         }
 
+        const layer = rendererRef.current?.getLayerStack().getLayer(activeSession?.layerId ?? "");
+        if (layer && !layer.visible) {
+          layer.visible = true;
+          layer.dirty = true;
+          rendererRef.current?.scheduleRender();
+        }
+
         transformDragRef.current = null;
+        pendingTransformPreviewRef.current = null;
+        setIsTransformDragging(false);
       };
 
       window.addEventListener("mousemove", onMove);
       window.addEventListener("mouseup", onUp);
     },
-    [getCanvasPoint, previewTransform, updateLayer],
+    [buildTransformPixels, getCanvasPoint, scheduleTransformPreview, updateLayer],
   );
 
   const applyToolStroke = useCallback((x: number, y: number) => {
@@ -311,10 +539,10 @@ export function CanvasArea() {
 
     switch (activeTool) {
       case Tool.Brush:
-        renderer.drawBrush(px, py, { r: 50, g: 150, b: 250, a: 255 }, 20);
+        renderer.drawBrush(px, py, foregroundColor, 20);
         break;
       case Tool.Pencil:
-        renderer.drawBrush(px, py, { r: 50, g: 150, b: 250, a: 255 }, 6);
+        renderer.drawBrush(px, py, foregroundColor, 6);
         break;
       case Tool.Eraser:
         renderer.drawBrush(px, py, { r: 0, g: 0, b: 0, a: 0 }, 20);
@@ -323,7 +551,7 @@ export function CanvasArea() {
         renderer.fill(
           px,
           py,
-          { r: 50, g: 150, b: 250, a: 255 },
+          foregroundColor,
           fillSettings.tolerance,
           fillSettings.contiguous,
         );
@@ -331,7 +559,7 @@ export function CanvasArea() {
       default:
         break;
     }
-  }, [activeTool, fillSettings.contiguous, fillSettings.tolerance]);
+  }, [activeTool, fillSettings.contiguous, fillSettings.tolerance, foregroundColor]);
 
   // Keyboard shortcuts
   useEffect(() => {
@@ -340,14 +568,21 @@ export function CanvasArea() {
       if (isMod && e.key.toLowerCase() === "t") {
         e.preventDefault();
         if (doc && activeLayerId && activeLayerId !== "layer-bg") {
+          setTransformActive(true);
           setTool(Tool.Move);
         }
-      } else if (e.key === "Enter" && activeTool === Tool.Move) {
+      } else if (e.key === "Enter" && transformActive) {
         e.preventDefault();
+        endTransformSession();
         setTool(previousToolRef.current);
       } else if (e.key === "Escape" || (isMod && e.key === "d")) {
         e.preventDefault();
-        clearSelection();
+        if (transformActive) {
+          endTransformSession();
+          setTool(previousToolRef.current);
+        } else {
+          clearSelection();
+        }
       } else if (isMod && e.key === "z") {
         e.preventDefault();
         undo();
@@ -358,7 +593,7 @@ export function CanvasArea() {
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [activeLayerId, activeTool, clearSelection, doc, redo, setTool, undo]);
+  }, [activeLayerId, clearSelection, doc, endTransformSession, redo, setTool, setTransformActive, transformActive, undo]);
 
   useEffect(() => {
     if (activeTool !== Tool.Move) {
@@ -374,41 +609,34 @@ export function CanvasArea() {
       renderer.syncDocument(doc, activeLayerId);
       // Re-sync selection
       renderer.syncSelection(doc.selection ?? null);
+      ensureRenderLoop();
     }
-  }, [doc, activeLayerId]);
+  }, [doc, activeLayerId, ensureRenderLoop]);
 
   useEffect(() => {
     if (
+      !transformActive ||
       activeTool !== Tool.Move ||
       !doc ||
       !activeLayerId ||
       transformDragRef.current
     ) {
-      if (activeTool !== Tool.Move) {
-        transformSessionRef.current = null;
-        transformPreviewRef.current = null;
-        transformBoundsRef.current = null;
-        setTransformBounds(null);
+      if (!transformActive || activeTool !== Tool.Move) {
+        endTransformSession();
       }
       return;
     }
 
     const activeLayer = doc.layers.find((layer) => layer.id === activeLayerId);
     if (!activeLayer?.pixels || activeLayer.id === "layer-bg") {
-      transformSessionRef.current = null;
-      transformPreviewRef.current = null;
-      transformBoundsRef.current = null;
-      setTransformBounds(null);
+      endTransformSession();
       return;
     }
 
     const bounds = activeLayer.transformSource?.bounds ??
       getLayerBounds(activeLayer.pixels, doc.width, doc.height);
     if (!bounds) {
-      transformSessionRef.current = null;
-      transformPreviewRef.current = null;
-      transformBoundsRef.current = null;
-      setTransformBounds(null);
+      endTransformSession();
       return;
     }
 
@@ -420,10 +648,49 @@ export function CanvasArea() {
       sourceWidth: activeLayer.transformSource?.width ?? doc.width,
       sourceHeight: activeLayer.transformSource?.height ?? doc.height,
     };
-    transformPreviewRef.current = null;
+    transformAngleRef.current = activeLayer.transformSource?.angle ?? 0;
     transformBoundsRef.current = bounds;
+    setTransformAngle(transformAngleRef.current);
     setTransformBounds(bounds);
-  }, [activeLayerId, activeTool, doc]);
+  }, [activeLayerId, activeTool, doc, endTransformSession, transformActive]);
+
+  useEffect(() => {
+    const previewCanvas = transformPreviewCanvasRef.current;
+    const session = transformSessionRef.current;
+    if (!previewCanvas || !session) return;
+
+    previewCanvas.width = session.sourceWidth;
+    previewCanvas.height = session.sourceHeight;
+    const ctx = previewCanvas.getContext("2d");
+    if (!ctx) return;
+
+    const imageData = new ImageData(
+      new Uint8ClampedArray(session.sourcePixels),
+      session.sourceWidth,
+      session.sourceHeight,
+    );
+    ctx.clearRect(0, 0, session.sourceWidth, session.sourceHeight);
+    ctx.putImageData(imageData, 0, 0);
+  }, [activeLayerId, doc, isTransformDragging, transformActive]);
+
+  useEffect(() => {
+    const previewCanvas = movePreviewCanvasRef.current;
+    const drag = moveDragRef.current;
+    if (!previewCanvas || !drag || !isMoveDragging || !doc) return;
+
+    previewCanvas.width = doc.width;
+    previewCanvas.height = doc.height;
+    const ctx = previewCanvas.getContext("2d");
+    if (!ctx) return;
+
+    const imageData = new ImageData(
+      new Uint8ClampedArray(drag.sourcePixels),
+      doc.width,
+      doc.height,
+    );
+    ctx.clearRect(0, 0, doc.width, doc.height);
+    ctx.putImageData(imageData, 0, 0);
+  }, [doc, isMoveDragging]);
 
   // mount renderer
   useEffect(() => {
@@ -469,6 +736,7 @@ export function CanvasArea() {
       };
       newDoc.layers.push(bgLayerForStore);
       setDocument(newDoc);
+      renderer.syncDocument(newDoc, "layer-bg");
 
       renderer.fitToViewport(w, h);
       renderer.forceRender();
@@ -477,14 +745,6 @@ export function CanvasArea() {
       setRendererRef(renderer);
       setZoom(renderer.getZoom() * 100);
       setPan(renderer.getPan());
-
-      const loop = () => {
-        if (!isDestroyed) {
-          renderer.render();
-          frameRef.current = requestAnimationFrame(loop);
-        }
-      };
-      frameRef.current = requestAnimationFrame(loop);
     }).catch((err) => console.error(err));
 
     const rob = new ResizeObserver((entries) => {
@@ -503,6 +763,8 @@ export function CanvasArea() {
       isDestroyed = true;
       rob.disconnect();
       cancelAnimationFrame(frameRef.current);
+      cancelAnimationFrame(movePreviewFrameRef.current);
+      cancelAnimationFrame(transformPreviewFrameRef.current);
       renderer.destroy();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -581,13 +843,48 @@ export function CanvasArea() {
       }
     } else {
       if (activeTool === Tool.Move) {
+        if (transformActive) {
+          panningRef.current = false;
+          return;
+        }
+
+        const activeLayer = r.getLayerStack().getActiveLayer();
+        if (!activeLayer || activeLayer.id === "layer-bg" || activeLayer.locked || !activeLayer.pixelBuffer) {
+          panningRef.current = false;
+          return;
+        }
+
+        commitHistory();
+        moveDragRef.current = {
+          layerId: activeLayer.id,
+          startPoint: cp,
+          sourcePixels: new Uint8ClampedArray(activeLayer.pixelBuffer),
+          originalTransformSource:
+            useDocumentStore.getState().document?.layers.find((layer) => layer.id === activeLayer.id)?.transformSource ?? null,
+          currentOffset: { x: 0, y: 0 },
+        };
+        activeLayer.visible = false;
+        activeLayer.dirty = true;
+        r.scheduleRender();
+        setMovePreviewOffset({ x: 0, y: 0 });
+        setIsMoveDragging(true);
+        panningRef.current = false;
+        return;
+      }
+      if (activeTool === Tool.Fill) {
+        commitHistory();
+        applyToolStroke(cp.x, cp.y);
+        const activeLayer = r.getLayerStack().getActiveLayer();
+        if (activeLayer && activeLayer.pixelBuffer) {
+          syncLayerPixelsIfNeeded(activeLayer.id, activeLayer.pixelBuffer);
+        }
         panningRef.current = false;
         return;
       }
       // Before starting to paint, sync current engine pixels to store and commit history
       const activeLayer = r.getLayerStack().getActiveLayer();
       if (activeLayer && activeLayer.pixelBuffer) {
-        syncPixels(activeLayer.id, activeLayer.pixelBuffer);
+        syncLayerPixelsIfNeeded(activeLayer.id, activeLayer.pixelBuffer);
       }
       commitHistory();
 
@@ -595,7 +892,7 @@ export function CanvasArea() {
       panningRef.current = false;
       lastRef.current = { x: e.clientX, y: e.clientY };
     }
-  }, [activeTool, applyToolStroke, commitHistory, syncPixels, doc?.selection?.mask]);
+  }, [activeTool, applyToolStroke, commitHistory, doc?.selection?.mask, syncLayerPixelsIfNeeded, transformActive]);
 
   const onMove = useCallback(
     (e: React.MouseEvent) => {
@@ -637,11 +934,16 @@ export function CanvasArea() {
         } else if (activeTool === Tool.QuickSelection) {
           r.updateSelectionQuickDraft(Math.round(cp.x), Math.round(cp.y), 10, 32, mode);
         }
+      } else if (e.buttons === 1 && activeTool === Tool.Move && !transformActive && moveDragRef.current) {
+        const offsetX = Math.round(cp.x - moveDragRef.current.startPoint.x);
+        const offsetY = Math.round(cp.y - moveDragRef.current.startPoint.y);
+        moveDragRef.current.currentOffset = { x: offsetX, y: offsetY };
+        scheduleMovePreview(offsetX, offsetY);
       } else if (e.buttons === 1 && activeTool !== Tool.Fill && activeTool !== Tool.Move) {
         applyToolStroke(cp.x, cp.y);
       }
     },
-    [activeTool, applyToolStroke, setCursor, setPan],
+    [activeTool, applyToolStroke, scheduleMovePreview, setCursor, setPan, transformActive],
   );
 
   const onUp = useCallback(() => {
@@ -659,14 +961,73 @@ export function CanvasArea() {
       }
 
       setSelection({ mask: finalMask, bounds, isActive: true });
-    } else if (r) {
-      // After finishing a stroke, sync the final pixels back to the store
+    } else if (r && moveDragRef.current) {
+      if (movePreviewFrameRef.current !== 0) {
+        cancelAnimationFrame(movePreviewFrameRef.current);
+        movePreviewFrameRef.current = 0;
+      }
+
+      const drag = moveDragRef.current;
+
+      const pendingMove = pendingMovePreviewRef.current;
+      if (pendingMove) {
+        drag.currentOffset = {
+          x: pendingMove.offsetX,
+          y: pendingMove.offsetY,
+        };
+        setMovePreviewOffset({ x: pendingMove.offsetX, y: pendingMove.offsetY });
+        pendingMovePreviewRef.current = null;
+      }
+
+      const activeLayer = r.getLayerStack().getLayer(drag.layerId);
+      if (activeLayer?.pixelBuffer) {
+        const translatedPixels = translatePixels(
+          drag.sourcePixels,
+          r.getDocWidth(),
+          r.getDocHeight(),
+          drag.currentOffset.x,
+          drag.currentOffset.y,
+        );
+
+        const currentDoc = useDocumentStore.getState().document;
+        const currentLayer = currentDoc?.layers.find((layer) => layer.id === drag.layerId);
+        const baseTransformSource =
+          currentLayer?.transformSource ?? drag.originalTransformSource;
+
+        updateLayer(drag.layerId, {
+          pixels: translatedPixels,
+          transformSource: baseTransformSource
+            ? {
+                pixels: baseTransformSource.pixels,
+                width: baseTransformSource.width,
+                height: baseTransformSource.height,
+                angle: baseTransformSource.angle,
+                bounds: {
+                  x: baseTransformSource.bounds.x + drag.currentOffset.x,
+                  y: baseTransformSource.bounds.y + drag.currentOffset.y,
+                  width: baseTransformSource.bounds.width,
+                  height: baseTransformSource.bounds.height,
+                },
+              }
+            : null,
+        });
+
+        activeLayer.visible = true;
+        activeLayer.dirty = true;
+        r.scheduleRender();
+      }
+      moveDragRef.current = null;
+      setMovePreviewOffset({ x: 0, y: 0 });
+      setIsMoveDragging(false);
+    } else if (r && activeTool !== Tool.Move) {
+      // After finishing a paint stroke, sync the final pixels back to the store.
+      // Move/transform manage their own commit paths and should not clear transformSource here.
       const activeLayer = r.getLayerStack().getActiveLayer();
       if (activeLayer && activeLayer.pixelBuffer) {
-        syncPixels(activeLayer.id, activeLayer.pixelBuffer);
+        syncLayerPixelsIfNeeded(activeLayer.id, activeLayer.pixelBuffer);
       }
     }
-  }, [clearSelection, setSelection, syncPixels]);
+  }, [clearSelection, setSelection, syncLayerPixelsIfNeeded, updateLayer]);
 
   const handleInvert = () => {
     const r = rendererRef.current;
@@ -675,7 +1036,7 @@ export function CanvasArea() {
     // Sync BEFORE action
     const activeLayer = r.getLayerStack().getActiveLayer();
     if (activeLayer && activeLayer.pixelBuffer) {
-      syncPixels(activeLayer.id, activeLayer.pixelBuffer);
+      syncLayerPixelsIfNeeded(activeLayer.id, activeLayer.pixelBuffer);
     }
     commitHistory();
     
@@ -683,7 +1044,7 @@ export function CanvasArea() {
     
     // Sync AFTER action
     if (activeLayer && activeLayer.pixelBuffer) {
-      syncPixels(activeLayer.id, activeLayer.pixelBuffer);
+      syncLayerPixelsIfNeeded(activeLayer.id, activeLayer.pixelBuffer);
     }
   };
 
@@ -695,33 +1056,92 @@ export function CanvasArea() {
         height: transformBounds.height * (zoom / 100),
       }
     : null;
+  const transformRotation = `rotate(${transformAngle}rad)`;
+  const isSelectionTool =
+    activeTool === Tool.SelectionRect ||
+    activeTool === Tool.SelectionEllipse ||
+    activeTool === Tool.Lasso ||
+    activeTool === Tool.QuickSelection;
 
   return (
     <main className="canvas-area">
       <div className="opts">
-        <div className="og">
-          <span className="ol">Mode</span>
-          <button className="ob active">Rectangle</button>
-          <button className="ob">Fixed Ratio</button>
-          <button className="ob">Fixed Size</button>
-        </div>
-        <div className="osep"></div>
-        <div className="og">
-          <span className="ol">Feather</span>
-          <input type="range" className="osl" min="0" max="100" defaultValue="0" />
-          <span className="ov">0px</span>
-        </div>
-        <div className="osep"></div>
-        <div className="og">
-          <span className="ol">AA</span>
-          <button className="ob active">ON</button>
-        </div>
-        <div className="osep"></div>
-        <div className="og">
-          <button className="ob d">✕ Deselect</button>
-          <button className="ob" onClick={handleInvert} style={{ marginLeft: 3 }}>Invert</button>
-          <button className="ob" style={{ marginLeft: 3 }}>Grow</button>
-        </div>
+        {activeTool === Tool.Fill ? (
+          <>
+            <div className="og">
+              <span className="ol">Tolerance</span>
+              <input
+                type="range"
+                className="osl"
+                min="0"
+                max="255"
+                value={fillSettings.tolerance}
+                onChange={(e) => setFillTolerance(parseInt(e.target.value, 10) || 0)}
+              />
+              <span className="ov">{fillSettings.tolerance}</span>
+            </div>
+            <div className="osep"></div>
+            <div className="og">
+              <span className="ol">Contiguous</span>
+              <button
+                className={`ob ${fillSettings.contiguous ? "active" : ""}`}
+                onClick={() => setFillContiguous(!fillSettings.contiguous)}
+              >
+                {fillSettings.contiguous ? "ON" : "OFF"}
+              </button>
+            </div>
+          </>
+        ) : isSelectionTool ? (
+          <>
+            <div className="og">
+              <span className="ol">Mode</span>
+              <button className="ob active">
+                {activeTool === Tool.SelectionEllipse
+                  ? "Ellipse"
+                  : activeTool === Tool.Lasso
+                    ? "Lasso"
+                    : activeTool === Tool.QuickSelection
+                      ? "Quick"
+                      : "Rectangle"}
+              </button>
+            </div>
+            <div className="osep"></div>
+            <div className="og">
+              <span className="ol">Feather</span>
+              <input type="range" className="osl" min="0" max="100" value={selectionSettings.feather} readOnly />
+              <span className="ov">{selectionSettings.feather}px</span>
+            </div>
+            <div className="osep"></div>
+            <div className="og">
+              <span className="ol">AA</span>
+              <button className={`ob ${selectionSettings.antiAlias ? "active" : ""}`}>
+                {selectionSettings.antiAlias ? "ON" : "OFF"}
+              </button>
+            </div>
+            <div className="osep"></div>
+            <div className="og">
+              <button className="ob d" onClick={clearSelection}>✕ Deselect</button>
+              <button className="ob" onClick={handleInvert} style={{ marginLeft: 3 }}>Invert</button>
+            </div>
+          </>
+        ) : (
+          <div className="og">
+            <span className="ol">Tool</span>
+            <span className="ov" style={{ minWidth: 120 }}>
+              {activeTool === Tool.Move
+                ? transformActive
+                  ? "Transform"
+                  : "Move"
+                : activeTool === Tool.Brush
+                  ? "Brush"
+                  : activeTool === Tool.Pencil
+                    ? "Pencil"
+                    : activeTool === Tool.Eraser
+                      ? "Eraser"
+                      : activeTool}
+            </span>
+          </div>
+        )}
       </div>
 
       <div className="cwr">
@@ -737,7 +1157,37 @@ export function CanvasArea() {
           onMouseLeave={onUp}
         >
           <canvas ref={canvasRef} style={{ position: "absolute", top: 0, left: 0, display: "block" }} />
-          {activeTool === Tool.Move && transformScreenBounds && (
+          {isMoveDragging && doc && (
+            <canvas
+              ref={movePreviewCanvasRef}
+              style={{
+                position: "absolute",
+                left: movePreviewOffset.x * (zoom / 100) + pan.x,
+                top: movePreviewOffset.y * (zoom / 100) + pan.y,
+                width: Math.max(doc.width * (zoom / 100), 1),
+                height: Math.max(doc.height * (zoom / 100), 1),
+                pointerEvents: "none",
+                imageRendering: "auto",
+              }}
+            />
+          )}
+          {transformActive && activeTool === Tool.Move && transformScreenBounds && isTransformDragging && (
+            <canvas
+              ref={transformPreviewCanvasRef}
+              style={{
+                position: "absolute",
+                left: transformScreenBounds.left,
+                top: transformScreenBounds.top,
+                width: Math.max(transformScreenBounds.width, 1),
+                height: Math.max(transformScreenBounds.height, 1),
+                transform: transformRotation,
+                transformOrigin: "center center",
+                pointerEvents: "none",
+                imageRendering: "auto",
+              }}
+            />
+          )}
+          {transformActive && activeTool === Tool.Move && transformScreenBounds && (
             <div
               onMouseDown={(e) => beginTransformDrag("move", e)}
               style={{
@@ -750,8 +1200,37 @@ export function CanvasArea() {
                 boxShadow: "0 0 0 1px rgba(74,163,255,0.25)",
                 cursor: "move",
                 boxSizing: "border-box",
+                transform: transformRotation,
+                transformOrigin: "center center",
               }}
             >
+              <div
+                onMouseDown={(e) => beginTransformDrag("rotate", e)}
+                style={{
+                  position: "absolute",
+                  left: "50%",
+                  top: -24,
+                  width: 12,
+                  height: 12,
+                  marginLeft: -6,
+                  borderRadius: "50%",
+                  background: "#ffffff",
+                  border: "1px solid #4aa3ff",
+                  boxSizing: "border-box",
+                  cursor: "grab",
+                }}
+              />
+              <div
+                style={{
+                  position: "absolute",
+                  left: "50%",
+                  top: -12,
+                  width: 1,
+                  height: 12,
+                  marginLeft: -0.5,
+                  background: "#4aa3ff",
+                }}
+              />
               {(["nw", "ne", "sw", "se"] as const).map((handle) => {
                 const positionStyle =
                   handle === "nw"

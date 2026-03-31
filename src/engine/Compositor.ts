@@ -9,80 +9,145 @@ export class Compositor {
   private width: number;
   private height: number;
   private compositeBuffer: Uint8ClampedArray;
+  private compositeImageData: ImageData;
 
   constructor(width: number, height: number) {
     this.width = width;
     this.height = height;
     this.compositeBuffer = new Uint8ClampedArray(width * height * 4);
+    this.compositeImageData = new ImageData(this.compositeBuffer as any, width, height);
   }
 
   resize(width: number, height: number): void {
     this.width = width;
     this.height = height;
     this.compositeBuffer = new Uint8ClampedArray(width * height * 4);
+    this.compositeImageData = new ImageData(this.compositeBuffer as any, width, height);
   }
 
-  composite(layers: LayerData[]): ImageData {
-    this.compositeBuffer.fill(0);
+  getCompositeBuffer(): Uint8ClampedArray {
+    return this.compositeBuffer;
+  }
 
+  composite(layers: LayerData[], dirtyRect?: { minX: number; minY: number; maxX: number; maxY: number }): ImageData {
     const visibleLayers = layers.filter((l) => l.visible && l.pixelBuffer);
     if (visibleLayers.length === 0) {
-      const result = new Uint8ClampedArray(this.compositeBuffer);
-      return new ImageData(result, this.width, this.height);
+      this.compositeBuffer.fill(0);
+      return this.compositeImageData;
     }
 
-    for (let i = 0; i < this.compositeBuffer.length; i += 4) {
-      this.compositeBuffer[i] = 0;
-      this.compositeBuffer[i + 1] = 0;
-      this.compositeBuffer[i + 2] = 0;
-      this.compositeBuffer[i + 3] = 0;
+    let startX = 0;
+    let startY = 0;
+    let endX = this.width - 1;
+    let endY = this.height - 1;
+
+    if (dirtyRect) {
+      startX = Math.max(0, Math.floor(dirtyRect.minX));
+      startY = Math.max(0, Math.floor(dirtyRect.minY));
+      endX = Math.min(this.width - 1, Math.ceil(dirtyRect.maxX));
+      endY = Math.min(this.height - 1, Math.ceil(dirtyRect.maxY));
+    }
+
+    for (let y = startY; y <= endY; y++) {
+      const rowStart = (y * this.width + startX) * 4;
+      const rowEnd = (y * this.width + endX + 1) * 4;
+      this.compositeBuffer.fill(0, rowStart, rowEnd);
+    }
+
+    if (
+      visibleLayers.length === 1 &&
+      visibleLayers[0].blendMode === "normal" &&
+      visibleLayers[0].opacity === 100
+    ) {
+      this.copyLayerRect(visibleLayers[0], startX, startY, endX, endY);
+      return this.compositeImageData;
     }
 
     for (const layer of visibleLayers) {
       if (!layer.pixelBuffer) continue;
 
       const layerOpacity = layer.opacity / 100;
+      const isFastNormal = layer.blendMode === "normal" && layer.opacity === 100;
       const blendFn = this.getBlendFunction(layer.blendMode);
 
-      for (let i = 0; i < this.compositeBuffer.length; i += 4) {
-        const srcR = layer.pixelBuffer[i];
-        const srcG = layer.pixelBuffer[i + 1];
-        const srcB = layer.pixelBuffer[i + 2];
-        const srcA = (layer.pixelBuffer[i + 3] / 255) * layerOpacity;
+      for (let y = startY; y <= endY; y++) {
+        for (let x = startX; x <= endX; x++) {
+          const i = (y * this.width + x) * 4;
+          const srcR = layer.pixelBuffer[i];
+          const srcG = layer.pixelBuffer[i + 1];
+          const srcB = layer.pixelBuffer[i + 2];
+          const srcAByte = layer.pixelBuffer[i + 3];
+          if (srcAByte === 0) continue;
 
-        const dstR = this.compositeBuffer[i];
-        const dstG = this.compositeBuffer[i + 1];
-        const dstB = this.compositeBuffer[i + 2];
-        const dstA = this.compositeBuffer[i + 3] / 255;
+          if (isFastNormal && srcAByte === 255) {
+            this.compositeBuffer[i] = srcR;
+            this.compositeBuffer[i + 1] = srcG;
+            this.compositeBuffer[i + 2] = srcB;
+            this.compositeBuffer[i + 3] = 255;
+            continue;
+          }
 
-        const [blendedR, blendedG, blendedB] = blendFn(
-          srcR,
-          srcG,
-          srcB,
-          dstR,
-          dstG,
-          dstB,
-        );
+          const srcA = (srcAByte / 255) * layerOpacity;
 
-        const outA = srcA + dstA * (1 - srcA);
+          const dstR = this.compositeBuffer[i];
+          const dstG = this.compositeBuffer[i + 1];
+          const dstB = this.compositeBuffer[i + 2];
+          const dstAByte = this.compositeBuffer[i + 3];
+          const dstA = dstAByte / 255;
 
-        if (outA > 0) {
-          this.compositeBuffer[i] = Math.round(
-            (blendedR * srcA + dstR * dstA * (1 - srcA)) / outA,
+          const [blendedR, blendedG, blendedB] = blendFn(
+            srcR,
+            srcG,
+            srcB,
+            dstR,
+            dstG,
+            dstB,
           );
-          this.compositeBuffer[i + 1] = Math.round(
-            (blendedG * srcA + dstG * dstA * (1 - srcA)) / outA,
-          );
-          this.compositeBuffer[i + 2] = Math.round(
-            (blendedB * srcA + dstB * dstA * (1 - srcA)) / outA,
-          );
-          this.compositeBuffer[i + 3] = Math.round(outA * 255);
+
+          const outA = srcA + dstA * (1 - srcA);
+
+          if (outA > 0) {
+            if (dstAByte === 0 && isFastNormal) {
+              this.compositeBuffer[i] = srcR;
+              this.compositeBuffer[i + 1] = srcG;
+              this.compositeBuffer[i + 2] = srcB;
+              this.compositeBuffer[i + 3] = srcAByte;
+              continue;
+            }
+
+            this.compositeBuffer[i] = Math.round(
+              (blendedR * srcA + dstR * dstA * (1 - srcA)) / outA,
+            );
+            this.compositeBuffer[i + 1] = Math.round(
+              (blendedG * srcA + dstG * dstA * (1 - srcA)) / outA,
+            );
+            this.compositeBuffer[i + 2] = Math.round(
+              (blendedB * srcA + dstB * dstA * (1 - srcA)) / outA,
+            );
+            this.compositeBuffer[i + 3] = Math.round(outA * 255);
+          }
         }
       }
     }
 
-    const result = new Uint8ClampedArray(this.compositeBuffer);
-    return new ImageData(result, this.width, this.height);
+    return this.compositeImageData;
+  }
+
+  private copyLayerRect(
+    layer: LayerData,
+    startX: number,
+    startY: number,
+    endX: number,
+    endY: number,
+  ) {
+    if (!layer.pixelBuffer) return;
+
+    const rowWidth = (endX - startX + 1) * 4;
+    for (let y = startY; y <= endY; y++) {
+      const rowStart = (y * this.width + startX) * 4;
+      const rowEnd = rowStart + rowWidth;
+      this.compositeBuffer.set(layer.pixelBuffer.subarray(rowStart, rowEnd), rowStart);
+    }
   }
 
   private getBlendFunction(
