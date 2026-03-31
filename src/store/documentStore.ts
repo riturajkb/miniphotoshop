@@ -30,29 +30,39 @@ interface DocumentActions {
   // History actions
   undo: () => void;
   redo: () => void;
-  commitHistory: () => void;
+  commitHistory: (options?: { cloneSelection?: boolean; cloneAllLayers?: boolean }) => void;
 }
 
 type DocumentStore = DocumentState & DocumentActions;
 
-// Helper to deep clone document for history
-function cloneDocument(doc: Document): Document {
+function cloneDocument(doc: Document, activeLayerId: string | null = null, cloneSelection: boolean = true): Document {
   return {
     ...doc,
     layers: doc.layers.map((l) => ({
       ...l,
-      pixels: l.pixels ? new Uint8ClampedArray(l.pixels) : null,
-      transformSource: l.transformSource ? {
-        ...l.transformSource,
-        pixels: new Uint8ClampedArray(l.transformSource.pixels),
-        bounds: { ...l.transformSource.bounds },
-      } : null,
+      pixels: l.pixels
+        ? activeLayerId === l.id || activeLayerId === null
+          ? new Uint8ClampedArray(l.pixels)
+          : l.pixels
+        : null,
+      transformSource: l.transformSource
+        ? {
+            ...l.transformSource,
+            pixels:
+              activeLayerId === l.id || activeLayerId === null
+                ? new Uint8ClampedArray(l.transformSource.pixels)
+                : l.transformSource.pixels,
+            bounds: { ...l.transformSource.bounds },
+          }
+        : null,
     })),
-    selection: doc.selection ? {
-      ...doc.selection,
-      mask: new Uint8Array(doc.selection.mask),
-      bounds: doc.selection.bounds ? { ...doc.selection.bounds } : null
-    } : null,
+    selection: doc.selection
+      ? {
+          ...doc.selection,
+          mask: cloneSelection ? new Uint8Array(doc.selection.mask) : doc.selection.mask,
+          bounds: doc.selection.bounds ? { ...doc.selection.bounds } : null,
+        }
+      : null,
   };
 }
 
@@ -105,11 +115,14 @@ export const useDocumentStore = create<DocumentStore>()(
     undoStack: [],
     redoStack: [],
 
-    commitHistory: () => {
-      const { document } = getFn();
+    commitHistory: (options?: { cloneSelection?: boolean; cloneAllLayers?: boolean }) => {
+      const { document, activeLayerId } = getFn();
       if (!document) return;
+      const layerToClone = options?.cloneAllLayers ? null : activeLayerId;
+      const cloneSelection = options?.cloneSelection ?? false;
+      
       setFn((state: DocumentState) => {
-        state.undoStack.push(cloneDocument(document));
+        state.undoStack.push(cloneDocument(document, layerToClone, cloneSelection));
         if (state.undoStack.length > 50) state.undoStack.shift();
         state.redoStack = []; // Clear redo stack on new action
       });
@@ -119,7 +132,7 @@ export const useDocumentStore = create<DocumentStore>()(
       setFn((state: DocumentState) => {
         if (state.undoStack.length === 0 || !state.document) return;
         const previous = state.undoStack.pop()!;
-        state.redoStack.push(cloneDocument(state.document));
+        state.redoStack.push(cloneDocument(state.document, null, true));
         state.document = previous;
         // Ensure active layer is still valid
         if (!state.document.layers.some(l => l.id === state.activeLayerId)) {
@@ -131,7 +144,7 @@ export const useDocumentStore = create<DocumentStore>()(
       setFn((state: DocumentState) => {
         if (state.redoStack.length === 0 || !state.document) return;
         const next = state.redoStack.pop()!;
-        state.undoStack.push(cloneDocument(state.document));
+        state.undoStack.push(cloneDocument(state.document, null, true));
         state.document = next;
         // Ensure active layer is still valid
         if (!state.document.layers.some(l => l.id === state.activeLayerId)) {
@@ -148,7 +161,7 @@ export const useDocumentStore = create<DocumentStore>()(
       }),
 
     setSelection: (selection: import("../types/editor").Selection | null) => {
-      getFn().commitHistory();
+      getFn().commitHistory({ cloneSelection: true });
       setFn((state: DocumentState) => {
         if (state.document) {
           state.document.selection = selection;
@@ -157,7 +170,7 @@ export const useDocumentStore = create<DocumentStore>()(
     },
 
     clearSelection: () => {
-      getFn().commitHistory();
+      getFn().commitHistory({ cloneSelection: true });
       setFn((state: DocumentState) => {
         if (state.document && state.document.selection) {
           state.document.selection = null;

@@ -237,6 +237,11 @@ export function CanvasArea() {
     sourcePixels: Uint8ClampedArray;
     originalTransformSource: Layer["transformSource"];
     currentOffset: { x: number; y: number };
+    previewSourcePixels: Uint8ClampedArray;
+    previewSourceWidth: number;
+    previewSourceHeight: number;
+    previewBounds: Bounds;
+    previewAngle: number;
   } | null>(null);
   const [transformBounds, setTransformBounds] = useState<Bounds | null>(null);
   const [transformAngle, setTransformAngle] = useState(0);
@@ -244,7 +249,9 @@ export function CanvasArea() {
   const [isMoveDragging, setIsMoveDragging] = useState(false);
   const [movePreviewOffset, setMovePreviewOffset] = useState({ x: 0, y: 0 });
 
-  const { activeTool, transformActive, setTool, setTransformActive, setZoom, setPan, setCursor, setViewport, setRendererRef, zoom, pan } =
+  const movePreviewTransformSource = moveDragRef.current?.originalTransformSource ?? null;
+
+  const { activeTool, transformActive, setTool, setTransformActive, setZoom, setPan, setViewport, setRendererRef, zoom, pan } =
     useEditorStore();
 
   const endTransformSession = useCallback(() => {
@@ -678,17 +685,17 @@ export function CanvasArea() {
     const drag = moveDragRef.current;
     if (!previewCanvas || !drag || !isMoveDragging || !doc) return;
 
-    previewCanvas.width = doc.width;
-    previewCanvas.height = doc.height;
+    previewCanvas.width = drag.previewSourceWidth;
+    previewCanvas.height = drag.previewSourceHeight;
     const ctx = previewCanvas.getContext("2d");
     if (!ctx) return;
 
     const imageData = new ImageData(
-      new Uint8ClampedArray(drag.sourcePixels),
-      doc.width,
-      doc.height,
+      new Uint8ClampedArray(drag.previewSourcePixels),
+      drag.previewSourceWidth,
+      drag.previewSourceHeight,
     );
-    ctx.clearRect(0, 0, doc.width, doc.height);
+    ctx.clearRect(0, 0, drag.previewSourceWidth, drag.previewSourceHeight);
     ctx.putImageData(imageData, 0, 0);
   }, [doc, isMoveDragging]);
 
@@ -855,13 +862,27 @@ export function CanvasArea() {
         }
 
         commitHistory();
+        const originalTransformSource =
+          useDocumentStore.getState().document?.layers.find((layer) => layer.id === activeLayer.id)?.transformSource ?? null;
+        const previewBounds = originalTransformSource?.bounds ?? {
+          x: 0,
+          y: 0,
+          width: r.getDocWidth(),
+          height: r.getDocHeight(),
+        };
         moveDragRef.current = {
           layerId: activeLayer.id,
           startPoint: cp,
           sourcePixels: new Uint8ClampedArray(activeLayer.pixelBuffer),
-          originalTransformSource:
-            useDocumentStore.getState().document?.layers.find((layer) => layer.id === activeLayer.id)?.transformSource ?? null,
+          originalTransformSource,
           currentOffset: { x: 0, y: 0 },
+          previewSourcePixels: new Uint8ClampedArray(
+            originalTransformSource?.pixels ?? activeLayer.pixelBuffer,
+          ),
+          previewSourceWidth: originalTransformSource?.width ?? r.getDocWidth(),
+          previewSourceHeight: originalTransformSource?.height ?? r.getDocHeight(),
+          previewBounds,
+          previewAngle: originalTransformSource?.angle ?? 0,
         };
         activeLayer.visible = false;
         activeLayer.dirty = true;
@@ -902,7 +923,10 @@ export function CanvasArea() {
 
       const { left, top } = vp.getBoundingClientRect();
       const cp = r.screenToCanvasPrecise(e.clientX - left, e.clientY - top);
-      setCursor(Math.round(cp.x), Math.round(cp.y));
+      const cxEl = document.getElementById("cx");
+      if (cxEl) cxEl.textContent = Math.round(cp.x).toString();
+      const cyEl = document.getElementById("cy");
+      if (cyEl) cyEl.textContent = Math.round(cp.y).toString();
 
       if (panningRef.current) {
         const dx = e.clientX - lastRef.current.x;
@@ -943,7 +967,7 @@ export function CanvasArea() {
         applyToolStroke(cp.x, cp.y);
       }
     },
-    [activeTool, applyToolStroke, scheduleMovePreview, setCursor, setPan, transformActive],
+    [activeTool, applyToolStroke, scheduleMovePreview, setPan, transformActive],
   );
 
   const onUp = useCallback(() => {
@@ -981,18 +1005,32 @@ export function CanvasArea() {
 
       const activeLayer = r.getLayerStack().getLayer(drag.layerId);
       if (activeLayer?.pixelBuffer) {
-        const translatedPixels = translatePixels(
-          drag.sourcePixels,
-          r.getDocWidth(),
-          r.getDocHeight(),
-          drag.currentOffset.x,
-          drag.currentOffset.y,
-        );
-
         const currentDoc = useDocumentStore.getState().document;
         const currentLayer = currentDoc?.layers.find((layer) => layer.id === drag.layerId);
         const baseTransformSource =
           currentLayer?.transformSource ?? drag.originalTransformSource;
+        const translatedPixels = baseTransformSource
+          ? renderTransformedPixels(
+              baseTransformSource.pixels,
+              baseTransformSource.width,
+              baseTransformSource.height,
+              r.getDocWidth(),
+              r.getDocHeight(),
+              {
+                x: baseTransformSource.bounds.x + drag.currentOffset.x,
+                y: baseTransformSource.bounds.y + drag.currentOffset.y,
+                width: baseTransformSource.bounds.width,
+                height: baseTransformSource.bounds.height,
+              },
+              baseTransformSource.angle,
+            )
+          : translatePixels(
+              drag.sourcePixels,
+              r.getDocWidth(),
+              r.getDocHeight(),
+              drag.currentOffset.x,
+              drag.currentOffset.y,
+            );
 
         updateLayer(drag.layerId, {
           pixels: translatedPixels,
@@ -1162,10 +1200,12 @@ export function CanvasArea() {
               ref={movePreviewCanvasRef}
               style={{
                 position: "absolute",
-                left: movePreviewOffset.x * (zoom / 100) + pan.x,
-                top: movePreviewOffset.y * (zoom / 100) + pan.y,
-                width: Math.max(doc.width * (zoom / 100), 1),
-                height: Math.max(doc.height * (zoom / 100), 1),
+                left: ((movePreviewTransformSource?.bounds.x ?? 0) + movePreviewOffset.x) * (zoom / 100) + pan.x,
+                top: ((movePreviewTransformSource?.bounds.y ?? 0) + movePreviewOffset.y) * (zoom / 100) + pan.y,
+                width: Math.max((movePreviewTransformSource?.bounds.width ?? doc.width) * (zoom / 100), 1),
+                height: Math.max((movePreviewTransformSource?.bounds.height ?? doc.height) * (zoom / 100), 1),
+                transform: movePreviewTransformSource ? `rotate(${movePreviewTransformSource.angle}rad)` : undefined,
+                transformOrigin: movePreviewTransformSource ? "center center" : undefined,
                 pointerEvents: "none",
                 imageRendering: "auto",
               }}

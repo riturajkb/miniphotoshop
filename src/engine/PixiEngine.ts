@@ -3,7 +3,7 @@
  * No singleton — each Renderer creates its own PixiEngine to survive HMR/StrictMode
  */
 import "pixi.js/unsafe-eval"; // Required: CSP blocks eval() used by PixiJS shader compiler
-import { Application, Container, Graphics, Sprite, Texture } from "pixi.js";
+import { Application, Container, Graphics, Sprite, Texture, TilingSprite } from "pixi.js";
 
 type CompositeTile = {
   canvas: HTMLCanvasElement;
@@ -22,7 +22,9 @@ export class PixiEngine {
   public checkerboardContainer!: Container;
   public compositeContainer!: Container;
   public backgroundGraphics: Graphics | null = null;
+  public pixelGridSprite: TilingSprite | null = null;
 
+  private currentGridScale = 0;
   private initialized = false;
   private compositeTiles: CompositeTile[] = [];
   private compositeWidth = 0;
@@ -56,6 +58,15 @@ export class PixiEngine {
     this.documentContainer.addChild(this.compositeContainer);
     this.app.stage.addChild(this.documentContainer);
 
+    this.pixelGridSprite = new TilingSprite({
+      texture: Texture.EMPTY,
+      width,
+      height,
+    });
+    this.pixelGridSprite.alpha = 0.5;
+    this.pixelGridSprite.visible = false;
+    this.app.stage.addChild(this.pixelGridSprite);
+
     this.initialized = true;
     console.log(
       `[PixiEngine] initialized: canvas ${canvas.width}x${canvas.height}, vp ${width}x${height}`,
@@ -65,6 +76,10 @@ export class PixiEngine {
   resize(width: number, height: number): void {
     if (!this.initialized) return;
     this.app.renderer.resize(width, height);
+    if (this.pixelGridSprite) {
+      this.pixelGridSprite.width = width;
+      this.pixelGridSprite.height = height;
+    }
   }
 
   createCheckerboard(docWidth: number, docHeight: number, tileSize = 8): void {
@@ -159,6 +174,54 @@ export class PixiEngine {
     this.checkerboardContainer.scale.set(scale);
     this.documentContainer.position.set(x, y);
     this.documentContainer.scale.set(scale);
+    
+    if (this.pixelGridSprite) {
+      if (scale >= 6) {
+        this.pixelGridSprite.visible = true;
+        this.pixelGridSprite.tilePosition.set(x, y);
+
+        const currentScaleInt = Math.round(scale);
+        if (this.currentGridScale !== currentScaleInt) {
+          this.currentGridScale = currentScaleInt;
+          const canvas = document.createElement("canvas");
+          canvas.width = currentScaleInt;
+          canvas.height = currentScaleInt;
+          const ctx = canvas.getContext("2d")!;
+
+          // Subtle black/gray line
+          ctx.strokeStyle = "rgba(0, 0, 0, 0.4)";
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.moveTo(0, 0);
+          ctx.lineTo(currentScaleInt, 0);
+          ctx.moveTo(0, 0);
+          ctx.lineTo(0, currentScaleInt);
+          ctx.stroke();
+
+          // Subtle white line next to it for contrast
+          ctx.strokeStyle = "rgba(255, 255, 255, 0.4)";
+          ctx.beginPath();
+          ctx.moveTo(1, 1);
+          ctx.lineTo(currentScaleInt, 1);
+          ctx.moveTo(1, 1);
+          ctx.lineTo(1, currentScaleInt);
+          ctx.stroke();
+
+          const newTexture = Texture.from(canvas);
+          if (this.pixelGridSprite.texture && this.pixelGridSprite.texture !== Texture.EMPTY) {
+            this.pixelGridSprite.texture.destroy(true);
+          }
+          this.pixelGridSprite.texture = newTexture;
+        }
+      } else {
+        this.pixelGridSprite.visible = false;
+        this.currentGridScale = 0;
+        if (this.pixelGridSprite.texture && this.pixelGridSprite.texture !== Texture.EMPTY) {
+          this.pixelGridSprite.texture.destroy(true);
+          this.pixelGridSprite.texture = Texture.EMPTY;
+        }
+      }
+    }
   }
 
   render(): void {
@@ -195,6 +258,8 @@ export class PixiEngine {
         tileCanvas.height = tileHeight;
         const tileCtx = tileCanvas.getContext("2d")!;
         const texture = Texture.from(tileCanvas);
+        // Ensure pixel art is crisp when zoomed in
+        texture.source.scaleMode = "nearest";
         const sprite = new Sprite(texture);
         sprite.position.set(x, y);
         this.compositeContainer.addChild(sprite);

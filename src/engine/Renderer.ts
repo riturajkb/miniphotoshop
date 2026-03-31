@@ -269,7 +269,7 @@ export class Renderer {
 
         if (px >= 0 && px < w && py >= 0 && py < h) {
           if (dx * dx + dy * dy <= radius * radius) {
-            if (!this.canAffectPixel(px, py, selectionMask, hasActiveSelection)) {
+            if (hasActiveSelection && selectionMask[py * w + px] === 0) {
               continue;
             }
 
@@ -308,7 +308,7 @@ export class Renderer {
     const height = this.docHeight;
     const { mask: selectionMask, hasActiveSelection } = this.getSelectionState();
 
-    if (!this.canAffectPixel(x, y, selectionMask, hasActiveSelection)) return;
+    if (hasActiveSelection && selectionMask[y * width + x] === 0) return;
 
     const startIndex = (y * width + x) * 4;
     const source = {
@@ -345,7 +345,7 @@ export class Renderer {
     if (!contiguous) {
       for (let py = 0; py < height; py++) {
         for (let px = 0; px < width; px++) {
-          if (!this.canAffectPixel(px, py, selectionMask, hasActiveSelection)) {
+          if (hasActiveSelection && selectionMask[py * width + px] === 0) {
             continue;
           }
 
@@ -370,7 +370,7 @@ export class Renderer {
       const px = current % width;
       const py = Math.floor(current / width);
 
-      if (!this.canAffectPixel(px, py, selectionMask, hasActiveSelection)) {
+      if (hasActiveSelection && selectionMask[current] === 0) {
         continue;
       }
 
@@ -414,7 +414,7 @@ export class Renderer {
       const px = pixelIndex % this.docWidth;
       const py = Math.floor(pixelIndex / this.docWidth);
 
-      if (!this.canAffectPixel(px, py, selectionMask, hasActiveSelection)) {
+      if (hasActiveSelection && selectionMask[pixelIndex] === 0) {
         continue;
       }
 

@@ -1,4 +1,4 @@
-const __vite__mapDeps=(i,m=__vite__mapDeps,d=(m.f||(m.f=["./browserAll-Bm9-CUBj.js","./webworkerAll-BSDksv32.js","./Filter-DELMkI7i.js","./WebGPURenderer-2qTgVEUR.js","./GpuStencilModesToPixi-CGmo6sZP.js","./RenderTargetSystem-cVH9hZwv.js","./WebGLRenderer-D5-ugl2K.js","./CanvasRenderer-6TS7DBB3.js"])))=>i.map(i=>d[i]);
+const __vite__mapDeps=(i,m=__vite__mapDeps,d=(m.f||(m.f=["./browserAll-DHH3QVV9.js","./webworkerAll-MRPOoLgt.js","./Filter-CRD1txHz.js","./WebGPURenderer-CVVFM6is.js","./GpuStencilModesToPixi-DHSM-4Vk.js","./RenderTargetSystem-DYXaEK8_.js","./WebGLRenderer-ChQMbDzY.js","./CanvasRenderer-C9aoPMG_.js"])))=>i.map(i=>d[i]);
 function getDefaultExportFromCjs(x2) {
   return x2 && x2.__esModule && Object.prototype.hasOwnProperty.call(x2, "default") ? x2["default"] : x2;
 }
@@ -21104,7 +21104,7 @@ const browserExt = {
   },
   test: () => true,
   load: async () => {
-    await __vitePreload(() => import("./browserAll-Bm9-CUBj.js"), true ? __vite__mapDeps([0,1,2]) : void 0, import.meta.url);
+    await __vitePreload(() => import("./browserAll-DHH3QVV9.js"), true ? __vite__mapDeps([0,1,2]) : void 0, import.meta.url);
   }
 };
 const webworkerExt = {
@@ -21115,7 +21115,7 @@ const webworkerExt = {
   },
   test: () => typeof self !== "undefined" && self.WorkerGlobalScope !== void 0,
   load: async () => {
-    await __vitePreload(() => import("./webworkerAll-BSDksv32.js"), true ? __vite__mapDeps([1,2]) : void 0, import.meta.url);
+    await __vitePreload(() => import("./webworkerAll-MRPOoLgt.js"), true ? __vite__mapDeps([1,2]) : void 0, import.meta.url);
   }
 };
 function updateQuadBounds(bounds, anchor, texture) {
@@ -25283,7 +25283,7 @@ async function autoDetectRenderer(options) {
     const rendererType = preferredOrder[i2];
     if (rendererType === "webgpu" && await isWebGPUSupported()) {
       const { WebGPURenderer } = await __vitePreload(async () => {
-        const { WebGPURenderer: WebGPURenderer2 } = await import("./WebGPURenderer-2qTgVEUR.js");
+        const { WebGPURenderer: WebGPURenderer2 } = await import("./WebGPURenderer-CVVFM6is.js");
         return { WebGPURenderer: WebGPURenderer2 };
       }, true ? __vite__mapDeps([3,4,5,2]) : void 0, import.meta.url);
       RendererClass = WebGPURenderer;
@@ -25293,7 +25293,7 @@ async function autoDetectRenderer(options) {
       options.failIfMajorPerformanceCaveat ?? AbstractRenderer.defaultOptions.failIfMajorPerformanceCaveat
     )) {
       const { WebGLRenderer } = await __vitePreload(async () => {
-        const { WebGLRenderer: WebGLRenderer2 } = await import("./WebGLRenderer-D5-ugl2K.js");
+        const { WebGLRenderer: WebGLRenderer2 } = await import("./WebGLRenderer-ChQMbDzY.js");
         return { WebGLRenderer: WebGLRenderer2 };
       }, true ? __vite__mapDeps([6,4,5,2]) : void 0, import.meta.url);
       RendererClass = WebGLRenderer;
@@ -25301,7 +25301,7 @@ async function autoDetectRenderer(options) {
       break;
     } else if (rendererType === "canvas") {
       const { CanvasRenderer } = await __vitePreload(async () => {
-        const { CanvasRenderer: CanvasRenderer2 } = await import("./CanvasRenderer-6TS7DBB3.js");
+        const { CanvasRenderer: CanvasRenderer2 } = await import("./CanvasRenderer-C9aoPMG_.js");
         return { CanvasRenderer: CanvasRenderer2 };
       }, true ? __vite__mapDeps([7,5,2]) : void 0, import.meta.url);
       RendererClass = CanvasRenderer;
@@ -35235,6 +35235,7 @@ function CanvasArea() {
   const [isTransformDragging, setIsTransformDragging] = reactExports.useState(false);
   const [isMoveDragging, setIsMoveDragging] = reactExports.useState(false);
   const [movePreviewOffset, setMovePreviewOffset] = reactExports.useState({ x: 0, y: 0 });
+  const movePreviewTransformSource = moveDragRef.current?.originalTransformSource ?? null;
   const { activeTool, transformActive, setTool, setTransformActive, setZoom, setPan, setCursor, setViewport, setRendererRef, zoom, pan } = useEditorStore();
   const endTransformSession = reactExports.useCallback(() => {
     const activeSession = transformSessionRef.current;
@@ -35597,16 +35598,16 @@ function CanvasArea() {
     const previewCanvas = movePreviewCanvasRef.current;
     const drag = moveDragRef.current;
     if (!previewCanvas || !drag || !isMoveDragging || !doc) return;
-    previewCanvas.width = doc.width;
-    previewCanvas.height = doc.height;
+    previewCanvas.width = drag.previewSourceWidth;
+    previewCanvas.height = drag.previewSourceHeight;
     const ctx = previewCanvas.getContext("2d");
     if (!ctx) return;
     const imageData = new ImageData(
-      new Uint8ClampedArray(drag.sourcePixels),
-      doc.width,
-      doc.height
+      new Uint8ClampedArray(drag.previewSourcePixels),
+      drag.previewSourceWidth,
+      drag.previewSourceHeight
     );
-    ctx.clearRect(0, 0, doc.width, doc.height);
+    ctx.clearRect(0, 0, drag.previewSourceWidth, drag.previewSourceHeight);
     ctx.putImageData(imageData, 0, 0);
   }, [doc, isMoveDragging]);
   reactExports.useEffect(() => {
@@ -35742,12 +35743,26 @@ function CanvasArea() {
           return;
         }
         commitHistory();
+        const originalTransformSource = useDocumentStore.getState().document?.layers.find((layer) => layer.id === activeLayer2.id)?.transformSource ?? null;
+        const previewBounds = originalTransformSource?.bounds ?? {
+          x: 0,
+          y: 0,
+          width: r2.getDocWidth(),
+          height: r2.getDocHeight()
+        };
         moveDragRef.current = {
           layerId: activeLayer2.id,
           startPoint: cp,
           sourcePixels: new Uint8ClampedArray(activeLayer2.pixelBuffer),
-          originalTransformSource: useDocumentStore.getState().document?.layers.find((layer) => layer.id === activeLayer2.id)?.transformSource ?? null,
-          currentOffset: { x: 0, y: 0 }
+          originalTransformSource,
+          currentOffset: { x: 0, y: 0 },
+          previewSourcePixels: new Uint8ClampedArray(
+            originalTransformSource?.pixels ?? activeLayer2.pixelBuffer
+          ),
+          previewSourceWidth: originalTransformSource?.width ?? r2.getDocWidth(),
+          previewSourceHeight: originalTransformSource?.height ?? r2.getDocHeight(),
+          previewBounds,
+          previewAngle: originalTransformSource?.angle ?? 0
         };
         activeLayer2.visible = false;
         activeLayer2.dirty = true;
@@ -35852,16 +35867,29 @@ function CanvasArea() {
       }
       const activeLayer = r2.getLayerStack().getLayer(drag.layerId);
       if (activeLayer?.pixelBuffer) {
-        const translatedPixels = translatePixels(
+        const currentDoc = useDocumentStore.getState().document;
+        const currentLayer = currentDoc?.layers.find((layer) => layer.id === drag.layerId);
+        const baseTransformSource = currentLayer?.transformSource ?? drag.originalTransformSource;
+        const translatedPixels = baseTransformSource ? renderTransformedPixels(
+          baseTransformSource.pixels,
+          baseTransformSource.width,
+          baseTransformSource.height,
+          r2.getDocWidth(),
+          r2.getDocHeight(),
+          {
+            x: baseTransformSource.bounds.x + drag.currentOffset.x,
+            y: baseTransformSource.bounds.y + drag.currentOffset.y,
+            width: baseTransformSource.bounds.width,
+            height: baseTransformSource.bounds.height
+          },
+          baseTransformSource.angle
+        ) : translatePixels(
           drag.sourcePixels,
           r2.getDocWidth(),
           r2.getDocHeight(),
           drag.currentOffset.x,
           drag.currentOffset.y
         );
-        const currentDoc = useDocumentStore.getState().document;
-        const currentLayer = currentDoc?.layers.find((layer) => layer.id === drag.layerId);
-        const baseTransformSource = currentLayer?.transformSource ?? drag.originalTransformSource;
         updateLayer(drag.layerId, {
           pixels: translatedPixels,
           transformSource: baseTransformSource ? {
@@ -35990,10 +36018,12 @@ function CanvasArea() {
                 ref: movePreviewCanvasRef,
                 style: {
                   position: "absolute",
-                  left: movePreviewOffset.x * (zoom / 100) + pan.x,
-                  top: movePreviewOffset.y * (zoom / 100) + pan.y,
-                  width: Math.max(doc.width * (zoom / 100), 1),
-                  height: Math.max(doc.height * (zoom / 100), 1),
+                  left: ((movePreviewTransformSource?.bounds.x ?? 0) + movePreviewOffset.x) * (zoom / 100) + pan.x,
+                  top: ((movePreviewTransformSource?.bounds.y ?? 0) + movePreviewOffset.y) * (zoom / 100) + pan.y,
+                  width: Math.max((movePreviewTransformSource?.bounds.width ?? doc.width) * (zoom / 100), 1),
+                  height: Math.max((movePreviewTransformSource?.bounds.height ?? doc.height) * (zoom / 100), 1),
+                  transform: movePreviewTransformSource ? `rotate(${movePreviewTransformSource.angle}rad)` : void 0,
+                  transformOrigin: movePreviewTransformSource ? "center center" : void 0,
                   pointerEvents: "none",
                   imageRendering: "auto"
                 }
