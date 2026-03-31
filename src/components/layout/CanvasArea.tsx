@@ -280,6 +280,9 @@ export function CanvasArea() {
     setTransformAngle(0);
     setIsTransformDragging(false);
   }, [setTransformActive]);
+  const brushSettings = useToolStore((state) => state.brush);
+  const pencilSettings = useToolStore((state) => state.pencil);
+  const eraserSettings = useToolStore((state) => state.eraser);
   const fillSettings = useToolStore((state) => state.fill);
   const selectionSettings = useToolStore((state) => state.selection);
   const setFillTolerance = useToolStore((state) => state.setFillTolerance);
@@ -288,8 +291,9 @@ export function CanvasArea() {
   const { setDocument, document: doc, undo, redo, commitHistory, syncPixels, updateLayer, activeLayerId, setSelection, clearSelection } = useDocumentStore();
 
   const isSelectingRef = useRef(false);
+  const lastBrushPointRef = useRef<{ x: number, y: number } | null>(null);
   const selectionStartRef = useRef({ x: 0, y: 0 });
-  const selectionPointsRef = useRef<{x: number, y: number}[]>([]);
+  const selectionPointsRef = useRef<{ x: number, y: number }[]>([]);
   const selectionModeRef = useRef<import("../../types/editor").SelectionMode>("replace");
 
   const getCanvasPoint = useCallback((clientX: number, clientY: number) => {
@@ -538,21 +542,41 @@ export function CanvasArea() {
     [buildTransformPixels, getCanvasPoint, scheduleTransformPreview, updateLayer],
   );
 
-  const applyToolStroke = useCallback((x: number, y: number) => {
+  const applyToolStroke = useCallback((x: number, y: number, fromX: number, fromY: number) => {
     const renderer = rendererRef.current;
     if (!renderer) return;
     const px = Math.round(x);
     const py = Math.round(y);
+    const fX = Math.round(fromX);
+    const fY = Math.round(fromY);
 
     switch (activeTool) {
       case Tool.Brush:
-        renderer.drawBrush(px, py, foregroundColor, 20);
+        renderer.drawBrushStroke(fX, fY, px, py, foregroundColor, {
+          size: brushSettings.size,
+          hardness: brushSettings.hardness,
+          opacity: brushSettings.opacity,
+          flow: brushSettings.flow,
+          spacing: 25 // standard photoshop spacing
+        });
         break;
       case Tool.Pencil:
-        renderer.drawBrush(px, py, foregroundColor, 6);
+        renderer.drawBrushStroke(fX, fY, px, py, foregroundColor, {
+          size: pencilSettings.size,
+          hardness: 100, // pencil is always hard-edge
+          opacity: pencilSettings.opacity,
+          flow: pencilSettings.flow,
+          spacing: 15
+        });
         break;
       case Tool.Eraser:
-        renderer.drawBrush(px, py, { r: 0, g: 0, b: 0, a: 0 }, 20);
+        renderer.drawBrushStroke(fX, fY, px, py, { r: 0, g: 0, b: 0, a: 0 }, {
+          size: eraserSettings.size,
+          hardness: eraserSettings.hardness,
+          opacity: eraserSettings.opacity,
+          flow: 100, // standard eraser flow
+          spacing: 25
+        });
         break;
       case Tool.Fill:
         renderer.fill(
@@ -566,7 +590,7 @@ export function CanvasArea() {
       default:
         break;
     }
-  }, [activeTool, fillSettings.contiguous, fillSettings.tolerance, foregroundColor]);
+  }, [activeTool, fillSettings.contiguous, fillSettings.tolerance, foregroundColor, brushSettings, pencilSettings, eraserSettings]);
 
   // Keyboard shortcuts
   useEffect(() => {
@@ -714,7 +738,7 @@ export function CanvasArea() {
 
     renderer.init(canvas, w, h).then(() => {
       if (isDestroyed) return;
-      
+
       // create default document in store
       const newDoc = createDefaultDocument(DEFAULT_W, DEFAULT_H, {
         r: 255,
@@ -821,9 +845,9 @@ export function CanvasArea() {
 
     if (e.button === 1 || e.altKey) {
       if (activeTool !== Tool.SelectionRect && activeTool !== Tool.SelectionEllipse && activeTool !== Tool.Lasso && activeTool !== Tool.QuickSelection) {
-         panningRef.current = true;
-         lastRef.current = { x: e.clientX, y: e.clientY };
-         return;
+        panningRef.current = true;
+        lastRef.current = { x: e.clientX, y: e.clientY };
+        return;
       }
     }
 
@@ -836,7 +860,7 @@ export function CanvasArea() {
       isSelectingRef.current = true;
       selectionStartRef.current = cp;
       selectionPointsRef.current = [cp];
-      
+
       let mode: import("../../types/editor").SelectionMode = "replace";
       if (e.shiftKey) mode = "add";
       else if (e.altKey) mode = "subtract";
@@ -894,7 +918,7 @@ export function CanvasArea() {
       }
       if (activeTool === Tool.Fill) {
         commitHistory();
-        applyToolStroke(cp.x, cp.y);
+        applyToolStroke(cp.x, cp.y, cp.x, cp.y);
         const activeLayer = r.getLayerStack().getActiveLayer();
         if (activeLayer && activeLayer.pixelBuffer) {
           syncLayerPixelsIfNeeded(activeLayer.id, activeLayer.pixelBuffer);
@@ -909,8 +933,9 @@ export function CanvasArea() {
       }
       commitHistory();
 
-      applyToolStroke(cp.x, cp.y);
+      applyToolStroke(cp.x, cp.y, cp.x, cp.y);
       panningRef.current = false;
+      lastBrushPointRef.current = { x: cp.x, y: cp.y };
       lastRef.current = { x: e.clientX, y: e.clientY };
     }
   }, [activeTool, applyToolStroke, commitHistory, doc?.selection?.mask, syncLayerPixelsIfNeeded, transformActive]);
@@ -939,19 +964,19 @@ export function CanvasArea() {
         const mode = selectionModeRef.current;
         const startX = selectionStartRef.current.x;
         const startY = selectionStartRef.current.y;
-        
+
         const wRaw = Math.abs(cp.x - startX);
         const hRaw = Math.abs(cp.y - startY);
         const w = e.shiftKey ? Math.max(wRaw, hRaw) : wRaw;
         const h = e.shiftKey ? Math.max(wRaw, hRaw) : hRaw;
-        
+
         const rx = cp.x < startX ? startX - w : startX;
         const ry = cp.y < startY ? startY - h : startY;
 
         if (activeTool === Tool.SelectionRect) {
           r.updateSelectionRectDraft(rx, ry, w, h, mode);
         } else if (activeTool === Tool.SelectionEllipse) {
-          r.updateSelectionEllipseDraft(rx + w/2, ry + h/2, w/2, h/2, mode);
+          r.updateSelectionEllipseDraft(rx + w / 2, ry + h / 2, w / 2, h / 2, mode);
         } else if (activeTool === Tool.Lasso) {
           selectionPointsRef.current.push(cp);
           r.updateSelectionPolygonDraft(selectionPointsRef.current, mode);
@@ -964,7 +989,9 @@ export function CanvasArea() {
         moveDragRef.current.currentOffset = { x: offsetX, y: offsetY };
         scheduleMovePreview(offsetX, offsetY);
       } else if (e.buttons === 1 && activeTool !== Tool.Fill && activeTool !== Tool.Move) {
-        applyToolStroke(cp.x, cp.y);
+        const fromPoint = lastBrushPointRef.current || cp;
+        applyToolStroke(cp.x, cp.y, fromPoint.x, fromPoint.y);
+        lastBrushPointRef.current = { x: cp.x, y: cp.y };
       }
     },
     [activeTool, applyToolStroke, scheduleMovePreview, setPan, transformActive],
@@ -972,6 +999,7 @@ export function CanvasArea() {
 
   const onUp = useCallback(() => {
     panningRef.current = false;
+    lastBrushPointRef.current = null;
     const r = rendererRef.current;
 
     if (isSelectingRef.current && r) {
@@ -1011,42 +1039,42 @@ export function CanvasArea() {
           currentLayer?.transformSource ?? drag.originalTransformSource;
         const translatedPixels = baseTransformSource
           ? renderTransformedPixels(
-              baseTransformSource.pixels,
-              baseTransformSource.width,
-              baseTransformSource.height,
-              r.getDocWidth(),
-              r.getDocHeight(),
-              {
-                x: baseTransformSource.bounds.x + drag.currentOffset.x,
-                y: baseTransformSource.bounds.y + drag.currentOffset.y,
-                width: baseTransformSource.bounds.width,
-                height: baseTransformSource.bounds.height,
-              },
-              baseTransformSource.angle,
-            )
+            baseTransformSource.pixels,
+            baseTransformSource.width,
+            baseTransformSource.height,
+            r.getDocWidth(),
+            r.getDocHeight(),
+            {
+              x: baseTransformSource.bounds.x + drag.currentOffset.x,
+              y: baseTransformSource.bounds.y + drag.currentOffset.y,
+              width: baseTransformSource.bounds.width,
+              height: baseTransformSource.bounds.height,
+            },
+            baseTransformSource.angle,
+          )
           : translatePixels(
-              drag.sourcePixels,
-              r.getDocWidth(),
-              r.getDocHeight(),
-              drag.currentOffset.x,
-              drag.currentOffset.y,
-            );
+            drag.sourcePixels,
+            r.getDocWidth(),
+            r.getDocHeight(),
+            drag.currentOffset.x,
+            drag.currentOffset.y,
+          );
 
         updateLayer(drag.layerId, {
           pixels: translatedPixels,
           transformSource: baseTransformSource
             ? {
-                pixels: baseTransformSource.pixels,
-                width: baseTransformSource.width,
-                height: baseTransformSource.height,
-                angle: baseTransformSource.angle,
-                bounds: {
-                  x: baseTransformSource.bounds.x + drag.currentOffset.x,
-                  y: baseTransformSource.bounds.y + drag.currentOffset.y,
-                  width: baseTransformSource.bounds.width,
-                  height: baseTransformSource.bounds.height,
-                },
-              }
+              pixels: baseTransformSource.pixels,
+              width: baseTransformSource.width,
+              height: baseTransformSource.height,
+              angle: baseTransformSource.angle,
+              bounds: {
+                x: baseTransformSource.bounds.x + drag.currentOffset.x,
+                y: baseTransformSource.bounds.y + drag.currentOffset.y,
+                width: baseTransformSource.bounds.width,
+                height: baseTransformSource.bounds.height,
+              },
+            }
             : null,
         });
 
@@ -1070,16 +1098,16 @@ export function CanvasArea() {
   const handleInvert = () => {
     const r = rendererRef.current;
     if (!r) return;
-    
+
     // Sync BEFORE action
     const activeLayer = r.getLayerStack().getActiveLayer();
     if (activeLayer && activeLayer.pixelBuffer) {
       syncLayerPixelsIfNeeded(activeLayer.id, activeLayer.pixelBuffer);
     }
     commitHistory();
-    
+
     r.invertLayer();
-    
+
     // Sync AFTER action
     if (activeLayer && activeLayer.pixelBuffer) {
       syncLayerPixelsIfNeeded(activeLayer.id, activeLayer.pixelBuffer);
@@ -1088,11 +1116,11 @@ export function CanvasArea() {
 
   const transformScreenBounds = transformBounds
     ? {
-        left: transformBounds.x * (zoom / 100) + pan.x,
-        top: transformBounds.y * (zoom / 100) + pan.y,
-        width: transformBounds.width * (zoom / 100),
-        height: transformBounds.height * (zoom / 100),
-      }
+      left: transformBounds.x * (zoom / 100) + pan.x,
+      top: transformBounds.y * (zoom / 100) + pan.y,
+      width: transformBounds.width * (zoom / 100),
+      height: transformBounds.height * (zoom / 100),
+    }
     : null;
   const transformRotation = `rotate(${transformAngle}rad)`;
   const isSelectionTool =
@@ -1162,6 +1190,53 @@ export function CanvasArea() {
               <button className="ob" onClick={handleInvert} style={{ marginLeft: 3 }}>Invert</button>
             </div>
           </>
+        ) : activeTool === Tool.Brush || activeTool === Tool.Pencil ? (
+          <>
+            <div className="og">
+              <span className="ol">{activeTool === Tool.Brush ? "Brush" : "Pencil"}</span>
+            </div>
+            <div className="osep"></div>
+            <div className="og">
+              <span className="ol">Size</span>
+              <input type="range" className="osl" min="1" max="500" value={activeTool === Tool.Brush ? brushSettings.size : pencilSettings.size} onChange={(e) => useToolStore.getState().setBrushSize(parseInt(e.target.value) || 1)} />
+              <input type="number" className="osl" style={{ width: 40, background: 'transparent', color: 'var(--mist)', border: 'none', borderBottom: '1px solid var(--cinder)', padding: 0 }} min="1" max="500" value={activeTool === Tool.Brush ? brushSettings.size : pencilSettings.size} onChange={(e) => useToolStore.getState().setBrushSize(parseInt(e.target.value) || 1)} />
+              <span className="ov">px</span>
+            </div>
+            <div className="osep"></div>
+            <div className="og">
+              <span className="ol">Hardness</span>
+              <input type="range" className="osl" min="0" max="100" value={activeTool === Tool.Brush ? brushSettings.hardness : 100} onChange={(e) => useToolStore.getState().setBrushHardness(parseInt(e.target.value) || 0)} disabled={activeTool === Tool.Pencil} />
+              <input type="number" className="osl" style={{ width: 40, background: 'transparent', color: 'var(--mist)', border: 'none', borderBottom: '1px solid var(--cinder)', padding: 0 }} min="0" max="100" value={activeTool === Tool.Brush ? brushSettings.hardness : 100} onChange={(e) => useToolStore.getState().setBrushHardness(parseInt(e.target.value) || 0)} disabled={activeTool === Tool.Pencil} />
+              <span className="ov">%</span>
+            </div>
+            <div className="osep"></div>
+            <div className="og">
+              <span className="ol">Opacity</span>
+              <input type="range" className="osl" min="0" max="100" value={activeTool === Tool.Brush ? brushSettings.opacity : pencilSettings.opacity} onChange={(e) => useToolStore.getState().setBrushOpacity(parseInt(e.target.value) || 0)} />
+              <input type="number" className="osl" style={{ width: 40, background: 'transparent', color: 'var(--mist)', border: 'none', borderBottom: '1px solid var(--cinder)', padding: 0 }} min="0" max="100" value={activeTool === Tool.Brush ? brushSettings.opacity : pencilSettings.opacity} onChange={(e) => useToolStore.getState().setBrushOpacity(parseInt(e.target.value) || 0)} />
+              <span className="ov">%</span>
+            </div>
+            <div className="osep"></div>
+            <div className="og">
+              <span className="ol">Flow</span>
+              <input type="range" className="osl" min="0" max="100" value={activeTool === Tool.Brush ? brushSettings.flow : pencilSettings.flow} onChange={(e) => useToolStore.getState().setBrushFlow(parseInt(e.target.value) || 0)} />
+              <input type="number" className="osl" style={{ width: 40, background: 'transparent', color: 'var(--mist)', border: 'none', borderBottom: '1px solid var(--cinder)', padding: 0 }} min="0" max="100" value={activeTool === Tool.Brush ? brushSettings.flow : pencilSettings.flow} onChange={(e) => useToolStore.getState().setBrushFlow(parseInt(e.target.value) || 0)} />
+              <span className="ov">%</span>
+            </div>
+          </>
+        ) : activeTool === Tool.Eraser ? (
+          <>
+            <div className="og">
+              <span className="ol">Eraser</span>
+            </div>
+            <div className="osep"></div>
+            <div className="og">
+              <span className="ol">Size</span>
+              <input type="range" className="osl" min="1" max="500" value={eraserSettings.size} onChange={(e) => useToolStore.getState().setEraserSize(parseInt(e.target.value) || 1)} />
+              <input type="number" className="osl" style={{ width: 40, background: 'transparent', color: 'var(--mist)', border: 'none', borderBottom: '1px solid var(--cinder)', padding: 0 }} min="1" max="500" value={eraserSettings.size} onChange={(e) => useToolStore.getState().setEraserSize(parseInt(e.target.value) || 1)} />
+              <span className="ov">px</span>
+            </div>
+          </>
         ) : (
           <div className="og">
             <span className="ol">Tool</span>
@@ -1170,13 +1245,7 @@ export function CanvasArea() {
                 ? transformActive
                   ? "Transform"
                   : "Move"
-                : activeTool === Tool.Brush
-                  ? "Brush"
-                  : activeTool === Tool.Pencil
-                    ? "Pencil"
-                    : activeTool === Tool.Eraser
-                      ? "Eraser"
-                      : activeTool}
+                : activeTool}
             </span>
           </div>
         )}

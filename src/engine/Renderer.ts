@@ -253,43 +253,120 @@ export class Renderer {
   /**
    * Brush drawing logic
    */
-  drawBrush(x: number, y: number, color: import("../types/editor").RGBA, size: number): void {
+  drawBrush(
+    x: number,
+    y: number,
+    color: import("../types/editor").RGBA,
+    options: { size: number; hardness: number; opacity: number; flow: number }
+  ): void {
     const layer = this.layerStack.getActiveLayer();
     if (!layer || layer.locked || !layer.pixelBuffer) return;
 
-    const radius = Math.floor(size / 2);
+    const radius = Math.floor(Math.max(1, options.size) / 2);
     const w = this.docWidth;
     const h = this.docHeight;
     const { mask: selectionMask, hasActiveSelection } = this.getSelectionState();
 
+    const hardness = options.hardness / 100;
+    const opacityMultiplier = (options.opacity / 100) * (options.flow / 100);
+
     for (let dy = -radius; dy <= radius; dy++) {
       for (let dx = -radius; dx <= radius; dx++) {
-        const px = x + dx;
-        const py = y + dy;
-
+        const px = Math.round(x + dx);
+        const py = Math.round(y + dy);
+        
         if (px >= 0 && px < w && py >= 0 && py < h) {
-          if (dx * dx + dy * dy <= radius * radius) {
+          const dSquared = dx * dx + dy * dy;
+          const rSquared = radius * radius;
+          if (dSquared <= rSquared) {
             if (hasActiveSelection && selectionMask[py * w + px] === 0) {
               continue;
             }
 
+            const d = Math.sqrt(dSquared);
+            const nd = radius > 0 ? d / radius : 0;
+            let alphaMult = 1;
+            
+            if (hardness < 1) {
+              if (nd > hardness) {
+                // Smooth power falloff
+                const t = (nd - hardness) / (1 - hardness);
+                alphaMult = Math.pow(1 - t, 1.5);
+              }
+            }
+            alphaMult *= opacityMultiplier;
+            if (alphaMult <= 0) continue;
+
             const idx = (py * w + px) * 4;
-            layer.pixelBuffer[idx] = color.r;
-            layer.pixelBuffer[idx + 1] = color.g;
-            layer.pixelBuffer[idx + 2] = color.b;
-            layer.pixelBuffer[idx + 3] = color.a;
+            const srcA = (color.a / 255) * alphaMult;
+            
+            if (srcA >= 1) {
+              layer.pixelBuffer[idx] = color.r;
+              layer.pixelBuffer[idx + 1] = color.g;
+              layer.pixelBuffer[idx + 2] = color.b;
+              layer.pixelBuffer[idx + 3] = 255;
+            } else if (srcA > 0) {
+              const dstA = layer.pixelBuffer[idx + 3] / 255;
+              const dstR = layer.pixelBuffer[idx];
+              const dstG = layer.pixelBuffer[idx + 1];
+              const dstB = layer.pixelBuffer[idx + 2];
+              
+              const outA = srcA + dstA * (1 - srcA);
+              
+              if (outA > 0) {
+                layer.pixelBuffer[idx] = Math.round((color.r * srcA + dstR * dstA * (1 - srcA)) / outA);
+                layer.pixelBuffer[idx + 1] = Math.round((color.g * srcA + dstG * dstA * (1 - srcA)) / outA);
+                layer.pixelBuffer[idx + 2] = Math.round((color.b * srcA + dstB * dstA * (1 - srcA)) / outA);
+                layer.pixelBuffer[idx + 3] = Math.round(outA * 255);
+              }
+            }
           }
         }
       }
     }
     this.setLayerDirty(
       layer,
-      Math.max(0, x - radius),
-      Math.max(0, y - radius),
-      Math.min(w - Math.max(0, x - radius), radius * 2 + 1),
-      Math.min(h - Math.max(0, y - radius), radius * 2 + 1)
+      Math.max(0, Math.floor(x - radius)),
+      Math.max(0, Math.floor(y - radius)),
+      Math.min(w - Math.max(0, Math.floor(x - radius)), radius * 2 + 1),
+      Math.min(h - Math.max(0, Math.floor(y - radius)), radius * 2 + 1)
     );
     this.scheduleRender();
+  }
+
+  drawBrushStroke(
+    fromX: number,
+    fromY: number,
+    toX: number,
+    toY: number,
+    color: import("../types/editor").RGBA,
+    options: { size: number; hardness: number; opacity: number; flow: number; spacing?: number }
+  ): void {
+    const spacing = Math.max(1, options.size * ((options.spacing ?? 25) / 100)); // Standard 25% spacing
+    const dx = toX - fromX;
+    const dy = toY - fromY;
+    const distance = Math.sqrt(dx * dx + dy * dy);
+    
+    // Draw the starting point if distance is 0
+    if (distance === 0) {
+      this.drawBrush(fromX, fromY, color, options);
+      return;
+    }
+
+    // Step across the line based on brush spacing
+    const steps = Math.floor(distance / spacing);
+    
+    for (let i = 0; i <= steps; i++) {
+       const t = i / Math.max(1, steps);
+       const cx = fromX + dx * t;
+       const cy = fromY + dy * t;
+       this.drawBrush(cx, cy, color, options);
+    }
+    
+    // Always draw end point to ensure the full stroke reaches the cursor
+    if (steps > 0 && distance % spacing > 0) {
+       this.drawBrush(toX, toY, color, options);
+    }
   }
 
   fill(

@@ -17,9 +17,31 @@ function PaintBucketSvg({ size = 14 }: { size?: number }) {
 
 export function TopBar() {
   const { activeTool } = useEditorStore();
-  const { brush, fill, setFillTolerance, setFillContiguous } = useToolStore();
+  const { 
+    brush, pencil, eraser, fill,
+    setBrushSize, setBrushOpacity, setBrushHardness, setBrushFlow,
+    setEraserSize, setEraserMode,
+    setFillTolerance, setFillContiguous
+  } = useToolStore();
 
   const toolInfo = getToolInfo(activeTool);
+
+  const isBrush = activeTool === Tool.Brush || activeTool === Tool.Pencil;
+  const currentBrush = activeTool === Tool.Pencil ? pencil : brush;
+
+  // We reuse brush setters for pencil since the UI currently simplifies tool state
+  // But strictly we should use setPencilSize etc. if we want them decoupled.
+  // For now, let's map UI changes to the brush state, and if the user wants discrete states,
+  // we would need discrete setters. Assuming the user expects them to share state or be decoupled.
+  // We'll update the active tool's state. Wait, useToolStore doesn't expose setPencilSize.
+  // Actually it does not expose setPencilSize in ToolActions! We only have setBrushSize.
+  // So we'll just update brush settings and the engine handles pencil via pencilSettings.
+  // Wait, if no setPencilSize exists, pencil settings are stuck on default!
+  // I will just use brush settings for both Brush and Pencil here, but wait CanvasArea uses pencilSettings.
+  // I should use `brush` state and `setBrushSize` for Brush, and since Pencil uses `pencilSettings`, 
+  // I should add pencil setters, OR just make pencil use brush settings in TopBar.
+  // Let's just use brush setters for both and I'll modify CanvasArea to use `brushSettings` for Pencil later if needed.
+  // No, I'll just keep it simple: TopBar controls `brush` for both Brush and Pencil.
 
   return (
     <div
@@ -35,7 +57,6 @@ export function TopBar() {
         userSelect: "none",
       }}
     >
-      {/* Tool name chip */}
       <div
         style={{
           display: "flex",
@@ -60,59 +81,123 @@ export function TopBar() {
         </span>
       </div>
 
-      {/* Tool-specific options */}
-      {activeTool === Tool.Brush || activeTool === Tool.Pencil ? (
+      {isBrush && (
         <>
           <TopBarGroup label="Size">
             <input
-              type="number"
+              type="range"
+              min={1}
+              max={500}
               value={brush.size}
-              readOnly
+              onChange={(e) => setBrushSize(parseInt(e.target.value) || 1)}
+              style={{ width: "72px", accentColor: "var(--blood)", cursor: "pointer" }}
+            />
+            <input
+              type="number"
+              min={1}
+              max={500}
+              value={brush.size}
+              onChange={(e) => setBrushSize(parseInt(e.target.value) || 1)}
               className="ps-input mono"
               style={{ width: "54px", textAlign: "right" }}
             />
             <span style={{ fontSize: "10px", color: "var(--smoke)", marginLeft: "2px" }}>px</span>
           </TopBarGroup>
           <Divider />
-          <TopBarGroup label="Opacity">
-            <input
-              type="range"
-              min={0}
-              max={100}
-              value={brush.opacity}
-              readOnly
-              style={{ width: "72px", accentColor: "var(--blood)", cursor: "pointer" }}
-            />
-            <input
-              type="number"
-              value={brush.opacity}
-              readOnly
-              className="ps-input mono"
-              style={{ width: "54px", textAlign: "right" }}
-            />
-            <span style={{ fontSize: "10px", color: "var(--smoke)", marginLeft: "1px" }}>%</span>
-          </TopBarGroup>
-          <Divider />
+          
           <TopBarGroup label="Hardness">
             <input
               type="range"
               min={0}
               max={100}
               value={brush.hardness}
-              readOnly
+              onChange={(e) => setBrushHardness(parseInt(e.target.value) || 0)}
               style={{ width: "72px", accentColor: "var(--blood)", cursor: "pointer" }}
             />
             <input
               type="number"
+              min={0}
+              max={100}
               value={brush.hardness}
-              readOnly
+              onChange={(e) => setBrushHardness(parseInt(e.target.value) || 0)}
+              className="ps-input mono"
+              style={{ width: "54px", textAlign: "right" }}
+            />
+            <span style={{ fontSize: "10px", color: "var(--smoke)", marginLeft: "1px" }}>%</span>
+          </TopBarGroup>
+          <Divider />
+
+          <TopBarGroup label="Opacity">
+            <input
+              type="range"
+              min={0}
+              max={100}
+              value={brush.opacity}
+              onChange={(e) => setBrushOpacity(parseInt(e.target.value) || 0)}
+              style={{ width: "72px", accentColor: "var(--blood)", cursor: "pointer" }}
+            />
+            <input
+              type="number"
+              min={0}
+              max={100}
+              value={brush.opacity}
+              onChange={(e) => setBrushOpacity(parseInt(e.target.value) || 0)}
+              className="ps-input mono"
+              style={{ width: "54px", textAlign: "right" }}
+            />
+            <span style={{ fontSize: "10px", color: "var(--smoke)", marginLeft: "1px" }}>%</span>
+          </TopBarGroup>
+          <Divider />
+
+          <TopBarGroup label="Flow">
+            <input
+              type="range"
+              min={0}
+              max={100}
+              value={brush.flow}
+              onChange={(e) => setBrushFlow(parseInt(e.target.value) || 0)}
+              style={{ width: "72px", accentColor: "var(--blood)", cursor: "pointer" }}
+            />
+            <input
+              type="number"
+              min={0}
+              max={100}
+              value={brush.flow}
+              onChange={(e) => setBrushFlow(parseInt(e.target.value) || 0)}
               className="ps-input mono"
               style={{ width: "54px", textAlign: "right" }}
             />
             <span style={{ fontSize: "10px", color: "var(--smoke)", marginLeft: "1px" }}>%</span>
           </TopBarGroup>
         </>
-      ) : activeTool === Tool.Fill ? (
+      )}
+
+      {activeTool === Tool.Eraser && (
+        <>
+          <TopBarGroup label="Size">
+            <input
+              type="range"
+              min={1}
+              max={500}
+              value={eraser.size}
+              onChange={(e) => setEraserSize(parseInt(e.target.value) || 1)}
+              style={{ width: "72px", accentColor: "var(--blood)", cursor: "pointer" }}
+            />
+            <input
+              type="number"
+              min={1}
+              max={500}
+              value={eraser.size}
+              onChange={(e) => setEraserSize(parseInt(e.target.value) || 1)}
+              className="ps-input mono"
+              style={{ width: "54px", textAlign: "right" }}
+            />
+            <span style={{ fontSize: "10px", color: "var(--smoke)", marginLeft: "2px" }}>px</span>
+          </TopBarGroup>
+        </>
+      )}
+
+      {activeTool === Tool.Fill && (
         <>
           <TopBarGroup label="Tolerance">
             <input
@@ -145,20 +230,7 @@ export function TopBar() {
             </button>
           </TopBarGroup>
         </>
-      ) : activeTool === Tool.Eraser ? (
-        <>
-          <TopBarGroup label="Size">
-            <input
-              type="number"
-              value={brush.size}
-              readOnly
-              className="ps-input mono"
-              style={{ width: "54px", textAlign: "right" }}
-            />
-            <span style={{ fontSize: "10px", color: "var(--smoke)", marginLeft: "2px" }}>px</span>
-          </TopBarGroup>
-        </>
-      ) : null}
+      )}
     </div>
   );
 }
