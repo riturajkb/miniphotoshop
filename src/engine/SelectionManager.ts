@@ -202,29 +202,71 @@ export class SelectionManager {
 
     if (mode === "replace") {
       this.mask.fill(0);
+      let minSelectedX = this.width;
+      let minSelectedY = this.height;
+      let maxSelectedX = -1;
+      let maxSelectedY = -1;
+
       for (let y = startY; y < endY; y++) {
         for (let x = startX; x < endX; x++) {
           if (contains(x, y)) {
             this.mask[y * this.width + x] = 255;
+            minSelectedX = Math.min(minSelectedX, x);
+            minSelectedY = Math.min(minSelectedY, y);
+            maxSelectedX = Math.max(maxSelectedX, x);
+            maxSelectedY = Math.max(maxSelectedY, y);
           }
         }
       }
-      this.recomputeBoundsAndActive();
+
+      if (maxSelectedX === -1 || maxSelectedY === -1) {
+        this.hasActive = false;
+        this.bounds = null;
+      } else {
+        this.hasActive = true;
+        this.bounds = {
+          x: minSelectedX,
+          y: minSelectedY,
+          width: maxSelectedX - minSelectedX + 1,
+          height: maxSelectedY - minSelectedY + 1,
+        };
+      }
       return;
     }
 
     if (mode === "intersect") {
       const nextMask = new Uint8Array(this.width * this.height);
+      let minSelectedX = this.width;
+      let minSelectedY = this.height;
+      let maxSelectedX = -1;
+      let maxSelectedY = -1;
+
       for (let y = startY; y < endY; y++) {
         for (let x = startX; x < endX; x++) {
           const index = y * this.width + x;
           if (this.mask[index] > 0 && contains(x, y)) {
             nextMask[index] = 255;
+            minSelectedX = Math.min(minSelectedX, x);
+            minSelectedY = Math.min(minSelectedY, y);
+            maxSelectedX = Math.max(maxSelectedX, x);
+            maxSelectedY = Math.max(maxSelectedY, y);
           }
         }
       }
       this.mask = nextMask;
-      this.recomputeBoundsAndActive();
+
+      if (maxSelectedX === -1 || maxSelectedY === -1) {
+        this.hasActive = false;
+        this.bounds = null;
+      } else {
+        this.hasActive = true;
+        this.bounds = {
+          x: minSelectedX,
+          y: minSelectedY,
+          width: maxSelectedX - minSelectedX + 1,
+          height: maxSelectedY - minSelectedY + 1,
+        };
+      }
       return;
     }
 

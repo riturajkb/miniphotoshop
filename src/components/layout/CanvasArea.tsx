@@ -12,6 +12,7 @@ import { Tool } from "../../types/editor";
 
 const DEFAULT_W = 800;
 const DEFAULT_H = 600;
+const LASSO_POINT_MIN_DISTANCE = 2;
 
 function getSelectionBounds(mask: Uint8Array, width: number, height: number) {
   let minX = width;
@@ -200,12 +201,14 @@ function translatePixels(
 export function CanvasArea() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const vpRef = useRef<HTMLDivElement>(null);
+  const lassoPreviewCanvasRef = useRef<HTMLCanvasElement>(null);
   const movePreviewCanvasRef = useRef<HTMLCanvasElement>(null);
   const transformPreviewCanvasRef = useRef<HTMLCanvasElement>(null);
   const rendererRef = useRef<Renderer | null>(null);
   const frameRef = useRef<number>(0);
   const movePreviewFrameRef = useRef<number>(0);
   const transformPreviewFrameRef = useRef<number>(0);
+  const lassoPreviewFrameRef = useRef<number>(0);
   const panningRef = useRef(false);
   const lastRef = useRef({ x: 0, y: 0 });
   const transformBoundsRef = useRef<Bounds | null>(null);
@@ -218,6 +221,10 @@ export function CanvasArea() {
   const pendingMovePreviewRef = useRef<{
     offsetX: number;
     offsetY: number;
+  } | null>(null);
+  const pendingLassoPreviewRef = useRef<{
+    points: { x: number; y: number }[];
+    mode: import("../../types/editor").SelectionMode;
   } | null>(null);
   const transformSessionRef = useRef<{
     layerId: string;
@@ -592,6 +599,90 @@ export function CanvasArea() {
     }
   }, [activeTool, fillSettings.contiguous, fillSettings.tolerance, foregroundColor, brushSettings, pencilSettings, eraserSettings]);
 
+  const drawLassoPreview = useCallback(
+    (points: { x: number; y: number }[]) => {
+      const canvas = lassoPreviewCanvasRef.current;
+      const renderer = rendererRef.current;
+      const vp = vpRef.current;
+      if (!canvas || !renderer || !vp) return;
+
+      const width = Math.max(1, vp.clientWidth);
+      const height = Math.max(1, vp.clientHeight);
+      if (canvas.width !== width || canvas.height !== height) {
+        canvas.width = width;
+        canvas.height = height;
+      }
+
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return;
+
+      ctx.clearRect(0, 0, width, height);
+      if (points.length === 0) return;
+
+      if (points.length === 1) {
+        const point = renderer.canvasToScreen(points[0].x, points[0].y);
+        ctx.strokeStyle = "rgba(0,0,0,0.95)";
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.arc(point.x, point.y, 2, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.strokeStyle = "rgba(73, 214, 255, 1)";
+        ctx.beginPath();
+        ctx.arc(point.x, point.y, 2, 0, Math.PI * 2);
+        ctx.stroke();
+        return;
+      }
+
+      ctx.lineWidth = 1;
+      ctx.lineJoin = "round";
+      ctx.lineCap = "round";
+
+      ctx.beginPath();
+      const first = renderer.canvasToScreen(points[0].x, points[0].y);
+      ctx.moveTo(first.x + 0.5, first.y + 0.5);
+      for (let index = 1; index < points.length; index += 1) {
+        const point = renderer.canvasToScreen(points[index].x, points[index].y);
+        ctx.lineTo(point.x + 0.5, point.y + 0.5);
+      }
+      ctx.strokeStyle = "rgba(0,0,0,0.9)";
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(first.x + 0.5, first.y + 0.5);
+      for (let index = 1; index < points.length; index += 1) {
+        const point = renderer.canvasToScreen(points[index].x, points[index].y);
+        ctx.lineTo(point.x + 0.5, point.y + 0.5);
+      }
+      ctx.strokeStyle = "rgba(73, 214, 255, 1)";
+      ctx.stroke();
+    },
+    [],
+  );
+
+  const clearLassoPreview = useCallback(() => {
+    const canvas = lassoPreviewCanvasRef.current;
+    if (!canvas) return;
+
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  }, []);
+
+  const scheduleLassoPreview = useCallback(
+    (points: { x: number; y: number }[], mode: import("../../types/editor").SelectionMode) => {
+      pendingLassoPreviewRef.current = { points, mode };
+      if (lassoPreviewFrameRef.current !== 0) return;
+
+      lassoPreviewFrameRef.current = requestAnimationFrame(() => {
+        lassoPreviewFrameRef.current = 0;
+        const pending = pendingLassoPreviewRef.current;
+        if (!pending) return;
+        drawLassoPreview(pending.points);
+      });
+    },
+    [drawLassoPreview],
+  );
+
   // Keyboard shortcuts
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
@@ -631,6 +722,17 @@ export function CanvasArea() {
       previousToolRef.current = activeTool;
     }
   }, [activeTool]);
+
+  useEffect(() => {
+    if (activeTool !== Tool.Lasso) {
+      clearLassoPreview();
+      pendingLassoPreviewRef.current = null;
+      if (lassoPreviewFrameRef.current !== 0) {
+        cancelAnimationFrame(lassoPreviewFrameRef.current);
+        lassoPreviewFrameRef.current = 0;
+      }
+    }
+  }, [activeTool, clearLassoPreview]);
 
   // Sync engine when document changes (e.g. from undo/redo)
   useEffect(() => {
@@ -796,6 +898,8 @@ export function CanvasArea() {
       cancelAnimationFrame(frameRef.current);
       cancelAnimationFrame(movePreviewFrameRef.current);
       cancelAnimationFrame(transformPreviewFrameRef.current);
+      cancelAnimationFrame(lassoPreviewFrameRef.current);
+      clearLassoPreview();
       renderer.destroy();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -868,8 +972,11 @@ export function CanvasArea() {
 
       const currentMask = doc?.selection?.mask || null;
       r.beginSelectionDraft(mode === "replace" ? null : currentMask);
+      clearLassoPreview();
 
-      if (activeTool === Tool.QuickSelection) {
+      if (activeTool === Tool.Lasso) {
+        scheduleLassoPreview(selectionPointsRef.current, mode);
+      } else if (activeTool === Tool.QuickSelection) {
         r.updateSelectionQuickDraft(Math.round(cp.x), Math.round(cp.y), 10, 32, mode);
       }
     } else {
@@ -938,7 +1045,7 @@ export function CanvasArea() {
       lastBrushPointRef.current = { x: cp.x, y: cp.y };
       lastRef.current = { x: e.clientX, y: e.clientY };
     }
-  }, [activeTool, applyToolStroke, commitHistory, doc?.selection?.mask, syncLayerPixelsIfNeeded, transformActive]);
+  }, [activeTool, applyToolStroke, clearLassoPreview, commitHistory, doc?.selection?.mask, scheduleLassoPreview, syncLayerPixelsIfNeeded, transformActive]);
 
   const onMove = useCallback(
     (e: React.MouseEvent) => {
@@ -978,8 +1085,15 @@ export function CanvasArea() {
         } else if (activeTool === Tool.SelectionEllipse) {
           r.updateSelectionEllipseDraft(rx + w / 2, ry + h / 2, w / 2, h / 2, mode);
         } else if (activeTool === Tool.Lasso) {
-          selectionPointsRef.current.push(cp);
-          r.updateSelectionPolygonDraft(selectionPointsRef.current, mode);
+          const lastPoint =
+            selectionPointsRef.current[selectionPointsRef.current.length - 1];
+          const dx = cp.x - lastPoint.x;
+          const dy = cp.y - lastPoint.y;
+
+          if (dx * dx + dy * dy >= LASSO_POINT_MIN_DISTANCE * LASSO_POINT_MIN_DISTANCE) {
+            selectionPointsRef.current.push(cp);
+            scheduleLassoPreview(selectionPointsRef.current, mode);
+          }
         } else if (activeTool === Tool.QuickSelection) {
           r.updateSelectionQuickDraft(Math.round(cp.x), Math.round(cp.y), 10, 32, mode);
         }
@@ -994,7 +1108,7 @@ export function CanvasArea() {
         lastBrushPointRef.current = { x: cp.x, y: cp.y };
       }
     },
-    [activeTool, applyToolStroke, scheduleMovePreview, setPan, transformActive],
+    [activeTool, applyToolStroke, scheduleLassoPreview, scheduleMovePreview, setPan, transformActive],
   );
 
   const onUp = useCallback(() => {
@@ -1003,6 +1117,17 @@ export function CanvasArea() {
     const r = rendererRef.current;
 
     if (isSelectingRef.current && r) {
+      if (lassoPreviewFrameRef.current !== 0) {
+        cancelAnimationFrame(lassoPreviewFrameRef.current);
+        lassoPreviewFrameRef.current = 0;
+      }
+
+      const pendingLassoPreview = pendingLassoPreviewRef.current;
+      if (activeTool === Tool.Lasso && pendingLassoPreview) {
+        r.updateSelectionPolygonDraft(pendingLassoPreview.points, pendingLassoPreview.mode);
+      }
+      pendingLassoPreviewRef.current = null;
+      clearLassoPreview();
       isSelectingRef.current = false;
       const finalMask = r.commitSelectionDraft();
       const bounds = getSelectionBounds(finalMask, r.getDocWidth(), r.getDocHeight());
@@ -1093,7 +1218,7 @@ export function CanvasArea() {
         syncLayerPixelsIfNeeded(activeLayer.id, activeLayer.pixelBuffer);
       }
     }
-  }, [clearSelection, setSelection, syncLayerPixelsIfNeeded, updateLayer]);
+  }, [activeTool, clearLassoPreview, clearSelection, setSelection, syncLayerPixelsIfNeeded, updateLayer]);
 
   const handleInvert = () => {
     const r = rendererRef.current;
@@ -1264,6 +1389,17 @@ export function CanvasArea() {
           onMouseLeave={onUp}
         >
           <canvas ref={canvasRef} style={{ position: "absolute", top: 0, left: 0, display: "block" }} />
+          <canvas
+            ref={lassoPreviewCanvasRef}
+            style={{
+              position: "absolute",
+              inset: 0,
+              width: "100%",
+              height: "100%",
+              display: activeTool === Tool.Lasso ? "block" : "none",
+              pointerEvents: "none",
+            }}
+          />
           {isMoveDragging && doc && (
             <canvas
               ref={movePreviewCanvasRef}

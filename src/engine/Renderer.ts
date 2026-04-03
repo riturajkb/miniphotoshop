@@ -1,14 +1,18 @@
 /**
  * Renderer - Syncs document state to PixiJS display tree
  */
+import { Sprite, Texture } from "pixi.js";
 import type { Graphics } from "pixi.js";
 import { PixiEngine } from "./PixiEngine";
 import { LayerStack } from "./LayerStack";
+import type { LayerData } from "./LayerStack";
 import { Compositor } from "./Compositor";
 import { SelectionManager } from "./SelectionManager";
 import { SelectionOverlay } from "./SelectionOverlay";
+import { TileManager } from "./tiled";
 
 export class Renderer {
+  private readonly tileSize = 256;
   private engine: PixiEngine;
   private layerStack: LayerStack;
   private compositor: Compositor;
@@ -24,6 +28,15 @@ export class Renderer {
   private selectionManager: SelectionManager;
   private selectionOverlay: SelectionOverlay;
   private tempSelectionMask: Uint8Array | null = null;
+  private draftPolygonPoints: import("../types/editor").Point[] | null = null;
+  private draftPolygonMode: import("../types/editor").SelectionMode | null = null;
+  private readonly layerTileManagers = new Map<string, TileManager>();
+  private readonly tileUploadCanvas: HTMLCanvasElement;
+  private readonly tileUploadCtx: CanvasRenderingContext2D;
+  private readonly tileUploadImageData: ImageData;
+  private readonly tileUploadTexture: Texture;
+  private readonly tileUploadSprite: Sprite;
+  private readonly tileManagerStampSprite: Sprite;
   private lastTime = performance.now();
   private renderRequestId: number | null = null;
 
@@ -41,6 +54,20 @@ export class Renderer {
 
     this.selectionManager = new SelectionManager(width, height);
     this.selectionOverlay = new SelectionOverlay();
+
+    this.tileUploadCanvas = document.createElement("canvas");
+    this.tileUploadCanvas.width = this.tileSize;
+    this.tileUploadCanvas.height = this.tileSize;
+    this.tileUploadCtx = this.tileUploadCanvas.getContext("2d")!;
+    this.tileUploadImageData = this.tileUploadCtx.createImageData(
+      this.tileSize,
+      this.tileSize,
+    );
+    this.tileUploadTexture = Texture.from(this.tileUploadCanvas);
+    this.tileUploadTexture.source.scaleMode = "nearest";
+    this.tileUploadSprite = new Sprite(this.tileUploadTexture);
+    this.tileUploadSprite.roundPixels = true;
+    this.tileManagerStampSprite = new Sprite(Texture.EMPTY);
   }
 
   async init(
@@ -53,6 +80,7 @@ export class Renderer {
     await this.engine.init(canvas, vpW, vpH);
     this.engine.createCheckerboard(this.docWidth, this.docHeight);
     this.engine.documentContainer.addChild(this.selectionOverlay.container);
+    this.selectionOverlay.setViewScale(this.zoom);
     this.updateTransform();
   }
 
@@ -73,59 +101,10 @@ export class Renderer {
     }
   }
 
-  /** Composite dirty layers and upload texture. Call from tick(). */
-  private composeDirty(): void {
-    if (!this.layerStack.hasDirtyLayers()) return;
-
-    let globalDirtyRect: { minX: number; minY: number; maxX: number; maxY: number } | undefined;
-    let canDoPartial = true;
-
-    for (const layer of this.layerStack.getLayers()) {
-      if (layer.dirty) {
-        if (!layer.dirtyRect) {
-          canDoPartial = false;
-          break;
-        }
-        if (!globalDirtyRect) {
-          globalDirtyRect = { ...layer.dirtyRect };
-        } else {
-          globalDirtyRect.minX = Math.min(globalDirtyRect.minX, layer.dirtyRect.minX);
-          globalDirtyRect.minY = Math.min(globalDirtyRect.minY, layer.dirtyRect.minY);
-          globalDirtyRect.maxX = Math.max(globalDirtyRect.maxX, layer.dirtyRect.maxX);
-          globalDirtyRect.maxY = Math.max(globalDirtyRect.maxY, layer.dirtyRect.maxY);
-        }
-      }
-    }
-
-    const imageData = this.compositor.composite(
-        this.layerStack.getLayers(),
-        canDoPartial ? globalDirtyRect : undefined
-    );
-
-    if (canDoPartial && globalDirtyRect) {
-      const dw = globalDirtyRect.maxX - globalDirtyRect.minX + 1;
-      const dh = globalDirtyRect.maxY - globalDirtyRect.minY + 1;
-      this.offCtx.putImageData(
-          imageData,
-          0,
-          0,
-          globalDirtyRect.minX,
-          globalDirtyRect.minY,
-          dw,
-          dh
-      );
-    } else {
-      this.offCtx.putImageData(imageData, 0, 0);
-    }
-
-    this.engine.setCompositeTexture(this.offscreen, globalDirtyRect);
-    this.layerStack.clearDirty();
-  }
-
-  /** Call every animation frame — composites dirty layers then repaints PixiJS */
+  /** Call every animation frame — uploads dirty tiles and repaints PixiJS */
   render(): void {
     if (!this.engine.isInitialized) return;
-    this.composeDirty();
+    this.flushDirtyLayerTiles();
 
     const now = performance.now();
     const dt = (now - this.lastTime) / 1000;
@@ -142,6 +121,7 @@ export class Renderer {
 
   forceRender(): void {
     this.layerStack.markAllDirty();
+    this.syncLayerDisplayStructure();
     this.render();
   }
 
@@ -177,6 +157,7 @@ export class Renderer {
 
   private updateTransform(): void {
     this.engine.setTransform(this.panX, this.panY, this.zoom);
+    this.selectionOverlay.setViewScale(this.zoom);
   }
 
   screenToCanvasPrecise(sx: number, sy: number): { x: number; y: number } {
@@ -540,6 +521,7 @@ export class Renderer {
     this.layerStack.reset(w, h);
     this.selectionManager.resize(w, h);
     this.engine.removeBackgroundGraphics();
+    this.destroyLayerTileManagers();
 
     // Recreate canvas to explicitly bypass PixiJS CanvasResource caching
     this.offscreen = document.createElement("canvas");
@@ -562,6 +544,7 @@ export class Renderer {
 
     const visualChanged = this.layerStack.syncFromDocument(doc.layers);
     this.layerStack.setActiveLayer(activeLayerId);
+    this.syncLayerDisplayStructure();
 
     if (visualChanged) {
       this.render();
@@ -573,6 +556,10 @@ export class Renderer {
       cancelAnimationFrame(this.renderRequestId);
       this.renderRequestId = null;
     }
+    this.destroyLayerTileManagers();
+    this.tileManagerStampSprite.destroy();
+    this.tileUploadSprite.destroy();
+    this.tileUploadTexture.destroy(true);
     this.engine.destroy();
   }
 
@@ -583,9 +570,7 @@ export class Renderer {
    * @returns Data URL string
    */
   exportToDataURL(format: "image/png" | "image/jpeg" = "image/png", quality?: number): string {
-    // Force a fresh composite before export
-    this.layerStack.markAllDirty();
-    this.composeDirty();
+    this.rebuildCompositeCanvas();
 
     // For PNG, we need to ensure the background is included
     // Create a temporary canvas to composite with background
@@ -612,9 +597,7 @@ export class Renderer {
    * @returns Data URL string (PNG format)
    */
   exportFlattenedToDataURL(): string {
-    // Force fresh composite
-    this.layerStack.markAllDirty();
-    this.composeDirty();
+    this.rebuildCompositeCanvas();
 
     // Get visible layers in order (they're already composited in offscreen)
     // Just export the offscreen canvas directly
@@ -627,7 +610,10 @@ export class Renderer {
 
   beginSelectionDraft(originalMask: Uint8Array | null) {
     this.tempSelectionMask = originalMask;
+    this.draftPolygonPoints = null;
+    this.draftPolygonMode = null;
     this.selectionManager.loadMask(originalMask);
+    this.selectionOverlay.clearDraft();
   }
 
   updateSelectionRectDraft(x: number, y: number, w: number, h: number, mode: import("../types/editor").SelectionMode) {
@@ -643,14 +629,15 @@ export class Renderer {
   }
 
   updateSelectionPolygonDraft(points: import("../types/editor").Point[], mode: import("../types/editor").SelectionMode) {
-    this.selectionManager.loadMask(this.tempSelectionMask);
-    this.selectionManager.drawPolygon(points, mode);
-    this.updateOverlayFromManager();
+    this.draftPolygonPoints = points;
+    this.draftPolygonMode = mode;
+    this.selectionOverlay.updateDraftPolygon(this.draftPolygonPoints);
+    this.scheduleRender();
   }
 
   updateSelectionQuickDraft(startX: number, startY: number, radius: number, tolerance: number, mode: import("../types/editor").SelectionMode) {
     // Force latest composite for accurate color sampling
-    this.composeDirty();
+    this.rebuildCompositeCanvas();
     const pixels = this.compositor.getCompositeBuffer();
     
     this.selectionManager.quickSelect(startX, startY, radius, tolerance, pixels, mode);
@@ -658,12 +645,22 @@ export class Renderer {
   }
 
   commitSelectionDraft(): Uint8Array {
+    if (this.draftPolygonPoints && this.draftPolygonMode) {
+      this.selectionManager.loadMask(this.tempSelectionMask);
+      this.selectionManager.drawPolygon(this.draftPolygonPoints, this.draftPolygonMode);
+      this.draftPolygonPoints = null;
+      this.draftPolygonMode = null;
+      this.selectionOverlay.clearDraft();
+      this.updateOverlayFromManager();
+    }
+
     return this.selectionManager.getMask();
   }
 
   private updateOverlayFromManager() {
     const mask = this.selectionManager.getMask();
-    this.selectionOverlay.updateMask(mask, this.docWidth, this.docHeight);
+    const bounds = this.selectionManager.getBounds();
+    this.selectionOverlay.updateMaskWithBounds(mask, this.docWidth, this.docHeight, bounds);
     this.scheduleRender();
   }
 
@@ -672,14 +669,152 @@ export class Renderer {
   // ============================================
   syncSelection(selection: import("../types/editor").Selection | null) {
     if (selection && selection.mask) {
+       this.draftPolygonPoints = null;
+       this.draftPolygonMode = null;
+       this.selectionOverlay.clearDraft();
        this.selectionManager.loadMask(selection.mask);
-       this.selectionOverlay.updateMask(selection.mask, this.docWidth, this.docHeight);
+       this.selectionOverlay.updateMaskWithBounds(
+         selection.mask,
+         this.docWidth,
+         this.docHeight,
+         selection.bounds,
+       );
        this.selectionOverlay.startAnimation();
     } else {
+       this.draftPolygonPoints = null;
+       this.draftPolygonMode = null;
        this.selectionManager.clear();
        this.selectionOverlay.clear();
        this.selectionOverlay.stopAnimation();
     }
     this.scheduleRender();
+  }
+
+  private flushDirtyLayerTiles(): void {
+    if (!this.layerStack.hasDirtyLayers()) {
+      return;
+    }
+
+    this.syncLayerDisplayStructure();
+
+    for (const layer of this.layerStack.getLayers()) {
+      if (!layer.dirty) continue;
+
+      const manager = this.ensureLayerTileManager(layer.id);
+      manager.container.visible = layer.visible;
+      manager.container.alpha = layer.opacity / 100;
+
+      if (layer.pixelBuffer) {
+        this.uploadLayerDirtyTiles(layer, manager);
+      }
+    }
+
+    this.layerStack.clearDirty();
+  }
+
+  private rebuildCompositeCanvas(): void {
+    const imageData = this.compositor.composite(this.layerStack.getLayers());
+    this.offCtx.putImageData(imageData, 0, 0);
+  }
+
+  private syncLayerDisplayStructure(): void {
+    if (!this.engine.isInitialized || !this.engine.compositeContainer) return;
+
+    const layers = this.layerStack.getLayers();
+    const liveIds = new Set(layers.map((layer) => layer.id));
+
+    for (const [layerId, manager] of this.layerTileManagers.entries()) {
+      if (liveIds.has(layerId)) continue;
+      manager.destroy();
+      this.layerTileManagers.delete(layerId);
+    }
+
+    for (const [index, layer] of layers.entries()) {
+      const manager = this.ensureLayerTileManager(layer.id);
+      manager.container.visible = layer.visible;
+      manager.container.alpha = layer.opacity / 100;
+
+      if (manager.container.parent !== this.engine.compositeContainer) {
+        this.engine.compositeContainer.addChild(manager.container);
+      }
+
+      if (this.engine.compositeContainer.getChildIndex(manager.container) !== index) {
+        this.engine.compositeContainer.setChildIndex(manager.container, index);
+      }
+    }
+  }
+
+  private ensureLayerTileManager(layerId: string): TileManager {
+    const existing = this.layerTileManagers.get(layerId);
+    if (existing) {
+      return existing;
+    }
+
+    const manager = new TileManager({
+      renderer: this.engine.app.renderer,
+      documentWidth: this.docWidth,
+      documentHeight: this.docHeight,
+      tileSize: this.tileSize,
+      stampSprite: this.tileManagerStampSprite,
+    });
+
+    this.layerTileManagers.set(layerId, manager);
+    if (this.engine.isInitialized && this.engine.compositeContainer) {
+      this.engine.compositeContainer.addChild(manager.container);
+    }
+
+    return manager;
+  }
+
+  private uploadLayerDirtyTiles(layer: LayerData, manager: TileManager): void {
+    if (!layer.pixelBuffer) return;
+
+    const minX = Math.max(0, layer.dirtyRect?.minX ?? 0);
+    const minY = Math.max(0, layer.dirtyRect?.minY ?? 0);
+    const maxX = Math.min(this.docWidth - 1, layer.dirtyRect?.maxX ?? this.docWidth - 1);
+    const maxY = Math.min(this.docHeight - 1, layer.dirtyRect?.maxY ?? this.docHeight - 1);
+
+    const minTileX = Math.floor(minX / this.tileSize);
+    const minTileY = Math.floor(minY / this.tileSize);
+    const maxTileX = Math.floor(maxX / this.tileSize);
+    const maxTileY = Math.floor(maxY / this.tileSize);
+
+    for (let tileY = minTileY; tileY <= maxTileY; tileY += 1) {
+      for (let tileX = minTileX; tileX <= maxTileX; tileX += 1) {
+        const bounds = manager.getTileBounds(tileX, tileY);
+        const tile = manager.getOrCreateTile(tileX, tileY);
+        const uploadData = this.tileUploadImageData.data;
+        const rowStride = this.tileSize * 4;
+
+        uploadData.fill(0);
+
+        for (let row = 0; row < bounds.height; row += 1) {
+          const srcStart = ((bounds.y + row) * this.docWidth + bounds.x) * 4;
+          const destStart = row * rowStride;
+          const srcEnd = srcStart + bounds.width * 4;
+          uploadData.set(layer.pixelBuffer.subarray(srcStart, srcEnd), destStart);
+        }
+
+        this.tileUploadCtx.putImageData(this.tileUploadImageData, 0, 0);
+        this.tileUploadTexture.source.update();
+
+        this.engine.app.renderer.render({
+          container: this.tileUploadSprite,
+          target: tile.texture,
+          clear: true,
+        });
+      }
+    }
+  }
+
+  private destroyLayerTileManagers(): void {
+    for (const manager of this.layerTileManagers.values()) {
+      manager.destroy();
+    }
+
+    this.layerTileManagers.clear();
+    if (this.engine.isInitialized && this.engine.compositeContainer) {
+      this.engine.compositeContainer.removeChildren();
+    }
   }
 }
